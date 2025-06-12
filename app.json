@@ -1,22 +1,24 @@
 {
   "expo": {
-    "name": "lime-rebuild",
-    "slug": "lime-rebuild",
+    "name": "LimeMVP_1.0",
+    "slug": "limemvp-1-0",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "limerebuild",
+    "scheme": "limemvp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.petermilligan.limemvp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.petermilligan.limemvp"
     },
     "web": {
       "bundler": "metro",
