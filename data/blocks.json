@@ -1,0 +1,62 @@
+[
+  {
+    "id": "0001",
+    "term": "zero",
+    "translation": "三",
+    "type": "number"
+  },
+  {
+    "id": "0012",
+    "term": "one",
+    "translation": "一",
+    "type": "number"
+  },
+  {
+    "id": "0015",
+    "term": "three",
+    "translation": "三",
+    "type": "number"
+  },
+  {
+    "id": "0031",
+    "term": "six",
+    "translation": "六",
+    "type": "number"
+  },
+  {
+    "id": "0032",
+    "term": "seven",
+    "translation": "七",
+    "type": "number"
+  },
+  {
+    "id": "0052",
+    "term": "four",
+    "translation": "四",
+    "type": "number"
+  },
+  {
+    "id": "0078",
+    "term": "yes",
+    "translation": "はい",
+    "type": "speech"
+  },
+  {
+    "id": "0081",
+    "term": "orange",
+    "translation": "オレンジ",
+    "type": "ingredients"
+  },
+  {
+    "id": "0085",
+    "term": "no",
+    "translation": "いいえ",
+    "type": "speech"
+  },
+  {
+    "id": "0089",
+    "term": "nine",
+    "translation": "九",
+    "type": "number"
+  }
+]
