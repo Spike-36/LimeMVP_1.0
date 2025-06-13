@@ -13,15 +13,12 @@
       "bundleIdentifier": "com.petermilligan.limemvp"
     },
     "android": {
+      "package": "com.petermilligan.limemvp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
-      "package": "com.petermilligan.limemvp"
-    },
-    "web": {
-      "favicon": "./assets/images/favicon.png"
+      "edgeToEdgeEnabled": true
     },
     "plugins": [
       [
@@ -33,9 +30,6 @@
           "backgroundColor": "#ffffff"
         }
       ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    ]
   }
 }

@@ -1,62 +1,92 @@
 [
   {
     "id": "0001",
-    "term": "zero",
-    "translation": "三",
-    "type": "number"
+    "english": "zero",
+    "foreign": "三",
+    "phonetic": "rei",
+    "type": "number",
+    "image": "0001.zero.jpg",
+    "audio": "0001.zero.japan.mp3"
   },
   {
     "id": "0012",
-    "term": "one",
-    "translation": "一",
-    "type": "number"
+    "english": "one",
+    "foreign": "一",
+    "phonetic": "ichi",
+    "type": "number",
+    "image": "0012.one.jpg",
+    "audio": "0012.one.japan.mp3"
   },
   {
     "id": "0015",
-    "term": "three",
-    "translation": "三",
-    "type": "number"
+    "english": "three",
+    "foreign": "三",
+    "phonetic": "san",
+    "type": "number",
+    "image": "0015.three.jpg",
+    "audio": "0015.three.japan.mp3"
   },
   {
     "id": "0031",
-    "term": "six",
-    "translation": "六",
-    "type": "number"
+    "english": "six",
+    "foreign": "六",
+    "phonetic": "roku",
+    "type": "number",
+    "image": "0031.six.jpg",
+    "audio": "0031.six.japan.mp3"
   },
   {
     "id": "0032",
-    "term": "seven",
-    "translation": "七",
-    "type": "number"
+    "english": "seven",
+    "foreign": "七",
+    "phonetic": "nana",
+    "type": "number",
+    "image": "0032.seven.jpg",
+    "audio": "0032.seven.japan.mp3"
   },
   {
     "id": "0052",
-    "term": "four",
-    "translation": "四",
-    "type": "number"
+    "english": "four",
+    "foreign": "四",
+    "phonetic": "yon",
+    "type": "number",
+    "image": "0052.four.jpg",
+    "audio": "0052.four.japan.mp3"
   },
   {
     "id": "0078",
-    "term": "yes",
-    "translation": "はい",
-    "type": "speech"
+    "english": "yes",
+    "foreign": "はい",
+    "phonetic": "hai",
+    "type": "speech",
+    "image": "0078.yes.jpg",
+    "audio": "0078.yes.japan.mp3"
   },
   {
     "id": "0081",
-    "term": "orange",
-    "translation": "オレンジ",
-    "type": "ingredients"
+    "english": "orange",
+    "foreign": "オレンジ",
+    "phonetic": "orenji",
+    "type": "ingredients",
+    "image": "0081.orange.jpg",
+    "audio": "0081.orange.japan.mp3"
   },
   {
     "id": "0085",
-    "term": "no",
-    "translation": "いいえ",
-    "type": "speech"
+    "english": "no",
+    "foreign": "いいえ",
+    "phonetic": "iie",
+    "type": "speech",
+    "image": "0085.no.jpg",
+    "audio": "0085.no.japan.mp3"
   },
   {
     "id": "0089",
-    "term": "nine",
-    "translation": "九",
-    "type": "number"
+    "english": "nine",
+    "foreign": "九",
+    "phonetic": "kyuu",
+    "type": "number",
+    "image": "0089.nine.jpg",
+    "audio": "0089.nine.japan.mp3"
   }
 ]
