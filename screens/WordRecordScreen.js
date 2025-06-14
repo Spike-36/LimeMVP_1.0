@@ -1,5 +1,5 @@
 import { Audio } from 'expo-av';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
@@ -10,6 +10,12 @@ export default function WordRecordScreen({ route, navigation }) {
   const imageSource = imageMap[word.image];
   const soundRef = useRef(null);
 
+  const recordingRef = useRef(null);
+  const recordedSoundRef = useRef(null);
+  const [recordingUri, setRecordingUri] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const playAudio = async () => {
     if (!word.audio || !audioMap[word.audio]) return;
     try {
@@ -19,15 +25,97 @@ export default function WordRecordScreen({ route, navigation }) {
 
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
-        playsInSilentModeIOS: true, // ✅ override silent switch
+        playsInSilentModeIOS: true,
       });
 
       const { sound } = await Audio.Sound.createAsync(audioMap[word.audio]);
-      await sound.setVolumeAsync(1.0); // ✅ force full volume
+      await sound.setVolumeAsync(1.0);
       soundRef.current = sound;
       await sound.playAsync();
     } catch (err) {
       console.warn('🎧 Playback error:', err);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      if (recordingRef.current) {
+        await recordingRef.current.stopAndUnloadAsync();
+        recordingRef.current = null;
+      }
+
+      if (recordedSoundRef.current) {
+        await recordedSoundRef.current.unloadAsync();
+        recordedSoundRef.current = null;
+      }
+
+      const { status } = await Audio.requestPermissionsAsync();
+      if (status !== 'granted') {
+        console.warn('❌ Mic permission not granted');
+        return;
+      }
+
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+
+      recordingRef.current = recording;
+      setIsRecording(true);
+    } catch (err) {
+      console.error('❌ Failed to start recording:', err);
+    }
+  };
+
+  const stopRecording = async () => {
+    try {
+      if (!recordingRef.current) return;
+
+      await recordingRef.current.stopAndUnloadAsync();
+      const uri = recordingRef.current.getURI();
+      recordingRef.current = null;
+      setRecordingUri(uri);
+      setIsRecording(false);
+      console.log('✅ Recording saved at:', uri);
+    } catch (err) {
+      console.error('❌ Failed to stop recording:', err);
+    }
+  };
+
+  const playRecording = async () => {
+    if (!recordingUri) return;
+    try {
+      if (recordedSoundRef.current) {
+        await recordedSoundRef.current.unloadAsync();
+        recordedSoundRef.current = null;
+      }
+
+      const { sound } = await Audio.Sound.createAsync({ uri: recordingUri });
+      recordedSoundRef.current = sound;
+
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+      });
+
+      await sound.setVolumeAsync(1.0);
+      setIsPlaying(true);
+
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          setIsPlaying(false);
+          sound.unloadAsync();
+        }
+      });
+
+      await sound.playAsync();
+      console.log('▶️ Playback started');
+    } catch (err) {
+      console.error('❌ Playback failed:', err);
     }
   };
 
@@ -54,7 +142,10 @@ export default function WordRecordScreen({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      {imageSource && <Image source={imageSource} style={styles.image} resizeMode="contain" />}
+      {imageSource && (
+        <Image source={imageSource} style={styles.image} resizeMode="contain" />
+      )}
+
       <Text style={styles.term}>{word.english}</Text>
       <Text style={styles.translation}>{word.foreign}</Text>
       <Text style={styles.phonetic}>{word.phonetic}</Text>
@@ -62,6 +153,21 @@ export default function WordRecordScreen({ route, navigation }) {
       <TouchableOpacity onPress={playAudio} style={styles.playButton}>
         <Text style={styles.playText}>🔊 Play</Text>
       </TouchableOpacity>
+
+      <View style={styles.recorderContainer}>
+        <TouchableOpacity
+          onPress={isRecording ? stopRecording : startRecording}
+          style={[styles.recButton, isRecording ? styles.stop : styles.record]}
+        >
+          <Text style={styles.recText}>{isRecording ? 'Stop' : 'Record'}</Text>
+        </TouchableOpacity>
+
+        {recordingUri && (
+          <TouchableOpacity onPress={playRecording} disabled={isPlaying} style={styles.playBackBtn}>
+            <Text style={styles.playBackText}>{isPlaying ? 'Playing...' : '▶️ Play Recording'}</Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
       <View style={styles.navButtons}>
         <TouchableOpacity onPress={goPrev} disabled={index === 0}>
@@ -114,6 +220,36 @@ const styles = StyleSheet.create({
   playText: {
     color: '#FFD700',
     fontSize: 18,
+  },
+  recorderContainer: {
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  recButton: {
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    marginBottom: 10,
+  },
+  record: {
+    backgroundColor: '#d32f2f',
+  },
+  stop: {
+    backgroundColor: '#388e3c',
+  },
+  recText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  playBackBtn: {
+    backgroundColor: '#FFD70020',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+  },
+  playBackText: {
+    color: '#FFD700',
+    fontSize: 16,
   },
   navButtons: {
     flexDirection: 'row',
