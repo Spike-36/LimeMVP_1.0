@@ -1,19 +1,15 @@
-import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+// screens/FindWordRecord.js
+
 import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import WordRecordLayout from '../components/WordRecordLayout';
 
-export default function WordRecordScreen({ route }) {
-  const navigation = useNavigation();
-  const words = route.params?.words || [];
-  const index = route.params?.index ?? 0;
-  const word = words[index];
-
+export default function FindWordRecord({ route }) {
+  const word = route.params?.word;
   const [sound, setSound] = useState(null);
   const [showEnglish, setShowEnglish] = useState(false);
   const [showTip, setShowTip] = useState(false);
@@ -55,24 +51,6 @@ export default function WordRecordScreen({ route }) {
     }
   };
 
-  const goToPrev = () => {
-    if (index > 0) {
-      navigation.replace('WordRecord', {
-        words,
-        index: index - 1,
-      });
-    }
-  };
-
-  const goToNext = () => {
-    if (index < words.length - 1) {
-      navigation.replace('WordRecord', {
-        words,
-        index: index + 1,
-      });
-    }
-  };
-
   if (!word) {
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -103,23 +81,6 @@ export default function WordRecordScreen({ route }) {
           <Text style={styles.closeTip} onPress={() => setShowTip(false)}>✕</Text>
         </View>
       )}
-
-      <View style={styles.navButtons}>
-        <TouchableOpacity onPress={goToPrev} disabled={index === 0}>
-          <FontAwesome
-            name="chevron-left"
-            size={32}
-            color={index === 0 ? 'gray' : '#FFD700'}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={goToNext} disabled={index === words.length - 1}>
-          <FontAwesome
-            name="chevron-right"
-            size={32}
-            color={index === words.length - 1 ? 'gray' : '#FFD700'}
-          />
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 }
@@ -155,11 +116,5 @@ const styles = StyleSheet.create({
     fontSize: 22,
     textAlign: 'center',
     marginTop: 16,
-  },
-  navButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 30,
-    paddingVertical: 20,
   },
 });

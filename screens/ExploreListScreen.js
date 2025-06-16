@@ -10,6 +10,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import BottomNav from '../components/BottomNav';
 import WordListItem from '../components/WordListItem';
 import blocks from '../data/blocks.json';
 
@@ -63,70 +64,74 @@ export default function ExploreListScreen() {
 
   return (
     <SafeAreaView style={styles.safeContainer} edges={['top']}>
-      <TouchableOpacity style={styles.topBar} onPress={() => setSectionMenuVisible(true)}>
-        <Text style={styles.topBarText}>{showHeader ? activeSection || 'Words' : ''}</Text>
-      </TouchableOpacity>
+      <View style={styles.content}>
+        <TouchableOpacity style={styles.topBar} onPress={() => setSectionMenuVisible(true)}>
+          <Text style={styles.topBarText}>{showHeader ? activeSection || 'Words' : ''}</Text>
+        </TouchableOpacity>
 
-      <ScrollView
-        ref={scrollRef}
-        contentContainerStyle={styles.listContainer}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-      >
-        {sectionTitles.map((title) => (
-          <View key={title}>
-            <View
-              ref={(ref) => {
-                if (ref && scrollRef.current) {
-                  sectionRefs.current[title] = ref;
-                  ref.measureLayout(
-                    scrollRef.current,
-                    (x, y) => {
-                      yPositions.current[title] = y;
-                    },
-                    () => {}
-                  );
-                }
-              }}
-              style={styles.headerContainer}
-            >
-              <Text style={styles.headerText}>{title}</Text>
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={styles.listContainer}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+        >
+          {sectionTitles.map((title) => (
+            <View key={title}>
+              <View
+                ref={(ref) => {
+                  if (ref && scrollRef.current) {
+                    sectionRefs.current[title] = ref;
+                    ref.measureLayout(
+                      scrollRef.current,
+                      (x, y) => {
+                        yPositions.current[title] = y;
+                      },
+                      () => {}
+                    );
+                  }
+                }}
+                style={styles.headerContainer}
+              >
+                <Text style={styles.headerText}>{title}</Text>
+              </View>
+              {groupedBlocks[title].map((item) => (
+                <WordListItem
+                  key={item.id}
+                  word={item}
+                  onPress={() =>
+                    navigation.push('WordRecord', {
+                      words: blocks,
+                      index: blocks.findIndex((w) => w.id === item.id),
+                    })
+                  }
+                />
+              ))}
             </View>
-            {groupedBlocks[title].map((item) => (
-              <WordListItem
-                key={item.id}
-                word={item}
-                onPress={() =>
-                  navigation.navigate('WordRecord', {
-                    words: blocks,
-                    index: blocks.findIndex(w => w.id === item.id),
-                  })
-                }
-              />
-            ))}
-          </View>
-        ))}
-      </ScrollView>
+          ))}
+        </ScrollView>
 
-      <Modal
-        visible={sectionMenuVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setSectionMenuVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            {sectionTitles.map((title) => (
-              <Pressable key={title} onPress={() => scrollToSection(title)}>
-                <Text style={styles.modalItem}>{title}</Text>
+        <Modal
+          visible={sectionMenuVisible}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setSectionMenuVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              {sectionTitles.map((title) => (
+                <Pressable key={title} onPress={() => scrollToSection(title)}>
+                  <Text style={styles.modalItem}>{title}</Text>
+                </Pressable>
+              ))}
+              <Pressable onPress={() => setSectionMenuVisible(false)}>
+                <Text style={styles.modalClose}>Cancel</Text>
               </Pressable>
-            ))}
-            <Pressable onPress={() => setSectionMenuVisible(false)}>
-              <Text style={styles.modalClose}>Cancel</Text>
-            </Pressable>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </View>
+
+      <BottomNav active="explore" />
     </SafeAreaView>
   );
 }
@@ -135,6 +140,9 @@ const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  content: {
+    flex: 1,
   },
   topBar: {
     backgroundColor: '#222',
