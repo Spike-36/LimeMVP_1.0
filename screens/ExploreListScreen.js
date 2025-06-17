@@ -1,13 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomNav from '../components/BottomNav';
@@ -22,6 +22,11 @@ export default function ExploreListScreen() {
   const [showHeader, setShowHeader] = useState(true);
   const sectionRefs = useRef({});
   const yPositions = useRef({});
+
+  useEffect(() => {
+    console.log('🧪 Loaded blocks.json:', blocks.length, 'records');
+    console.log('🧪 Sample:', blocks[0]);
+  }, []);
 
   const groupedBlocks = blocks.reduce((acc, word) => {
     const type = word.type || 'other';

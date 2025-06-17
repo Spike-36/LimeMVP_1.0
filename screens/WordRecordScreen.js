@@ -18,6 +18,13 @@ export default function WordRecordScreen({ route }) {
   const [showEnglish, setShowEnglish] = useState(false);
   const [showTip, setShowTip] = useState(false);
 
+  // ✅ Debug log to verify dynamic data
+  useEffect(() => {
+    console.log('🧪 WordRecordScreen mounted');
+    console.log('🧪 Received index:', index);
+    console.log('🧪 Word record:', word);
+  }, []);
+
   const audioAsset = word ? audioMap[word.audio] : null;
   const imageAsset = word ? imageMap[word.image] : null;
 
