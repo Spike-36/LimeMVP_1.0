@@ -9,4 +9,5 @@ export const imageMap = {
   "0081.orange.jpg": require('../assets/image/0081.orange.jpg'),
   "0085.no.jpg": require('../assets/image/0085.no.jpg'),
   "0089.nine.jpg": require('../assets/image/0089.nine.jpg'),
+  "0153.two.jpg": require('../assets/image/0153.two.jpg'),
 };

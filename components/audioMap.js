@@ -9,4 +9,5 @@ export const audioMap = {
   "0081.orange.japan.mp3": require('../assets/audio/japan/0081.orange.japan.mp3'),
   "0085.no.japan.mp3": require('../assets/audio/japan/0085.no.japan.mp3'),
   "0089.nine.japan.mp3": require('../assets/audio/japan/0089.nine.japan.mp3'),
+  "0153.two.japan.mp3": require('../assets/audio/japan/0153.two.japan.mp3'),
 };

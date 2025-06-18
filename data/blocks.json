@@ -88,5 +88,14 @@
     "type": "number",
     "image": "0089.nine.jpg",
     "audio": "0089.nine.japan.mp3"
+  },
+  {
+    "id": "0153",
+    "english": "two",
+    "foreign": "二",
+    "phonetic": "ni",
+    "type": "number",
+    "image": "0153.two.jpg",
+    "audio": "0153.two.japan.mp3"
   }
 ]
