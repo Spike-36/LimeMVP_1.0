@@ -1,7 +1,8 @@
+// PracticeSpeakScreen.js (with auto-play native audio)
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { Audio } from 'expo-av';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
@@ -29,6 +30,7 @@ export default function PracticeSpeakScreen() {
   const [showTip, setShowTip] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
   const [progress, setProgress] = useState({});
+  const [nativeSound, setNativeSound] = useState(null);
 
   const current = shuffledBlocks[currentIndex];
   const asset = current?.audio && audioMap[current.audio];
@@ -45,6 +47,37 @@ export default function PracticeSpeakScreen() {
       loadEligibleWords();
     }, [])
   );
+
+  // 🔈 Auto-play native audio on word change
+  useEffect(() => {
+    if (!asset) return;
+
+    const loadAndPlay = async () => {
+      try {
+        await Audio.setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          allowsRecordingIOS: false,
+        });
+
+        const { sound } = await Audio.Sound.createAsync(asset, { volume: 1.0 });
+        setNativeSound(sound);
+        await sound.playAsync();
+        const status = await sound.getStatusAsync();
+        const duration = status?.durationMillis || 2000;
+        await delay(duration + 200);
+      } catch (err) {
+        console.warn('⚠️ Auto-play failed:', err);
+      }
+    };
+
+    loadAndPlay();
+
+    return () => {
+      if (nativeSound) {
+        nativeSound.unloadAsync().catch(() => {});
+      }
+    };
+  }, [current]);
 
   const handleNext = () => {
     if (currentIndex === shuffledBlocks.length - 1) {
@@ -126,7 +159,6 @@ export default function PracticeSpeakScreen() {
         hideThaiText={!showAnswer}
         hidePhonetic={!showAnswer}
         hideAudioButton={true}
-        onPlayAudio={playNativeAudio}
         onToggleEnglish={() => setShowEnglish(!showEnglish)}
         onShowTip={() => setShowTip(true)}
         bottomContent={
@@ -198,14 +230,7 @@ export default function PracticeSpeakScreen() {
 
       {!showAnswer && (
         <View style={styles.buttonContainer}>
-          <Button
-            title="Show Answer"
-            onPress={async () => {
-              setShowAnswer(true);
-              await delay(100);
-              playNativeAudio();
-            }}
-          />
+          <Button title="Show Answer" onPress={() => setShowAnswer(true)} />
         </View>
       )}
     </View>
