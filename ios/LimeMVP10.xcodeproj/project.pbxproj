@@ -9,24 +9,24 @@
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		57AA05D8C024BB8665ABCCE9 /* libPods-LimeMVP10.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0950106D47CFC9F7169665E5 /* libPods-LimeMVP10.a */; };
-		AB825E79DB2635F25F8E684C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 41A3931593B3D44EA4950D27 /* PrivacyInfo.xcprivacy */; };
+		6131610426951E94A72BD5A5 /* libPods-LimeMVP10.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B4444AE54F831F18957C75E2 /* libPods-LimeMVP10.a */; };
+		85A03251A5E3BD5BFAA6C8EE /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA8F7E50EFF7711E617590A /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		CADBDE7D20AAA250779E2B0F /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C145732965E0F2738E2C411 /* ExpoModulesProvider.swift */; };
+		EF8025B496A7FD0F5D05E0F9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 7040B73F37A59DD4FA2E5E8B /* PrivacyInfo.xcprivacy */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0950106D47CFC9F7169665E5 /* libPods-LimeMVP10.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-LimeMVP10.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E6AF29FCCFF158ADAED667F /* Pods-LimeMVP10.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LimeMVP10.debug.xcconfig"; path = "Target Support Files/Pods-LimeMVP10/Pods-LimeMVP10.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* LimeMVP10.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LimeMVP10.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = LimeMVP10/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = LimeMVP10/Info.plist; sourceTree = "<group>"; };
-		1C145732965E0F2738E2C411 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-LimeMVP10/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		41A3931593B3D44EA4950D27 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = LimeMVP10/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		47D909D320F145BE218CAEDF /* Pods-LimeMVP10.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LimeMVP10.debug.xcconfig"; path = "Target Support Files/Pods-LimeMVP10/Pods-LimeMVP10.debug.xcconfig"; sourceTree = "<group>"; };
-		6F74919864F6556E65780028 /* Pods-LimeMVP10.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LimeMVP10.release.xcconfig"; path = "Target Support Files/Pods-LimeMVP10/Pods-LimeMVP10.release.xcconfig"; sourceTree = "<group>"; };
+		692D92A139D55C8EF221856A /* Pods-LimeMVP10.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LimeMVP10.release.xcconfig"; path = "Target Support Files/Pods-LimeMVP10/Pods-LimeMVP10.release.xcconfig"; sourceTree = "<group>"; };
+		7040B73F37A59DD4FA2E5E8B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = LimeMVP10/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = LimeMVP10/SplashScreen.storyboard; sourceTree = "<group>"; };
+		B4444AE54F831F18957C75E2 /* libPods-LimeMVP10.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-LimeMVP10.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		CDA8F7E50EFF7711E617590A /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-LimeMVP10/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = LimeMVP10/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* LimeMVP10-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "LimeMVP10-Bridging-Header.h"; path = "LimeMVP10/LimeMVP10-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -37,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				57AA05D8C024BB8665ABCCE9 /* libPods-LimeMVP10.a in Frameworks */,
+				6131610426951E94A72BD5A5 /* libPods-LimeMVP10.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,18 +53,34 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				41A3931593B3D44EA4950D27 /* PrivacyInfo.xcprivacy */,
+				7040B73F37A59DD4FA2E5E8B /* PrivacyInfo.xcprivacy */,
 			);
 			name = LimeMVP10;
+			sourceTree = "<group>";
+		};
+		2337D194D2445792841425AB /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				69C3B8CFD545C4B96484F212 /* LimeMVP10 */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				0950106D47CFC9F7169665E5 /* libPods-LimeMVP10.a */,
+				B4444AE54F831F18957C75E2 /* libPods-LimeMVP10.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		69C3B8CFD545C4B96484F212 /* LimeMVP10 */ = {
+			isa = PBXGroup;
+			children = (
+				CDA8F7E50EFF7711E617590A /* ExpoModulesProvider.swift */,
+			);
+			name = LimeMVP10;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -81,8 +97,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				911019C512674D832E4DB571 /* Pods */,
-				D968EEAA2F55C482F02433C4 /* ExpoModulesProviders */,
+				B8E7696B3E57F309F89F5CFD /* Pods */,
+				2337D194D2445792841425AB /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -97,21 +113,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		911019C512674D832E4DB571 /* Pods */ = {
+		B8E7696B3E57F309F89F5CFD /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				47D909D320F145BE218CAEDF /* Pods-LimeMVP10.debug.xcconfig */,
-				6F74919864F6556E65780028 /* Pods-LimeMVP10.release.xcconfig */,
+				0E6AF29FCCFF158ADAED667F /* Pods-LimeMVP10.debug.xcconfig */,
+				692D92A139D55C8EF221856A /* Pods-LimeMVP10.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		982287C177B4BC288E1E3FAA /* LimeMVP10 */ = {
-			isa = PBXGroup;
-			children = (
-				1C145732965E0F2738E2C411 /* ExpoModulesProvider.swift */,
-			);
-			name = LimeMVP10;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -123,14 +131,6 @@
 			path = LimeMVP10/Supporting;
 			sourceTree = "<group>";
 		};
-		D968EEAA2F55C482F02433C4 /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				982287C177B4BC288E1E3FAA /* LimeMVP10 */,
-			);
-			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -139,13 +139,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "LimeMVP10" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				3AB186A279DF92228202F10B /* [Expo] Configure project */,
+				69C3653AA3F4AA9C1F47697E /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				2929733FD0447E90251E313B /* [CP] Embed Pods Frameworks */,
+				17A6E32AA976B34B3C84BBC8 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -195,7 +195,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				AB825E79DB2635F25F8E684C /* PrivacyInfo.xcprivacy in Resources */,
+				EF8025B496A7FD0F5D05E0F9 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,7 +239,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2929733FD0447E90251E313B /* [CP] Embed Pods Frameworks */ = {
+		17A6E32AA976B34B3C84BBC8 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -257,7 +257,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LimeMVP10/Pods-LimeMVP10-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		3AB186A279DF92228202F10B /* [Expo] Configure project */ = {
+		69C3653AA3F4AA9C1F47697E /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -326,7 +326,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				CADBDE7D20AAA250779E2B0F /* ExpoModulesProvider.swift in Sources */,
+				85A03251A5E3BD5BFAA6C8EE /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -335,7 +335,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 47D909D320F145BE218CAEDF /* Pods-LimeMVP10.debug.xcconfig */;
+			baseConfigurationReference = 0E6AF29FCCFF158ADAED667F /* Pods-LimeMVP10.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -372,7 +372,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6F74919864F6556E65780028 /* Pods-LimeMVP10.release.xcconfig */;
+			baseConfigurationReference = 692D92A139D55C8EF221856A /* Pods-LimeMVP10.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -456,10 +456,7 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -514,10 +511,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

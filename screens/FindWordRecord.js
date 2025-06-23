@@ -3,7 +3,7 @@
 import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import WordRecordLayout from '../components/WordRecordLayout';
@@ -53,14 +53,14 @@ export default function FindWordRecord({ route }) {
 
   if (!word) {
     return (
-      <SafeAreaView style={styles.container} edges={['bottom']}>
+      <View style={styles.container}>
         <Text style={styles.error}>⚠️ Word not found</Text>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <View style={styles.container}>
       <StatusBar style="light" translucent backgroundColor="transparent" />
 
       <WordRecordLayout
@@ -81,7 +81,7 @@ export default function FindWordRecord({ route }) {
           <Text style={styles.closeTip} onPress={() => setShowTip(false)}>✕</Text>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 

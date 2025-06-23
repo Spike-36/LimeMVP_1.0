@@ -1,4 +1,3 @@
-import { Entypo, FontAwesome } from '@expo/vector-icons';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const { height: screenHeight } = Dimensions.get('window');
@@ -27,31 +26,26 @@ export default function WordRecordLayout({
           <Image source={imageAsset} style={styles.image} resizeMode="cover" />
         )}
 
-        {showInfoIcon && showImage && (
-          <TouchableOpacity style={styles.infoIconFloating} onPress={onToggleEnglish}>
-            <Entypo name="info-with-circle" size={26} color="white" />
-          </TouchableOpacity>
-        )}
-
-        {showTipIcon && showImage && (
-          <TouchableOpacity style={styles.tipIconFloating} onPress={onShowTip}>
-            <Entypo name="light-bulb" size={26} color="white" />
+        {showInfoIcon && showImage && !showEnglish && (
+          <TouchableOpacity style={styles.langBadge} onPress={onToggleEnglish}>
+            <Text style={styles.langBadgeText}>EN</Text>
           </TouchableOpacity>
         )}
 
         {showEnglish && (
           <View style={styles.englishOverlay}>
-            <Text style={styles.englishText}>{block?.english}</Text>
+            <View style={styles.englishBackground}>
+              <Text style={styles.englishText}>{block?.english}</Text>
+            </View>
           </View>
         )}
       </View>
 
       <View style={styles.textSection}>
-        {!hideThaiText && <Text style={styles.foreign}>{block?.foreign}</Text>}
         {!hidePhonetic && <Text style={styles.phonetic}>{block?.phonetic}</Text>}
-        {!hideAudioButton && (
-          <TouchableOpacity style={styles.audioButton} onPress={onPlayAudio}>
-            <FontAwesome name="volume-up" size={28} color="black" />
+        {!hideThaiText && (
+          <TouchableOpacity onPress={onPlayAudio}>
+            <Text style={styles.foreign}>{block?.foreign}</Text>
           </TouchableOpacity>
         )}
         {bottomContent && <View style={styles.bottomArea}>{bottomContent}</View>}
@@ -74,26 +68,38 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
-  tipIconFloating: {
-    position: 'absolute',
-    bottom: 15,
-    left: 15,
-  },
-  infoIconFloating: {
+  langBadge: {
     position: 'absolute',
     bottom: 15,
     right: 15,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // subtle dark background
+    borderColor: '#555',
+    borderWidth: 1.5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  langBadgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   englishOverlay: {
     position: 'absolute',
-    top: '35%',
+    bottom: 15,
     left: 0,
     right: 0,
-    transform: [{ translateY: -15 }],
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  englishBackground: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
   },
   englishText: {
-    color: '#BFFF00',
+    color: 'white',
     fontSize: 26,
     fontWeight: '600',
     textShadowColor: 'black',
@@ -104,17 +110,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 40,
+    paddingTop: 60,
   },
   foreign: {
     color: 'white',
-    fontSize: 36,
+    fontSize: 40,
     textAlign: 'center',
+    marginTop: 10,
   },
   phonetic: {
     color: '#FFD700',
-    fontSize: 26,
+    fontSize: 30,
     textAlign: 'center',
-    marginTop: 6,
+    marginBottom: 16,
   },
   audioButton: {
     backgroundColor: '#FFD700',

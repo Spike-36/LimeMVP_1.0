@@ -1,13 +1,16 @@
-// screens/PracticeSpeakScreen.js
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { Audio } from 'expo-av';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
+
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
+import ProgressSelector from '../components/ProgressSelector';
 import RecorderBlock from '../components/RecorderBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
+import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 function shuffleArray(array) {
   return array
@@ -25,21 +28,37 @@ export default function PracticeSpeakScreen() {
   const [userRecordingUri, setUserRecordingUri] = useState(null);
   const [showTip, setShowTip] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
+  const [progress, setProgress] = useState({});
 
   const current = shuffledBlocks[currentIndex];
   const asset = current?.audio && audioMap[current.audio];
 
-  useEffect(() => {
-    const shuffled = shuffleArray(blocks);
-    setShuffledBlocks(shuffled);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      async function loadEligibleWords() {
+        const stored = await loadProgress();
+        const eligible = blocks.filter(b => getStage(stored, b.id) >= 2);
+        setProgress(stored);
+        setShuffledBlocks(shuffleArray(eligible));
+        setCurrentIndex(0);
+      }
+      loadEligibleWords();
+    }, [])
+  );
 
   const handleNext = () => {
+    if (currentIndex === shuffledBlocks.length - 1) {
+      const reshuffled = shuffleArray(shuffledBlocks);
+      setShuffledBlocks(reshuffled);
+      setCurrentIndex(0);
+    } else {
+      setCurrentIndex(prev => prev + 1);
+    }
+
     setShowAnswer(false);
     setUserRecordingUri(null);
     setShowEnglish(false);
     setShowTip(false);
-    setCurrentIndex((prev) => (prev + 1) % shuffledBlocks.length);
   };
 
   const handleRecordingFinished = (uri) => {
@@ -88,7 +107,9 @@ export default function PracticeSpeakScreen() {
   if (!current) {
     return (
       <View style={styles.centeredContainer}>
-        <Text style={styles.emptyText}>No blocks found.</Text>
+        <Text style={styles.emptyText}>
+          No eligible words. Go to Explore → tap stars → then mark as 'Familiar'.
+        </Text>
       </View>
     );
   }
@@ -105,26 +126,42 @@ export default function PracticeSpeakScreen() {
         hideThaiText={!showAnswer}
         hidePhonetic={!showAnswer}
         hideAudioButton={true}
+        onPlayAudio={playNativeAudio}
         onToggleEnglish={() => setShowEnglish(!showEnglish)}
         onShowTip={() => setShowTip(true)}
         bottomContent={
           showAnswer ? (
-            <View style={styles.iconButtonRow}>
-              <View style={styles.iconWrapper}>
-                <Ionicons
-                  name="play-circle"
-                  size={64}
-                  color="#1E90FF"
-                  onPress={playNativeAudio}
-                />
+            <View>
+              <View style={styles.iconButtonRow}>
+                <View style={styles.iconWrapper}>
+                  <Ionicons
+                    name="play-circle"
+                    size={64}
+                    color="#1E90FF"
+                    onPress={playNativeAudio}
+                  />
+                </View>
+                <View style={styles.iconWrapper}>
+                  <Ionicons
+                    name="play-circle"
+                    size={64}
+                    color="#32CD32"
+                    onPress={playUserRecording}
+                  />
+                </View>
               </View>
-              <View style={styles.iconWrapper}>
-                <Ionicons
-                  name="play-circle"
-                  size={64}
-                  color="#32CD32"
-                  onPress={playUserRecording}
-                />
+
+              <ProgressSelector
+                currentStage={getStage(progress, current.id)}
+                onSelect={async (stage) => {
+                  await updateWordStage(current.id, stage);
+                  const updated = await loadProgress();
+                  setProgress(updated);
+                }}
+              />
+
+              <View style={styles.buttonRow}>
+                <Button title="Next" onPress={handleNext} />
               </View>
             </View>
           ) : userRecordingUri ? (
@@ -159,17 +196,16 @@ export default function PracticeSpeakScreen() {
         </View>
       )}
 
-      {showAnswer && (
-        <View style={styles.buttonRow}>
-          <Button title="Forgot" onPress={handleNext} />
-          <Button title="Hard" onPress={handleNext} />
-          <Button title="Easy" onPress={handleNext} />
-        </View>
-      )}
-
       {!showAnswer && (
         <View style={styles.buttonContainer}>
-          <Button title="Show Answer" onPress={() => setShowAnswer(true)} />
+          <Button
+            title="Show Answer"
+            onPress={async () => {
+              setShowAnswer(true);
+              await delay(100);
+              playNativeAudio();
+            }}
+          />
         </View>
       )}
     </View>
@@ -191,6 +227,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'gray',
     textAlign: 'center',
+    paddingHorizontal: 24,
   },
   tipOverlay: {
     position: 'absolute',
@@ -219,20 +256,15 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    marginTop: 20,
     marginBottom: 30,
-  },
-  audioButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginVertical: 20,
   },
   iconButtonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginVertical: 30,
     paddingHorizontal: 60,
-    marginTop: 0,
   },
   iconWrapper: {
     flex: 1,

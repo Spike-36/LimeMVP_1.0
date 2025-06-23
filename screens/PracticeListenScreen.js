@@ -1,10 +1,14 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { Audio } from 'expo-av';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
+
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
+import ProgressSelector from '../components/ProgressSelector';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
+import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 function shuffleArray(array) {
   return array
@@ -19,24 +23,81 @@ export default function PracticeListenScreen() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [showTip, setShowTip] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
+  const [progress, setProgress] = useState({});
+  const [sound, setSound] = useState(null);
 
   const current = shuffledBlocks[currentIndex];
 
-  useEffect(() => {
-    const shuffled = shuffleArray(blocks);
-    setShuffledBlocks(shuffled);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      async function loadEligibleWords() {
+        const progressMap = await loadProgress();
+        console.log('✅ Loaded progress:', progressMap);
+
+        const eligible = blocks.filter(b => {
+          const stage = getStage(progressMap, b.id);
+          return stage === 1 || stage === 2; // Only Learning or Familiar
+        });
+
+        console.log('🎯 Eligible for Listen:', eligible.map(e => e.english));
+
+        setProgress(progressMap);
+        setShuffledBlocks(shuffleArray(eligible));
+        setCurrentIndex(0);
+      }
+
+      loadEligibleWords();
+    }, [])
+  );
 
   const playAudio = async () => {
     const asset = current?.audio && audioMap[current.audio];
     if (!asset) return;
+
     try {
-      const { sound } = await Audio.Sound.createAsync(asset);
-      await sound.playAsync();
+      await Audio.setAudioModeAsync({
+        playsInSilentModeIOS: true,
+        allowsRecordingIOS: false,
+      });
+
+      const { sound: newSound } = await Audio.Sound.createAsync(asset);
+      setSound(newSound);
+      await newSound.replayAsync();
     } catch (err) {
       console.warn('❌ Audio error:', err);
     }
   };
+
+  // 🔈 Auto-play audio on word change
+  useEffect(() => {
+    if (!current) return;
+
+    const loadAndPlay = async () => {
+      const asset = current.audio && audioMap[current.audio];
+      if (!asset) return;
+
+      try {
+        await Audio.setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          allowsRecordingIOS: false,
+        });
+
+        const { sound: newSound } = await Audio.Sound.createAsync(asset);
+        setSound(newSound);
+        await newSound.replayAsync();
+      } catch (err) {
+        console.warn('⚠️ Auto-play error:', err);
+      }
+    };
+
+    loadAndPlay();
+
+    return () => {
+      if (sound) {
+        sound.unloadAsync().catch(() => {});
+      }
+    };
+  }, [current]);
 
   const handleNext = () => {
     setShowAnswer(false);
@@ -45,10 +106,19 @@ export default function PracticeListenScreen() {
     setCurrentIndex((prev) => (prev + 1) % shuffledBlocks.length);
   };
 
+  const handleStageSelect = async (stage) => {
+    const wordId = current.id;
+    await updateWordStage(wordId, stage);
+    const updated = await loadProgress();
+    setProgress(updated);
+  };
+
   if (!current) {
     return (
       <View style={styles.centeredContainer}>
-        <Text style={styles.emptyText}>No word records available.</Text>
+        <Text style={styles.emptyText}>
+          No eligible words. Go to Explore → tap star → then mark as Familiar.
+        </Text>
       </View>
     );
   }
@@ -62,14 +132,21 @@ export default function PracticeListenScreen() {
         showTipIcon={showAnswer}
         showInfoIcon={showAnswer}
         showEnglish={showEnglish}
+        hideAudioButton={true}
         onPlayAudio={playAudio}
         onToggleEnglish={() => setShowEnglish(true)}
         onShowTip={() => setShowTip(true)}
         bottomContent={
           showAnswer ? (
-            <View style={styles.buttonRow}>
-              <Button title="Next" onPress={handleNext} />
-            </View>
+            <>
+              <ProgressSelector
+                currentStage={getStage(progress, current.id)}
+                onSelect={handleStageSelect}
+              />
+              <View style={styles.buttonRow}>
+                <Button title="Next" onPress={handleNext} />
+              </View>
+            </>
           ) : (
             <View style={styles.buttonContainer}>
               <Button title="Show Answer" onPress={() => setShowAnswer(true)} />
@@ -113,6 +190,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'gray',
     textAlign: 'center',
+    paddingHorizontal: 24,
   },
   tipOverlay: {
     position: 'absolute',

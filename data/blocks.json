@@ -110,10 +110,10 @@
 	{
 		"audio" : "0439.wine.japan.mp3",
 		"english" : "wine",
-		"foreign" : "タクシー",
+		"foreign" : "ワイン",
 		"id" : "0439",
 		"image" : "0439.wine.jpg",
-		"phonetic" : "takushī",
+		"phonetic" : "wien",
 		"type" : "headings"
 	},
 	{
@@ -128,10 +128,10 @@
 	{
 		"audio" : "1396.taxi.japan.mp3",
 		"english" : "taxi",
-		"foreign" : "さようなら",
+		"foreign" : "タクシー",
 		"id" : "1396",
 		"image" : "1396.taxi.jpg",
-		"phonetic" : "sayōnara",
+		"phonetic" : "takushī",
 		"type" : "speech"
 	},
 	{

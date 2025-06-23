@@ -1,5 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import { useEffect, useRef, useState } from 'react';
+// screens/ExploreListScreen.js
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useRef, useState } from 'react';
 import {
   Modal,
   Pressable,
@@ -7,26 +8,37 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomNav from '../components/BottomNav';
 import WordListItem from '../components/WordListItem';
 import blocks from '../data/blocks.json';
+import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function ExploreListScreen() {
   const navigation = useNavigation();
   const scrollRef = useRef(null);
+  const [progress, setProgress] = useState({});
   const [sectionMenuVisible, setSectionMenuVisible] = useState(false);
   const [activeSection, setActiveSection] = useState('');
   const [showHeader, setShowHeader] = useState(true);
   const sectionRefs = useRef({});
   const yPositions = useRef({});
 
-  useEffect(() => {
-    console.log('🧪 Loaded blocks.json:', blocks.length, 'records');
-    console.log('🧪 Sample:', blocks[0]);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadProgress().then(setProgress);
+    }, [])
+  );
+
+  const handleToggleStage1 = async (id) => {
+    const current = getStage(progress, id);
+    const newStage = current >= 1 ? 0 : 1;
+    await updateWordStage(id, newStage);
+    const updated = await loadProgress();
+    setProgress(updated);
+  };
 
   const groupedBlocks = blocks.reduce((acc, word) => {
     const type = word.type || 'other';
@@ -103,6 +115,8 @@ export default function ExploreListScreen() {
                 <WordListItem
                   key={item.id}
                   word={item}
+                  isFavorite={getStage(progress, item.id) >= 1}
+                  onToggleFavorite={() => handleToggleStage1(item.id)}
                   onPress={() =>
                     navigation.push('WordRecord', {
                       words: blocks,

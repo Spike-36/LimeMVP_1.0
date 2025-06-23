@@ -10,7 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.petermilligan.limemvp"
+      "bundleIdentifier": "com.petermilligan.limemvp",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app does not access your photos. This permission is requested by a third-party library and is not used.",
+        "NSSpeechRecognitionUsageDescription": "This app uses speech recognition to help users practice pronunciation."
+      }
     },
     "android": {
       "package": "com.petermilligan.limemvp",

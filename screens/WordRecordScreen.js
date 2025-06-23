@@ -1,12 +1,14 @@
-import { FontAwesome } from '@expo/vector-icons';
+import { Feather, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import WordRecordLayout from '../components/WordRecordLayout';
+import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function WordRecordScreen({ route }) {
   const navigation = useNavigation();
@@ -17,19 +19,29 @@ export default function WordRecordScreen({ route }) {
   const [sound, setSound] = useState(null);
   const [showEnglish, setShowEnglish] = useState(false);
   const [showTip, setShowTip] = useState(false);
+  const [progress, setProgress] = useState({});
 
-  // ✅ Debug log to verify dynamic data
+  const wordId = word?.id;
+  const stage = getStage(progress, wordId);
+
   useEffect(() => {
-    console.log('🧪 WordRecordScreen mounted');
-    console.log('🧪 Received index:', index);
-    console.log('🧪 Word record:', word);
+    const fetchProgress = async () => {
+      const data = await loadProgress();
+      setProgress(data);
+    };
+    fetchProgress();
   }, []);
 
-  const audioAsset = word ? audioMap[word.audio] : null;
-  const imageAsset = word ? imageMap[word.image] : null;
+  const handleSetStage = async (newStage) => {
+    if (!wordId) return;
+    await updateWordStage(wordId, newStage);
+    const updated = await loadProgress();
+    setProgress(updated);
+  };
 
   useEffect(() => {
     let loadedSound;
+    const audioAsset = word?.audio && audioMap[word.audio];
 
     const loadAudio = async () => {
       if (audioAsset) {
@@ -51,6 +63,16 @@ export default function WordRecordScreen({ route }) {
       }
     };
   }, [word?.audio]);
+
+  useEffect(() => {
+    if (sound) {
+      sound.replayAsync().catch((e) => {
+        console.warn('⚠️ Auto-play error:', e);
+      });
+    }
+  }, [sound]);
+
+  const imageAsset = word ? imageMap[word.image] : null;
 
   const playAudio = async () => {
     if (sound) {
@@ -82,15 +104,31 @@ export default function WordRecordScreen({ route }) {
 
   if (!word) {
     return (
-      <SafeAreaView style={styles.container} edges={['bottom']}>
+      <View style={styles.container}>
         <Text style={styles.error}>⚠️ Word not found</Text>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <View style={styles.container}>
       <StatusBar style="light" translucent backgroundColor="transparent" />
+
+      <View style={styles.stageStars}>
+        {[0, 1, 2, 3].map((level) => (
+          <TouchableOpacity
+            key={level}
+            onPress={() => handleSetStage(level + 1)}
+          >
+            <FontAwesome
+              name={stage > level ? 'star' : 'star-o'}
+              size={24}
+              color={stage > level ? '#FFD700' : '#555'}
+              style={{ marginLeft: 2 }}
+            />
+          </TouchableOpacity>
+        ))}
+      </View>
 
       <WordRecordLayout
         block={word}
@@ -99,6 +137,7 @@ export default function WordRecordScreen({ route }) {
         showTipIcon={true}
         showInfoIcon={true}
         showEnglish={showEnglish}
+        hideAudioButton={true}
         onPlayAudio={playAudio}
         onToggleEnglish={() => setShowEnglish(!showEnglish)}
         onShowTip={() => setShowTip(true)}
@@ -113,21 +152,25 @@ export default function WordRecordScreen({ route }) {
 
       <View style={styles.navButtons}>
         <TouchableOpacity onPress={goToPrev} disabled={index === 0}>
-          <FontAwesome
-            name="chevron-left"
-            size={32}
-            color={index === 0 ? 'gray' : '#FFD700'}
-          />
+          <View style={{ transform: [{ scaleY: 1.4 }] }}>
+            <Feather
+              name="chevron-left"
+              size={48}
+              color={index === 0 ? 'gray' : '#888'}
+            />
+          </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={goToNext} disabled={index === words.length - 1}>
-          <FontAwesome
-            name="chevron-right"
-            size={32}
-            color={index === words.length - 1 ? 'gray' : '#FFD700'}
-          />
+          <View style={{ transform: [{ scaleY: 1.4 }] }}>
+            <Feather
+              name="chevron-right"
+              size={48}
+              color={index === words.length - 1 ? 'gray' : '#888'}
+            />
+          </View>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -141,6 +184,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'red',
     textAlign: 'center',
+  },
+  stageStars: {
+    position: 'absolute',
+    top: 70,
+    right: 20,
+    zIndex: 20,
+    flexDirection: 'row',
   },
   tipOverlay: {
     position: 'absolute',
@@ -167,6 +217,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 30,
-    paddingVertical: 20,
+    paddingTop: 20,
+    paddingBottom: 60,
   },
 });
