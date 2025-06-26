@@ -1,3 +1,4 @@
+// screens/WordRecordScreen.js
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';

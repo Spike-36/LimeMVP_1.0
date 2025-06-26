@@ -1,6 +1,6 @@
 // screens/ExploreListScreen.js
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Modal,
   Pressable,
@@ -11,7 +11,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import BottomNav from '../components/BottomNav';
 import WordListItem from '../components/WordListItem';
 import blocks from '../data/blocks.json';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
@@ -25,12 +24,20 @@ export default function ExploreListScreen() {
   const [showHeader, setShowHeader] = useState(true);
   const sectionRefs = useRef({});
   const yPositions = useRef({});
+  const hasOpenedInitially = useRef(false);
 
   useFocusEffect(
     useCallback(() => {
       loadProgress().then(setProgress);
     }, [])
   );
+
+  useEffect(() => {
+    if (!hasOpenedInitially.current) {
+      hasOpenedInitially.current = true;
+      setSectionMenuVisible(true);
+    }
+  }, []);
 
   const handleToggleStage1 = async (id) => {
     const current = getStage(progress, id);
@@ -47,7 +54,16 @@ export default function ExploreListScreen() {
     return acc;
   }, {});
 
+  Object.keys(groupedBlocks).forEach((type) => {
+    if (type.toLowerCase() === 'number') {
+      groupedBlocks[type].sort((a, b) => (a.value ?? 0) - (b.value ?? 0));
+    } else {
+      groupedBlocks[type].sort((a, b) => a.english.localeCompare(b.english));
+    }
+  });
+
   const sectionTitles = Object.keys(groupedBlocks).sort();
+  const orderedWords = sectionTitles.flatMap((title) => groupedBlocks[title]);
 
   const scrollToSection = (title) => {
     const node = sectionRefs.current[title];
@@ -119,8 +135,8 @@ export default function ExploreListScreen() {
                   onToggleFavorite={() => handleToggleStage1(item.id)}
                   onPress={() =>
                     navigation.push('WordRecord', {
-                      words: blocks,
-                      index: blocks.findIndex((w) => w.id === item.id),
+                      words: orderedWords,
+                      index: orderedWords.findIndex((w) => w.id === item.id),
                     })
                   }
                 />
@@ -149,8 +165,6 @@ export default function ExploreListScreen() {
           </View>
         </Modal>
       </View>
-
-      <BottomNav active="explore" />
     </SafeAreaView>
   );
 }
