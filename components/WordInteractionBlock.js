@@ -1,6 +1,23 @@
-// components/WordInteractionBlock.js
 import { FontAwesome } from '@expo/vector-icons';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+// 🔹 Reusable star renderer function
+export function renderStars(stage = 0, onStageChange = () => {}) {
+  return (
+    <View style={styles.stars}>
+      {[0, 1, 2, 3].map((level) => (
+        <TouchableOpacity key={level} onPress={() => onStageChange(level + 1)}>
+          <FontAwesome
+            name={stage > level ? 'star' : 'star-o'}
+            size={24}
+            color={stage > level ? '#FFD700' : '#555'}
+            style={{ marginHorizontal: 15 }}
+          />
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
 
 export default function WordInteractionBlock({
   block,
@@ -15,20 +32,7 @@ export default function WordInteractionBlock({
 }) {
   return (
     <View style={[styles.container, style]}>
-      {showStars && (
-        <View style={styles.stars}>
-          {[0, 1, 2, 3].map((level) => (
-            <TouchableOpacity key={level} onPress={() => onStageChange(level + 1)}>
-              <FontAwesome
-                name={stage > level ? 'star' : 'star-o'}
-                size={24}
-                color={stage > level ? '#FFD700' : '#555'}
-                style={{ marginHorizontal: 15 }}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
+      {showStars && renderStars(stage, onStageChange)}
 
       <Text style={styles.phonetic}>{block?.phonetic}</Text>
 

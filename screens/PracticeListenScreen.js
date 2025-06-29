@@ -1,5 +1,3 @@
-// screens/PracticeListenScreen.js
-import { FontAwesome } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import { useCallback, useEffect, useState } from 'react';
@@ -7,6 +5,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
+import StageAdvanceButton from '../components/StageAdvanceButton';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
@@ -121,17 +120,6 @@ export default function PracticeListenScreen() {
     );
   }
 
-  const stars = [0, 1, 2, 3].map((level) => (
-    <TouchableOpacity key={level} onPress={() => handleStageSelect(level + 1)}>
-      <FontAwesome
-        name={getStage(progress, current.id) > level ? 'star' : 'star-o'}
-        size={20}
-        color={getStage(progress, current.id) > level ? '#FFD700' : '#555'}
-        style={{ marginLeft: 2 }}
-      />
-    </TouchableOpacity>
-  ));
-
   return (
     <View style={styles.container}>
       <WordRecordLayout
@@ -145,16 +133,13 @@ export default function PracticeListenScreen() {
         onPlayAudio={playAudio}
         onToggleEnglish={() => setShowEnglish(true)}
         onShowTip={() => setShowTip(true)}
-        onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })} // ✅ FIX APPLIED HERE
-        stars={showAnswer ? stars : null}
+        onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         topContent={
-          <View style={[styles.stackBlock, !showAnswer && { paddingTop: 48 }]}>
+          <View style={[styles.stackBlock, !showAnswer && { paddingTop: 48 }]}>            
             <View
-              style={[
-                styles.interactionWrapper,
+              style={[styles.interactionWrapper,
                 !showAnswer && styles.preRevealPushDown,
-                showAnswer && styles.revealUp
-              ]}
+                showAnswer && styles.revealUp]}
             >
               <WordInteractionBlock
                 block={current}
@@ -175,6 +160,15 @@ export default function PracticeListenScreen() {
         }
       />
 
+      {showAnswer && (
+        <StageAdvanceButton
+          wordId={current.id}
+          currentStage={getStage(progress, current.id)}
+          onStageChange={handleStageSelect}
+          requiredStage={2}
+        />
+      )}
+
       {showTip && (
         <View style={styles.tipOverlay}>
           <Text style={styles.tipText}>{current.tip}</Text>
@@ -186,7 +180,11 @@ export default function PracticeListenScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'black' },
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+    position: 'relative',
+  },
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',

@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import StageAdvanceButton from './StageAdvanceButton';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -21,6 +22,9 @@ export default function WordRecordLayout({
   topContent,
   bottomContent,
   showAnswer = true,
+  stage,              // ✅ NEW
+  wordId,             // ✅ NEW
+  onAdvanceStage = () => {},  // ✅ optional callback
 }) {
   return (
     <View style={styles.container}>
@@ -29,28 +33,39 @@ export default function WordRecordLayout({
           <Image source={imageAsset} style={styles.image} resizeMode="cover" />
         )}
 
-        {/* NEW: Stars on top-left */}
+        {/* Stars on top-left */}
         {stars && <View style={styles.starRow}>{stars}</View>}
 
-        {/* NEW: Find icon on top-right */}
+        {/* Find icon top-right */}
         {onPressFind && (
           <TouchableOpacity style={styles.findButton} onPress={onPressFind}>
             <Ionicons name="search" size={25} color="white" />
           </TouchableOpacity>
         )}
 
+        {/* EN badge bottom-left */}
         {showInfoIcon && showImage && !showEnglish && (
           <TouchableOpacity style={styles.langBadge} onPress={onToggleEnglish}>
             <Text style={styles.langBadgeText}>EN</Text>
           </TouchableOpacity>
         )}
 
+        {/* English text overlay */}
         {showEnglish && (
           <View style={styles.englishOverlay}>
             <View style={styles.englishBackground}>
               <Text style={styles.englishText}>{block?.english}</Text>
             </View>
           </View>
+        )}
+
+        {/* ✅ StageAdvanceButton, bottom-right */}
+        {typeof stage === 'number' && stage < 4 && wordId && (
+          <StageAdvanceButton
+            wordId={wordId}
+            currentStage={stage}
+            onStageChange={onAdvanceStage}
+          />
         )}
       </View>
 
@@ -94,7 +109,7 @@ const styles = StyleSheet.create({
   langBadge: {
     position: 'absolute',
     bottom: 15,
-    right: 15,
+    left: 15,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderColor: '#555',
     borderWidth: 1.5,
@@ -103,7 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   langBadgeText: {
-     color: '#aaa', // ✅ mid gray
+    color: '#aaa',
     fontSize: 12,
     fontWeight: 'bold',
   },

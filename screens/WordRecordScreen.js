@@ -1,4 +1,3 @@
-// screens/WordRecordScreen.js
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
@@ -8,7 +7,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
-import WordInteractionBlock from '../components/WordInteractionBlock';
+import StageAdvanceButton from '../components/StageAdvanceButton';
+import WordInteractionBlock, { renderStars } from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
@@ -34,10 +34,10 @@ export default function WordRecordScreen({ route }) {
     fetchProgress();
   }, []);
 
-  const handleSetStage = async (newStage) => {
+  const handleSetStage = async (newStage, updatedProgress = null) => {
     if (!wordId) return;
     await updateWordStage(wordId, newStage);
-    const updated = await loadProgress();
+    const updated = updatedProgress || await loadProgress();
     setProgress(updated);
   };
 
@@ -46,71 +46,54 @@ export default function WordRecordScreen({ route }) {
     const audioAsset = word?.audio && audioMap[word.audio];
 
     const loadAudio = async () => {
-      if (audioAsset) {
-        try {
-          const { sound: newSound } = await Audio.Sound.createAsync(audioAsset);
-          setSound(newSound);
-          loadedSound = newSound;
-        } catch (err) {
-          console.warn('❌ Failed to preload audio:', err);
-        }
+      try {
+        const { sound: newSound } = await Audio.Sound.createAsync(audioAsset);
+        setSound(newSound);
+        loadedSound = newSound;
+      } catch (err) {
+        console.warn('Failed to preload audio:', err);
       }
     };
 
-    loadAudio();
+    if (audioAsset) loadAudio();
 
     return () => {
-      if (loadedSound) {
-        loadedSound.unloadAsync();
-      }
+      if (loadedSound) loadedSound.unloadAsync();
     };
   }, [word?.audio]);
 
   useEffect(() => {
     if (sound) {
-      sound.replayAsync().catch((e) => {
-        console.warn('⚠️ Auto-play error:', e);
-      });
+      sound.replayAsync().catch((e) => console.warn('Auto-play error:', e));
     }
   }, [sound]);
-
-  const imageAsset = word ? imageMap[word.image] : null;
 
   const playAudio = async () => {
     if (sound) {
       try {
         await sound.replayAsync();
       } catch (e) {
-        console.warn('⚠️ Audio playback error:', e);
+        console.warn('Playback error:', e);
       }
     }
   };
 
-  const goToPrev = () => {
-    if (index > 0) {
-      navigation.replace('WordRecord', {
-        words,
-        index: index - 1,
-      });
-    }
-  };
-
-  const goToNext = () => {
-    if (index < words.length - 1) {
-      navigation.replace('WordRecord', {
-        words,
-        index: index + 1,
-      });
-    }
+  const navigateToIndex = (newIndex) => {
+    navigation.replace('WordRecord', {
+      words,
+      index: newIndex,
+    });
   };
 
   if (!word) {
     return (
       <View style={styles.container}>
-        <Text style={styles.error}>⚠️ Word not found</Text>
+        <Text style={styles.error}>Word not found</Text>
       </View>
     );
   }
+
+  const imageAsset = imageMap[word.image];
 
   return (
     <View style={styles.fixedContainer}>
@@ -120,15 +103,23 @@ export default function WordRecordScreen({ route }) {
         <WordRecordLayout
           block={word}
           imageAsset={imageAsset}
-          showImage={true}
-          showTipIcon={true}
-          showInfoIcon={true}
+          showImage
+          showTipIcon
+          showInfoIcon
           showEnglish={showEnglish}
-          hideAudioButton={true}
+          hideAudioButton
           onPlayAudio={playAudio}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onShowTip={() => setShowTip(true)}
-          onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })} // ✅ Unified logic
+          onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
+          stars={renderStars(stage, handleSetStage)}
+        />
+
+        <StageAdvanceButton
+          wordId={wordId}
+          currentStage={stage}
+          requiredStage={0} // only shows for Explore-stage words
+          onStageChange={handleSetStage}
         />
       </View>
 
@@ -151,23 +142,21 @@ export default function WordRecordScreen({ route }) {
       )}
 
       <View style={styles.navButtons}>
-        <TouchableOpacity onPress={goToPrev} disabled={index === 0}>
-          <View style={{ transform: [{ scaleY: 1.4 }] }}>
-            <Feather
-              name="chevron-left"
-              size={48}
-              color={index === 0 ? 'gray' : '#888'}
-            />
-          </View>
+        <TouchableOpacity onPress={() => navigateToIndex(index - 1)} disabled={index === 0}>
+          <Feather
+            name="chevron-left"
+            size={48}
+            color={index === 0 ? 'gray' : '#888'}
+            style={{ transform: [{ scaleY: 1.4 }] }}
+          />
         </TouchableOpacity>
-        <TouchableOpacity onPress={goToNext} disabled={index === words.length - 1}>
-          <View style={{ transform: [{ scaleY: 1.4 }] }}>
-            <Feather
-              name="chevron-right"
-              size={48}
-              color={index === words.length - 1 ? 'gray' : '#888'}
-            />
-          </View>
+        <TouchableOpacity onPress={() => navigateToIndex(index + 1)} disabled={index >= words.length - 1}>
+          <Feather
+            name="chevron-right"
+            size={48}
+            color={index >= words.length - 1 ? 'gray' : '#888'}
+            style={{ transform: [{ scaleY: 1.4 }] }}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -220,7 +209,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 30,
-    paddingTop: 20,
     paddingBottom: 0,
     position: 'absolute',
     bottom: 0,
