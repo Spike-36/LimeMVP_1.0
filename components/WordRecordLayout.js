@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const { height: screenHeight } = Dimensions.get('window');
@@ -9,21 +10,33 @@ export default function WordRecordLayout({
   onPlayAudio,
   onToggleEnglish,
   onShowTip,
+  onPressFind,
+  stars = null,
   showTipIcon = true,
   showInfoIcon = true,
   showEnglish = false,
   hideThaiText = false,
   hidePhonetic = false,
   hideAudioButton = false,
+  topContent,
   bottomContent,
+  showAnswer = true,
 }) {
   return (
     <View style={styles.container}>
-      <View
-        style={[styles.imageContainer, !showImage && { height: screenHeight * 0.478 }]}
-      >
+      <View style={[styles.imageContainer, !showImage && { height: screenHeight * 0.478 }]}>
         {showImage && imageAsset && (
           <Image source={imageAsset} style={styles.image} resizeMode="cover" />
+        )}
+
+        {/* NEW: Stars on top-left */}
+        {stars && <View style={styles.starRow}>{stars}</View>}
+
+        {/* NEW: Find icon on top-right */}
+        {onPressFind && (
+          <TouchableOpacity style={styles.findButton} onPress={onPressFind}>
+            <Ionicons name="search" size={25} color="white" />
+          </TouchableOpacity>
         )}
 
         {showInfoIcon && showImage && !showEnglish && (
@@ -42,13 +55,8 @@ export default function WordRecordLayout({
       </View>
 
       <View style={styles.textSection}>
-        {!hidePhonetic && <Text style={styles.phonetic}>{block?.phonetic}</Text>}
-        {!hideThaiText && (
-          <TouchableOpacity onPress={onPlayAudio}>
-            <Text style={styles.foreign}>{block?.foreign}</Text>
-          </TouchableOpacity>
-        )}
-        {bottomContent && <View style={styles.bottomArea}>{bottomContent}</View>}
+        {topContent}
+        {bottomContent}
       </View>
     </View>
   );
@@ -68,11 +76,26 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
+  starRow: {
+    position: 'absolute',
+    top: 60,
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  findButton: {
+    position: 'absolute',
+    top: 49,
+    right: 16,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    padding: 8,
+    borderRadius: 20,
+  },
   langBadge: {
     position: 'absolute',
     bottom: 15,
     right: 15,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', // subtle dark background
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderColor: '#555',
     borderWidth: 1.5,
     paddingHorizontal: 8,
@@ -80,7 +103,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   langBadgeText: {
-    color: 'white',
+     color: '#aaa', // ✅ mid gray
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -107,31 +130,9 @@ const styles = StyleSheet.create({
   },
   textSection: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingBottom: 40,
-    paddingTop: 60,
-  },
-  foreign: {
-    color: 'white',
-    fontSize: 40,
-    textAlign: 'center',
-    marginTop: 10,
-  },
-  phonetic: {
-    color: '#FFD700',
-    fontSize: 30,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  audioButton: {
-    backgroundColor: '#FFD700',
-    borderRadius: 50,
-    padding: 16,
-    marginTop: 20,
-  },
-  bottomArea: {
-    marginTop: 30,
-    alignItems: 'center',
+    paddingTop: 24,
+    paddingBottom: 24,
   },
 });

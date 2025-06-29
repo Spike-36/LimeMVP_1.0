@@ -1,5 +1,5 @@
 // screens/WordRecordScreen.js
-import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
@@ -8,6 +8,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
+import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
@@ -112,37 +113,35 @@ export default function WordRecordScreen({ route }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.fixedContainer}>
       <StatusBar style="light" translucent backgroundColor="transparent" />
 
-      <View style={styles.stageStars}>
-        {[0, 1, 2, 3].map((level) => (
-          <TouchableOpacity
-            key={level}
-            onPress={() => handleSetStage(level + 1)}
-          >
-            <FontAwesome
-              name={stage > level ? 'star' : 'star-o'}
-              size={24}
-              color={stage > level ? '#FFD700' : '#555'}
-              style={{ marginLeft: 2 }}
-            />
-          </TouchableOpacity>
-        ))}
+      <View style={styles.topHalf}>
+        <WordRecordLayout
+          block={word}
+          imageAsset={imageAsset}
+          showImage={true}
+          showTipIcon={true}
+          showInfoIcon={true}
+          showEnglish={showEnglish}
+          hideAudioButton={true}
+          onPlayAudio={playAudio}
+          onToggleEnglish={() => setShowEnglish(!showEnglish)}
+          onShowTip={() => setShowTip(true)}
+          onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })} // ✅ Unified logic
+        />
       </View>
 
-      <WordRecordLayout
-        block={word}
-        imageAsset={imageAsset}
-        showImage={true}
-        showTipIcon={true}
-        showInfoIcon={true}
-        showEnglish={showEnglish}
-        hideAudioButton={true}
-        onPlayAudio={playAudio}
-        onToggleEnglish={() => setShowEnglish(!showEnglish)}
-        onShowTip={() => setShowTip(true)}
-      />
+      <View style={styles.interactionBlock}>
+        <WordInteractionBlock
+          block={word}
+          stage={stage}
+          onStageChange={handleSetStage}
+          onPlayAudio={playAudio}
+          showStars={false}
+          showInstruction={false}
+        />
+      </View>
 
       {showTip && (
         <View style={styles.tipOverlay}>
@@ -176,22 +175,25 @@ export default function WordRecordScreen({ route }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  fixedContainer: {
     flex: 1,
     backgroundColor: 'black',
+    justifyContent: 'flex-start',
+  },
+  topHalf: {
+    height: '58%',
+  },
+  interactionBlock: {
+    height: '42%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 30,
   },
   error: {
     marginTop: 40,
     fontSize: 18,
     color: 'red',
     textAlign: 'center',
-  },
-  stageStars: {
-    position: 'absolute',
-    top: 70,
-    right: 20,
-    zIndex: 20,
-    flexDirection: 'row',
   },
   tipOverlay: {
     position: 'absolute',
@@ -219,6 +221,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 30,
     paddingTop: 20,
-    paddingBottom: 60,
+    paddingBottom: 0,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
   },
 });

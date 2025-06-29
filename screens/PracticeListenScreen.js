@@ -1,11 +1,13 @@
-import { useFocusEffect } from '@react-navigation/native';
+// screens/PracticeListenScreen.js
+import { FontAwesome } from '@expo/vector-icons';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import { useCallback, useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
-import ProgressSelector from '../components/ProgressSelector';
+import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
@@ -18,6 +20,7 @@ function shuffleArray(array) {
 }
 
 export default function PracticeListenScreen() {
+  const navigation = useNavigation();
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -32,14 +35,10 @@ export default function PracticeListenScreen() {
     useCallback(() => {
       async function loadEligibleWords() {
         const progressMap = await loadProgress();
-        console.log('✅ Loaded progress:', progressMap);
-
         const eligible = blocks.filter(b => {
           const stage = getStage(progressMap, b.id);
-          return stage === 1 || stage === 2; // Only Learning or Familiar
+          return stage === 1 || stage === 2;
         });
-
-        console.log('🎯 Eligible for Listen:', eligible.map(e => e.english));
 
         setProgress(progressMap);
         setShuffledBlocks(shuffleArray(eligible));
@@ -64,11 +63,10 @@ export default function PracticeListenScreen() {
       setSound(newSound);
       await newSound.replayAsync();
     } catch (err) {
-      console.warn('❌ Audio error:', err);
+      console.warn('Audio error:', err);
     }
   };
 
-  // 🔈 Auto-play audio on word change
   useEffect(() => {
     if (!current) return;
 
@@ -86,7 +84,7 @@ export default function PracticeListenScreen() {
         setSound(newSound);
         await newSound.replayAsync();
       } catch (err) {
-        console.warn('⚠️ Auto-play error:', err);
+        console.warn('Auto-play error:', err);
       }
     };
 
@@ -123,6 +121,17 @@ export default function PracticeListenScreen() {
     );
   }
 
+  const stars = [0, 1, 2, 3].map((level) => (
+    <TouchableOpacity key={level} onPress={() => handleStageSelect(level + 1)}>
+      <FontAwesome
+        name={getStage(progress, current.id) > level ? 'star' : 'star-o'}
+        size={20}
+        color={getStage(progress, current.id) > level ? '#FFD700' : '#555'}
+        style={{ marginLeft: 2 }}
+      />
+    </TouchableOpacity>
+  ));
+
   return (
     <View style={styles.container}>
       <WordRecordLayout
@@ -136,29 +145,40 @@ export default function PracticeListenScreen() {
         onPlayAudio={playAudio}
         onToggleEnglish={() => setShowEnglish(true)}
         onShowTip={() => setShowTip(true)}
-        bottomContent={
-          showAnswer ? (
-            <>
-              <ProgressSelector
-                currentStage={getStage(progress, current.id)}
-                onSelect={handleStageSelect}
+        onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })} // ✅ FIX APPLIED HERE
+        stars={showAnswer ? stars : null}
+        topContent={
+          <View style={[styles.stackBlock, !showAnswer && { paddingTop: 48 }]}>
+            <View
+              style={[
+                styles.interactionWrapper,
+                !showAnswer && styles.preRevealPushDown,
+                showAnswer && styles.revealUp
+              ]}
+            >
+              <WordInteractionBlock
+                block={current}
+                stage={getStage(progress, current.id)}
+                onStageChange={handleStageSelect}
+                onPlayAudio={playAudio}
+                showStars={false}
+                showInstruction={!showAnswer}
               />
-              <View style={styles.buttonRow}>
-                <Button title="Next" onPress={handleNext} />
-              </View>
-            </>
-          ) : (
-            <View style={styles.buttonContainer}>
-              <Button title="Show Answer" onPress={() => setShowAnswer(true)} />
             </View>
-          )
+
+            <View style={[styles.buttonWrapper, showAnswer && styles.revealButtonUp]}>
+              <TouchableOpacity style={styles.button} onPress={showAnswer ? handleNext : () => setShowAnswer(true)}>
+                <Text style={styles.buttonText}>{showAnswer ? 'Next' : 'Show Answer'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         }
       />
 
       {showTip && (
         <View style={styles.tipOverlay}>
           <Text style={styles.tipText}>{current.tip}</Text>
-          <Text style={styles.closeTip} onPress={() => setShowTip(false)}>✕</Text>
+          <Text style={styles.closeTip} onPress={() => setShowTip(false)}>\u2715</Text>
         </View>
       )}
     </View>
@@ -166,31 +186,51 @@ export default function PracticeListenScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
-  },
+  container: { flex: 1, backgroundColor: 'black' },
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'black',
   },
-  buttonContainer: {
-    marginBottom: 30,
-    alignItems: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-    marginBottom: 30,
-  },
   emptyText: {
     fontSize: 20,
     color: 'gray',
     textAlign: 'center',
     paddingHorizontal: 24,
+  },
+  stackBlock: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingVertical: 24,
+  },
+  interactionWrapper: {
+    alignItems: 'center',
+  },
+  preRevealPushDown: {
+    marginTop: 15,
+  },
+  revealUp: {
+    marginTop: -20,
+  },
+  buttonWrapper: {
+    minHeight: 60,
+    marginTop: -22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  revealButtonUp: {
+    marginTop: -16,
+  },
+  button: {
+    backgroundColor: '#444',
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
   },
   tipOverlay: {
     position: 'absolute',

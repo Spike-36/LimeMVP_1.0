@@ -1,17 +1,16 @@
-// PracticeSpeakScreen.js (with auto-play native audio)
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
-import ProgressSelector from '../components/ProgressSelector';
 import RecorderBlock from '../components/RecorderBlock';
+import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
-import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
+import { getStage, loadProgress } from '../utils/progressStorage';
 
 function shuffleArray(array) {
   return array
@@ -23,6 +22,7 @@ function shuffleArray(array) {
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
 export default function PracticeSpeakScreen() {
+  const navigation = useNavigation();
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -48,7 +48,6 @@ export default function PracticeSpeakScreen() {
     }, [])
   );
 
-  // 🔈 Auto-play native audio on word change
   useEffect(() => {
     if (!asset) return;
 
@@ -66,7 +65,7 @@ export default function PracticeSpeakScreen() {
         const duration = status?.durationMillis || 2000;
         await delay(duration + 200);
       } catch (err) {
-        console.warn('⚠️ Auto-play failed:', err);
+        console.warn('Auto-play failed:', err);
       }
     };
 
@@ -80,14 +79,8 @@ export default function PracticeSpeakScreen() {
   }, [current]);
 
   const handleNext = () => {
-    if (currentIndex === shuffledBlocks.length - 1) {
-      const reshuffled = shuffleArray(shuffledBlocks);
-      setShuffledBlocks(reshuffled);
-      setCurrentIndex(0);
-    } else {
-      setCurrentIndex(prev => prev + 1);
-    }
-
+    const nextIndex = (currentIndex + 1) % shuffledBlocks.length;
+    setCurrentIndex(nextIndex);
     setShowAnswer(false);
     setUserRecordingUri(null);
     setShowEnglish(false);
@@ -112,7 +105,7 @@ export default function PracticeSpeakScreen() {
       await delay(duration + 200);
       await sound.unloadAsync();
     } catch (err) {
-      console.warn('❌ Failed to play native audio:', err);
+      console.warn('Native audio failed:', err);
     }
   };
 
@@ -123,17 +116,14 @@ export default function PracticeSpeakScreen() {
         playsInSilentModeIOS: true,
         allowsRecordingIOS: false,
       });
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: userRecordingUri },
-        { volume: 1.0 }
-      );
+      const { sound } = await Audio.Sound.createAsync({ uri: userRecordingUri }, { volume: 1.0 });
       await sound.playAsync();
       const status = await sound.getStatusAsync();
       const duration = status?.durationMillis || 2000;
       await delay(duration + 200);
       await sound.unloadAsync();
     } catch (err) {
-      console.warn('❌ Failed to play user recording:', err);
+      console.warn('User recording playback failed:', err);
     }
   };
 
@@ -161,36 +151,23 @@ export default function PracticeSpeakScreen() {
         hideAudioButton={true}
         onToggleEnglish={() => setShowEnglish(!showEnglish)}
         onShowTip={() => setShowTip(true)}
+        onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         bottomContent={
           showAnswer ? (
             <View>
-              <View style={styles.iconButtonRow}>
-                <View style={styles.iconWrapper}>
-                  <Ionicons
-                    name="play-circle"
-                    size={64}
-                    color="#1E90FF"
-                    onPress={playNativeAudio}
-                  />
-                </View>
-                <View style={styles.iconWrapper}>
-                  <Ionicons
-                    name="play-circle"
-                    size={64}
-                    color="#32CD32"
-                    onPress={playUserRecording}
-                  />
-                </View>
+              <View style={styles.raisedInteraction}>
+                <WordInteractionBlock
+                  block={current}
+                  onPlayAudio={playNativeAudio}
+                  showStars={false}
+                  showInstruction={false}
+                />
               </View>
 
-              <ProgressSelector
-                currentStage={getStage(progress, current.id)}
-                onSelect={async (stage) => {
-                  await updateWordStage(current.id, stage);
-                  const updated = await loadProgress();
-                  setProgress(updated);
-                }}
-              />
+              <View style={styles.iconButtonRow}>
+                <Ionicons name="play-circle" size={56} color="#1E90FF" onPress={playNativeAudio} />
+                <Ionicons name="play-circle" size={56} color="#32CD32" onPress={playUserRecording} />
+              </View>
 
               <View style={styles.buttonRow}>
                 <Button title="Next" onPress={handleNext} />
@@ -198,22 +175,8 @@ export default function PracticeSpeakScreen() {
             </View>
           ) : userRecordingUri ? (
             <View style={styles.iconButtonRow}>
-              <View style={styles.iconWrapper}>
-                <Ionicons
-                  name="play-circle"
-                  size={64}
-                  color="#1E90FF"
-                  onPress={playUserRecording}
-                />
-              </View>
-              <View style={styles.iconWrapper}>
-                <Ionicons
-                  name="mic-circle"
-                  size={64}
-                  color="#FFA500"
-                  onPress={() => setUserRecordingUri(null)}
-                />
-              </View>
+              <Ionicons name="play-circle" size={56} color="#1E90FF" onPress={playUserRecording} />
+              <Ionicons name="mic-circle" size={56} color="#FFA500" onPress={() => setUserRecordingUri(null)} />
             </View>
           ) : (
             <RecorderBlock onRecordingFinished={handleRecordingFinished} />
@@ -224,7 +187,7 @@ export default function PracticeSpeakScreen() {
       {showTip && (
         <View style={styles.tipOverlay}>
           <Text style={styles.tipText}>{current.tip}</Text>
-          <Text style={styles.closeTip} onPress={() => setShowTip(false)}>✕</Text>
+          <Text style={styles.closeTip} onPress={() => setShowTip(false)}>\u2715</Text>
         </View>
       )}
 
@@ -238,10 +201,7 @@ export default function PracticeSpeakScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
-  },
+  container: { flex: 1, backgroundColor: 'black' },
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -282,17 +242,16 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
-    marginBottom: 30,
+    marginTop: 8,
+    marginBottom: 24,
   },
   iconButtonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 30,
-    paddingHorizontal: 60,
+    justifyContent: 'space-around',
+    marginVertical: 12,
+    paddingHorizontal: 40,
   },
-  iconWrapper: {
-    flex: 1,
-    alignItems: 'center',
+  raisedInteraction: {
+    marginTop: -8,
   },
 });

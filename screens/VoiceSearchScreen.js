@@ -5,14 +5,15 @@ import { StatusBar } from 'expo-status-bar';
 import { closest, distance } from 'fastest-levenshtein';
 import React, { useEffect, useState } from 'react';
 import {
-    PermissionsAndroid,
-    Platform,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  PermissionsAndroid,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+
 import BottomNav from '../components/BottomNav';
 import blocks from '../data/blocks.json';
 
@@ -37,12 +38,15 @@ export default function VoiceSearchScreen() {
         }, 500);
       }
     };
+
     Voice.onSpeechError = (event) => {
       const msg = event.error?.message || 'Speech error';
       setErrorMessage('⚠️ ' + msg);
     };
+
     return () => {
-      Voice.destroy().then(Voice.removeAllListeners);
+      Voice.destroy().catch(() => {});
+      Voice.removeAllListeners();
     };
   }, []);
 
@@ -78,15 +82,16 @@ export default function VoiceSearchScreen() {
     try {
       await Voice.stop();
       setIsListening(false);
-    } catch (e) {}
+    } catch {}
 
     console.log('🎤 Raw:', rawText);
 
     let cleaned = rawText
       .toLowerCase()
       .replace(/[^぀-ヿ一-鿿a-z0-9\s]/g, '')
-      .trim();
-    cleaned = cleaned.replace(/^(i said|this is|please|can i have)\s+/i, '');
+      .trim()
+      .replace(/^(i said|this is|please|can i have)\s+/i, '');
+
     const canonical = aliasMap[cleaned] || cleaned;
 
     console.log('🧼 Cleaned:', cleaned);
@@ -95,36 +100,32 @@ export default function VoiceSearchScreen() {
     let bestBlock = blocks.find((b) =>
       [b.english, b.foreign, b.phonetic, ...(b.aliases || [])]
         .filter(Boolean)
-        .some((f) => f.toLowerCase() === canonical)
+        .some((f) => f?.toLowerCase() === canonical)
     );
 
     if (!bestBlock) {
       const phrases = cleaned.split(/\s+/);
-      const allBlockNames = blocks
-        .flatMap((b) => [
-          b.english?.toLowerCase(),
-          b.foreign?.toLowerCase(),
-          b.phonetic?.toLowerCase(),
-          ...(b.aliases || []),
-        ])
-        .filter(Boolean);
+      const allNames = blocks.flatMap((b) =>
+        [b.english, b.foreign, b.phonetic, ...(b.aliases || [])]
+          .filter(Boolean)
+          .map((s) => s.toLowerCase())
+      );
 
-      const bestPhrase = closestFromList(phrases, allBlockNames);
+      const bestPhrase = closestFromList(phrases, allNames);
       const dist = distance(bestPhrase.phrase, bestPhrase.match);
+
       if (dist <= 2) {
         bestBlock = blocks.find((b) =>
           [b.english, b.foreign, b.phonetic, ...(b.aliases || [])]
             .filter(Boolean)
-            .some((f) => f.toLowerCase() === bestPhrase.match)
+            .some((f) => f?.toLowerCase() === bestPhrase.match)
         );
       }
     }
 
     if (bestBlock) {
       console.log('🔎 Matched:', bestBlock.id, bestBlock.english);
-      navigation.navigate('FindWordRecord', {
-        word: bestBlock, // ✅ fixed
-      });
+      navigation.navigate('FindWordRecord', { word: bestBlock });
     } else {
       setErrorMessage('❌ No match found for: ' + rawText);
     }
@@ -133,9 +134,9 @@ export default function VoiceSearchScreen() {
   const closestFromList = (phrases, targets) => {
     let best = { phrase: '', match: '', dist: Infinity };
     for (const phrase of phrases) {
-      const close = closest(phrase, targets);
-      const dist = distance(phrase, close);
-      if (dist < best.dist) best = { phrase, match: close, dist };
+      const match = closest(phrase, targets);
+      const dist = distance(phrase, match);
+      if (dist < best.dist) best = { phrase, match, dist };
     }
     return best;
   };
