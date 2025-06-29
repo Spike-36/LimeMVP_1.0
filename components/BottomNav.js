@@ -7,7 +7,10 @@ export default function BottomNav({ active }) {
   const navigation = useNavigation();
   const tabs = [
     { name: 'Explore', route: 'Explore' },
-    { name: 'Search', route: 'Find' }, // Correct top-level tab name
+    { name: 'Learn', route: 'Learn' },
+    { name: 'Listen', route: 'PracticeListen' },
+    { name: 'Speak', route: 'PracticeSpeak' },
+    { name: 'Review', route: 'Review' },
   ];
 
   return (

@@ -1,3 +1,5 @@
+// App.js
+
 import { Entypo, Feather, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -5,9 +7,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useEffect } from 'react';
 
 import ExploreStack from './screens/ExploreStack';
-import FindStack from './screens/FindStack';
+import LearnScreen from './screens/LearnScreen';
 import PracticeListenScreen from './screens/PracticeListenScreen';
 import PracticeSpeakScreen from './screens/PracticeSpeakScreen';
+import ReviewScreen from './screens/ReviewScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -36,20 +39,20 @@ export default function App() {
         }}
       >
         <Tab.Screen
-          name="Find"
-          component={FindStack}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Feather name="search" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
           name="Explore"
           component={ExploreStack}
           options={{
             tabBarIcon: ({ color, size }) => (
               <Entypo name="grid" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Learn"
+          component={LearnScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="book-open-variant" size={size} color={color} />
             ),
           }}
         />
@@ -68,6 +71,15 @@ export default function App() {
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="microphone" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Review"
+          component={ReviewScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Feather name="check-circle" size={size} color={color} />
             ),
           }}
         />
