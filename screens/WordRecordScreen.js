@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
@@ -8,42 +8,41 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import StageAdvanceButton from '../components/StageAdvanceButton';
-import WordInteractionBlock, { renderStars } from '../components/WordInteractionBlock';
+import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
-export default function WordRecordScreen({ route }) {
+export default function WordRecordScreen() {
   const navigation = useNavigation();
-  const words = route.params?.words || [];
-  const index = route.params?.index ?? 0;
+  const route = useRoute();
+  const { words, index = 0, mode = 'explore' } = route.params || {};
+
+  if (!words || !Array.isArray(words) || index < 0 || index >= words.length) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.error}>⚠️ Invalid word parameters</Text>
+      </View>
+    );
+  }
+
   const word = words[index];
+  const wordId = word?.id;
 
   const [sound, setSound] = useState(null);
   const [showEnglish, setShowEnglish] = useState(false);
   const [showTip, setShowTip] = useState(false);
   const [progress, setProgress] = useState({});
 
-  const wordId = word?.id;
   const stage = getStage(progress, wordId);
 
   useEffect(() => {
-    const fetchProgress = async () => {
-      const data = await loadProgress();
-      setProgress(data);
-    };
-    fetchProgress();
+    loadProgress().then(setProgress);
   }, []);
-
-  const handleSetStage = async (newStage, updatedProgress = null) => {
-    if (!wordId) return;
-    await updateWordStage(wordId, newStage);
-    const updated = updatedProgress || await loadProgress();
-    setProgress(updated);
-  };
 
   useEffect(() => {
     let loadedSound;
     const audioAsset = word?.audio && audioMap[word.audio];
+    if (!audioAsset) return;
 
     const loadAudio = async () => {
       try {
@@ -51,11 +50,11 @@ export default function WordRecordScreen({ route }) {
         setSound(newSound);
         loadedSound = newSound;
       } catch (err) {
-        console.warn('Failed to preload audio:', err);
+        console.warn('Audio preload error:', err);
       }
     };
 
-    if (audioAsset) loadAudio();
+    loadAudio();
 
     return () => {
       if (loadedSound) loadedSound.unloadAsync();
@@ -64,7 +63,7 @@ export default function WordRecordScreen({ route }) {
 
   useEffect(() => {
     if (sound) {
-      sound.replayAsync().catch((e) => console.warn('Auto-play error:', e));
+      sound.replayAsync().catch(err => console.warn('Auto-play error:', err));
     }
   }, [sound]);
 
@@ -78,22 +77,25 @@ export default function WordRecordScreen({ route }) {
     }
   };
 
-  const navigateToIndex = (newIndex) => {
-    navigation.replace('WordRecord', {
-      words,
-      index: newIndex,
-    });
+  const handleSetStage = async (newStage) => {
+    if (!wordId) return;
+
+    await updateWordStage(wordId, newStage);
+    const updated = await loadProgress();
+    setProgress(updated);
   };
 
-  if (!word) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.error}>Word not found</Text>
-      </View>
-    );
-  }
+  const goToPrev = () => {
+    if (index > 0) {
+      navigation.push('WordRecord', { words, index: index - 1, mode });
+    }
+  };
 
-  const imageAsset = imageMap[word.image];
+  const goToNext = () => {
+    if (index < words.length - 1) {
+      navigation.push('WordRecord', { words, index: index + 1, mode });
+    }
+  };
 
   return (
     <View style={styles.fixedContainer}>
@@ -102,25 +104,25 @@ export default function WordRecordScreen({ route }) {
       <View style={styles.topHalf}>
         <WordRecordLayout
           block={word}
-          imageAsset={imageAsset}
+          imageAsset={imageMap[word.image]}
           showImage
           showTipIcon
           showInfoIcon
           showEnglish={showEnglish}
-          hideAudioButton
           onPlayAudio={playAudio}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onShowTip={() => setShowTip(true)}
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
-          stars={renderStars(stage, handleSetStage)}
         />
 
-        <StageAdvanceButton
-          wordId={wordId}
-          currentStage={stage}
-          requiredStage={0} // only shows for Explore-stage words
-          onStageChange={handleSetStage}
-        />
+        {wordId && mode === 'explore' && stage === 0 && (
+          <StageAdvanceButton
+            wordId={wordId}
+            currentStage={stage}
+            requiredStage={0}
+            onStageChange={handleSetStage}
+          />
+        )}
       </View>
 
       <View style={styles.interactionBlock}>
@@ -142,7 +144,7 @@ export default function WordRecordScreen({ route }) {
       )}
 
       <View style={styles.navButtons}>
-        <TouchableOpacity onPress={() => navigateToIndex(index - 1)} disabled={index === 0}>
+        <TouchableOpacity onPress={goToPrev} disabled={index === 0}>
           <Feather
             name="chevron-left"
             size={48}
@@ -150,7 +152,7 @@ export default function WordRecordScreen({ route }) {
             style={{ transform: [{ scaleY: 1.4 }] }}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateToIndex(index + 1)} disabled={index >= words.length - 1}>
+        <TouchableOpacity onPress={goToNext} disabled={index >= words.length - 1}>
           <Feather
             name="chevron-right"
             size={48}
@@ -177,12 +179,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 30,
-  },
-  error: {
-    marginTop: 40,
-    fontSize: 18,
-    color: 'red',
-    textAlign: 'center',
   },
   tipOverlay: {
     position: 'absolute',
@@ -215,5 +211,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
+  },
+  error: {
+    marginTop: 40,
+    fontSize: 18,
+    color: 'gray',
+    textAlign: 'center',
   },
 });

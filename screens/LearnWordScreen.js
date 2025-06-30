@@ -13,7 +13,7 @@ import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
-export default function LearnScreen() {
+export default function LearnWordScreen() {
   const navigation = useNavigation();
   const [eligibleWords, setEligibleWords] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -36,6 +36,12 @@ export default function LearnScreen() {
     };
     fetchProgress();
   }, []);
+
+  // Reset EN and TIP state when index changes
+  useEffect(() => {
+    setShowEnglish(false);
+    setShowTip(false);
+  }, [currentIndex]);
 
   useEffect(() => {
     let loadedSound;
@@ -75,11 +81,17 @@ export default function LearnScreen() {
     }
   };
 
-  const handleSetStage = async (newStage, updatedProgress = null) => {
+  const handleSetStage = async (newStage) => {
     if (!wordId) return;
+
     await updateWordStage(wordId, newStage);
-    const updated = updatedProgress || await loadProgress();
+    const updated = await loadProgress();
+    const updatedEligible = blocks.filter(b => getStage(updated, b.id) === 1);
     setProgress(updated);
+    setEligibleWords(updatedEligible);
+
+    const remaining = updatedEligible.filter(w => w.id !== wordId);
+    setCurrentIndex(remaining.length > 0 ? 0 : 0);
   };
 
   const goToPrev = () => {
@@ -93,7 +105,7 @@ export default function LearnScreen() {
   if (!word) {
     return (
       <View style={styles.container}>
-        <Text style={styles.emptyText}>⚠️ No one-star words found</Text>
+        <Text style={styles.error}>⚠️ No one-star words found</Text>
       </View>
     );
   }
@@ -182,12 +194,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 30,
   },
-  emptyText: {
-    fontSize: 20,
+  error: {
+    marginTop: 40,
+    fontSize: 18,
     color: 'gray',
     textAlign: 'center',
-    paddingHorizontal: 24,
-    marginTop: 40,
   },
   tipOverlay: {
     position: 'absolute',
@@ -214,7 +225,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 30,
-    paddingBottom: 35,
+    paddingBottom: 0,
     position: 'absolute',
     bottom: 0,
     left: 0,

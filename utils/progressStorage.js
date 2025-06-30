@@ -1,21 +1,16 @@
-// utils/progressStorage.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 
 const FILE_PATH = FileSystem.documentDirectory + 'wordProgress.json';
-
-// Default fallback structure
 const defaultProgress = {};
 
 export async function loadProgress() {
   try {
     const fileInfo = await FileSystem.getInfoAsync(FILE_PATH);
-
     if (fileInfo.exists) {
       const content = await FileSystem.readAsStringAsync(FILE_PATH);
       return JSON.parse(content);
     } else {
-      // Attempt fallback to legacy AsyncStorage
       const legacy = await AsyncStorage.getItem('wordProgress');
       if (legacy) {
         const parsed = JSON.parse(legacy);
@@ -39,9 +34,15 @@ export async function saveProgress(progress) {
 }
 
 export async function updateWordStage(id, newStage) {
+  if (newStage < 0 || newStage > 4) return;
+
   const current = await loadProgress();
-  current[id] = { stage: newStage };
-  await saveProgress(current);
+  const existingStage = current[id]?.stage ?? 0;
+
+  if (newStage > existingStage) {
+    current[id] = { stage: newStage };
+    await saveProgress(current);
+  }
 }
 
 export function getStage(progress, id) {
@@ -55,4 +56,19 @@ export async function resetProgress() {
   } catch (err) {
     console.error('⚠️ Failed to reset progress:', err);
   }
+}
+
+// NEW: Group all word IDs by stage (0–4)
+export async function getAllStages() {
+  const progress = await loadProgress();
+  const stages = { 0: [], 1: [], 2: [], 3: [], 4: [] };
+
+  Object.entries(progress).forEach(([id, data]) => {
+    const stage = data.stage ?? 0;
+    if (stage >= 0 && stage <= 4) {
+      stages[stage].push(id);
+    }
+  });
+
+  return stages;
 }

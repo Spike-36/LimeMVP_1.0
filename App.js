@@ -7,7 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useEffect } from 'react';
 
 import ExploreStack from './screens/ExploreStack';
-import LearnScreen from './screens/LearnScreen';
+import LearnWordScreen from './screens/LearnWordScreen'; // ✅ Corrected import
 import PracticeListenScreen from './screens/PracticeListenScreen';
 import PracticeSpeakScreen from './screens/PracticeSpeakScreen';
 import ReviewScreen from './screens/ReviewScreen';
@@ -49,7 +49,7 @@ export default function App() {
         />
         <Tab.Screen
           name="Learn"
-          component={LearnScreen}
+          component={LearnWordScreen} // ✅ Corrected component
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="book-open-variant" size={size} color={color} />

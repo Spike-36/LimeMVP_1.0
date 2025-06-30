@@ -1,4 +1,3 @@
-// screens/ExploreListScreen.js
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -133,12 +132,18 @@ export default function ExploreListScreen() {
                   word={item}
                   isFavorite={getStage(progress, item.id) >= 1}
                   onToggleFavorite={() => handleToggleStage1(item.id)}
-                  onPress={() =>
-                    navigation.push('WordRecord', {
-                      words: orderedWords,
-                      index: orderedWords.findIndex((w) => w.id === item.id),
-                    })
-                  }
+                  onPress={() => {
+                    const index = orderedWords.findIndex((w) => w.id === item.id);
+                    if (index !== -1) {
+                      navigation.push('WordRecord', {
+                        words: orderedWords,
+                        index,
+                        mode: 'explore',
+                      });
+                    } else {
+                      console.warn('Word not found in ordered list:', item.id);
+                    }
+                  }}
                 />
               ))}
             </View>
