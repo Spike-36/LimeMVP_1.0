@@ -33,15 +33,18 @@ export async function saveProgress(progress) {
   }
 }
 
-export async function updateWordStage(id, newStage) {
+export async function updateWordStage(id, newStage, force = false) {
   if (newStage < 0 || newStage > 4) return;
 
   const current = await loadProgress();
   const existingStage = current[id]?.stage ?? 0;
 
-  if (newStage > existingStage) {
+  if (force || newStage > existingStage) {
+    console.log(`⬆️ Updating word ${id} from ${existingStage} to ${newStage}${force ? ' (forced)' : ''}`);
     current[id] = { stage: newStage };
     await saveProgress(current);
+  } else {
+    console.log(`🚫 Skipped update — current: ${existingStage}, attempted: ${newStage}`);
   }
 }
 
@@ -58,7 +61,6 @@ export async function resetProgress() {
   }
 }
 
-// NEW: Group all word IDs by stage (0–4)
 export async function getAllStages() {
   const progress = await loadProgress();
   const stages = { 0: [], 1: [], 2: [], 3: [], 4: [] };

@@ -11,8 +11,6 @@ import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
-console.log('🎧 Listen screen loaded');
-
 function shuffleArray(array) {
   return array
     .map(value => ({ value, sort: Math.random() }))
@@ -21,6 +19,8 @@ function shuffleArray(array) {
 }
 
 export default function PracticeListenScreen() {
+  console.log('🎧 PracticeListenScreen mounted');
+
   const navigation = useNavigation();
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);

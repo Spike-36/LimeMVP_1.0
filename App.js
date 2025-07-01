@@ -1,4 +1,4 @@
-// App.js
+// App.js (Updated to include hidden Find stack route)
 
 import { Entypo, Feather, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,7 +7,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useEffect } from 'react';
 
 import ExploreStack from './screens/ExploreStack';
-import LearnWordScreen from './screens/LearnWordScreen'; // ✅ Corrected import
+import FindStack from './screens/FindStack'; // ✅ NEW IMPORT
+import LearnWordScreen from './screens/LearnWordScreen';
 import PracticeListenScreen from './screens/PracticeListenScreen';
 import PracticeSpeakScreen from './screens/PracticeSpeakScreen';
 import ReviewScreen from './screens/ReviewScreen';
@@ -49,7 +50,7 @@ export default function App() {
         />
         <Tab.Screen
           name="Learn"
-          component={LearnWordScreen} // ✅ Corrected component
+          component={LearnWordScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="book-open-variant" size={size} color={color} />
@@ -82,6 +83,13 @@ export default function App() {
               <Feather name="check-circle" size={size} color={color} />
             ),
           }}
+        />
+
+        {/* ✅ Hidden route to support navigation to FindStack without a visible tab */}
+        <Tab.Screen
+          name="Find"
+          component={FindStack}
+          options={{ tabBarButton: () => null }}
         />
       </Tab.Navigator>
     </NavigationContainer>

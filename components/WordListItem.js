@@ -2,8 +2,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { imageMap } from './imageMap'; // adjust path if needed
 
-export default function WordListItem({ word, isFavorite, onToggleFavorite, onPress }) {
+export default function WordListItem({ word, wordStage = 0, onToggleFavorite, onPress }) {
   const imageSource = imageMap[word.image];
+
+  // Determine star appearance based on stage
+  let starName = 'star-outline';
+  let starColor = '#444';
+
+  if (wordStage === 4) {
+    starName = 'star';
+    starColor = '#FFD700'; // gold for review
+  } else if (wordStage >= 1) {
+    starName = 'star';
+    starColor = 'gray'; // selected but not yet Review
+  }
 
   return (
     <View style={styles.item}>
@@ -17,12 +29,14 @@ export default function WordListItem({ word, isFavorite, onToggleFavorite, onPre
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={onToggleFavorite} style={styles.starButton}>
-        <Ionicons
-          name={isFavorite ? 'star' : 'star-outline'}
-          size={24}
-          color={isFavorite ? 'gray' : '#444'} // ✅ Gray if selected, dark gray if not
-        />
+      <TouchableOpacity
+        onPress={() => {
+          console.log(`⭐ Star tapped — ID: ${word.id}, Stage: ${wordStage}`);
+          onToggleFavorite();
+        }}
+        style={styles.starButton}
+      >
+        <Ionicons name={starName} size={24} color={starColor} />
       </TouchableOpacity>
     </View>
   );

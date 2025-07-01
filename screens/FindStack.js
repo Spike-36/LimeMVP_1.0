@@ -1,12 +1,14 @@
-// screens/FindStack.js
+// screens/ExploreStack.js
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import FindWordRecord from './FindWordRecord';
-import VoiceSearchScreen from './VoiceSearchScreen';
+import ExploreListScreen from './ExploreListScreen';
+import FindWordRecord from './FindWordRecord'; // ✅ Added
+import VoiceSearchScreen from './VoiceSearchScreen'; // ✅ Added
+import WordRecordScreen from './WordRecordScreen';
 
 const Stack = createNativeStackNavigator();
 
-export default function FindStack() {
+export default function ExploreStack() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -15,8 +17,10 @@ export default function FindStack() {
         contentStyle: { backgroundColor: 'black' },
       }}
     >
-      <Stack.Screen name="VoiceSearch" component={VoiceSearchScreen} />
-      <Stack.Screen name="FindWordRecord" component={FindWordRecord} />
+      <Stack.Screen name="ExploreList" component={ExploreListScreen} />
+      <Stack.Screen name="WordRecord" component={WordRecordScreen} />
+      <Stack.Screen name="VoiceSearch" component={VoiceSearchScreen} />     {/* ✅ NEW */}
+      <Stack.Screen name="FindWordRecord" component={FindWordRecord} />     {/* ✅ NEW */}
     </Stack.Navigator>
   );
 }

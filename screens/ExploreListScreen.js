@@ -1,6 +1,7 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Modal,
   Pressable,
   ScrollView,
@@ -40,10 +41,30 @@ export default function ExploreListScreen() {
 
   const handleToggleStage1 = async (id) => {
     const current = getStage(progress, id);
-    const newStage = current >= 1 ? 0 : 1;
-    await updateWordStage(id, newStage);
-    const updated = await loadProgress();
-    setProgress(updated);
+    console.log(`⭐ Toggle Pressed — ID: ${id}, Current Stage: ${current}`);
+
+    if (current >= 1) {
+      Alert.alert(
+        'Reset?',
+        'Do you want to reset this word?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Reset',
+            style: 'destructive',
+            onPress: async () => {
+              await updateWordStage(id, 0, true);
+              const updated = await loadProgress();
+              setProgress(updated);
+            },
+          },
+        ]
+      );
+    } else {
+      await updateWordStage(id, 1);
+      const updated = await loadProgress();
+      setProgress(updated);
+    }
   };
 
   const groupedBlocks = blocks.reduce((acc, word) => {
@@ -130,7 +151,7 @@ export default function ExploreListScreen() {
                 <WordListItem
                   key={item.id}
                   word={item}
-                  isFavorite={getStage(progress, item.id) >= 1}
+                  wordStage={getStage(progress, item.id)}
                   onToggleFavorite={() => handleToggleStage1(item.id)}
                   onPress={() => {
                     const index = orderedWords.findIndex((w) => w.id === item.id);

@@ -1,8 +1,8 @@
 import { Feather } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
@@ -26,18 +26,20 @@ export default function LearnWordScreen() {
   const wordId = word?.id;
   const stage = getStage(progress, wordId);
 
-  useEffect(() => {
-    const fetchProgress = async () => {
-      const stored = await loadProgress();
-      const filtered = blocks.filter(b => getStage(stored, b.id) === 1);
-      setProgress(stored);
-      setEligibleWords(filtered);
-      setCurrentIndex(0);
-    };
-    fetchProgress();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchProgress = async () => {
+        const stored = await loadProgress();
+        const filtered = blocks.filter(b => getStage(stored, b.id) === 1);
+        console.log('🧠 Eligible stage-1 words:', filtered.map(w => w.id));
+        setProgress(stored);
+        setEligibleWords(filtered);
+        setCurrentIndex(0);
+      };
+      fetchProgress();
+    }, [])
+  );
 
-  // Reset EN and TIP state when index changes
   useEffect(() => {
     setShowEnglish(false);
     setShowTip(false);

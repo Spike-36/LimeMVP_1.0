@@ -31,7 +31,7 @@ export default function PracticeSpeakScreen() {
   const [sound, setSound] = useState(null);
 
   const current = shuffledBlocks[currentIndex];
-  const currentStage = getStage(progress, current?.id);
+  const currentStage = current?.id ? getStage(progress, current.id) : 0;
   console.log('🧪 Speak Screen - Word ID:', current?.id, 'Stage:', currentStage);
 
   useFocusEffect(
@@ -108,6 +108,8 @@ export default function PracticeSpeakScreen() {
   };
 
   const handleStageSelect = async (stage) => {
+    if (!current?.id) return;
+
     const wordId = current.id;
     await updateWordStage(wordId, stage);
     const updated = await loadProgress();
