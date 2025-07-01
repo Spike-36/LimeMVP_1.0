@@ -28,13 +28,16 @@ export default function WordInteractionBlock({
   instructionText = '',
   showStars = true,
   showInstruction = true,
+  showPhonetic = true, // ✅ NEW PROP
   style = {},
 }) {
   return (
     <View style={[styles.container, style]}>
       {showStars && renderStars(stage, onStageChange)}
 
-      <Text style={styles.phonetic}>{block?.phonetic}</Text>
+      {showPhonetic && (  // ✅ CONDITIONAL RENDER
+        <Text style={styles.phonetic}>{block?.phonetic}</Text>
+      )}
 
       <TouchableOpacity onPress={onPlayAudio}>
         <Text style={styles.foreign}>{block?.foreign}</Text>

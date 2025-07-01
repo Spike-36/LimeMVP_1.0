@@ -140,9 +140,13 @@ export default function PracticeListenScreen() {
           onPlayAudio={() => {}}
           showStars={false}
           showInstruction={!showAnswer}
+          showPhonetic={showAnswer} // 👈 Only show phonetic in reveal
         />
 
-        <TouchableOpacity style={styles.nextButton} onPress={showAnswer ? handleNext : () => setShowAnswer(true)}>
+        <TouchableOpacity
+          style={styles.nextButton}
+          onPress={showAnswer ? handleNext : () => setShowAnswer(true)}
+        >
           <Text style={styles.buttonText}>{showAnswer ? 'Next' : 'Show Answer'}</Text>
         </TouchableOpacity>
       </View>

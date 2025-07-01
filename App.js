@@ -1,5 +1,3 @@
-// App.js (Updated to include hidden Find stack route)
-
 import { Entypo, Feather, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useEffect } from 'react';
 
 import ExploreStack from './screens/ExploreStack';
-import FindStack from './screens/FindStack'; // ✅ NEW IMPORT
+import FindStack from './screens/FindStack'; // ✅ VoiceSearch + FindWordRecord live here
 import LearnWordScreen from './screens/LearnWordScreen';
 import PracticeListenScreen from './screens/PracticeListenScreen';
 import PracticeSpeakScreen from './screens/PracticeSpeakScreen';
@@ -20,7 +18,9 @@ export default function App() {
     (async () => {
       try {
         const saved = await AsyncStorage.getItem('savedWords');
-        console.log('❤️ Saved Words:', JSON.parse(saved));
+        if (saved) {
+          console.log('❤️ Saved Words:', JSON.parse(saved));
+        }
       } catch (err) {
         console.error('⚠️ Failed to load savedWords:', err);
       }
@@ -85,11 +85,14 @@ export default function App() {
           }}
         />
 
-        {/* ✅ Hidden route to support navigation to FindStack without a visible tab */}
+        {/* ✅ Hidden entry point for VoiceSearch / FindWordRecord */}
         <Tab.Screen
           name="Find"
           component={FindStack}
-          options={{ tabBarButton: () => null }}
+          options={{
+            tabBarButton: () => null,
+            tabBarItemStyle: { display: 'none' }, // ✅ prevent ghost tab layout
+          }}
         />
       </Tab.Navigator>
     </NavigationContainer>

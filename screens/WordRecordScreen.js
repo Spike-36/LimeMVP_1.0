@@ -112,7 +112,7 @@ export default function WordRecordScreen() {
           onPlayAudio={playAudio}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onShowTip={() => setShowTip(true)}
-          onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
+          onPressFind={() => navigation.navigate('VoiceSearch')}
         />
 
         {wordId && mode === 'explore' && stage === 0 && (

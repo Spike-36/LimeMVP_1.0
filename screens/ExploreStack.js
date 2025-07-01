@@ -1,3 +1,4 @@
+// screens/ExploreStack.js
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ExploreListScreen from './ExploreListScreen';
 import WordRecordScreen from './WordRecordScreen';
