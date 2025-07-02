@@ -1,17 +1,16 @@
-// PracticeSpeakScreen.js (with auto-play native audio)
-import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import { useCallback, useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
-import ProgressSelector from '../components/ProgressSelector';
-import RecorderBlock from '../components/RecorderBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
+
+console.log('📢 Speak screen loaded');
 
 function shuffleArray(array) {
   return array
@@ -20,120 +19,102 @@ function shuffleArray(array) {
     .map(({ value }) => value);
 }
 
-const delay = (ms) => new Promise(res => setTimeout(res, ms));
-
 export default function PracticeSpeakScreen() {
+  const navigation = useNavigation();
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [userRecordingUri, setUserRecordingUri] = useState(null);
   const [showTip, setShowTip] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
   const [progress, setProgress] = useState({});
-  const [nativeSound, setNativeSound] = useState(null);
+  const [sound, setSound] = useState(null);
 
   const current = shuffledBlocks[currentIndex];
-  const asset = current?.audio && audioMap[current.audio];
+  const currentStage = current?.id ? getStage(progress, current.id) : 0;
 
   useFocusEffect(
     useCallback(() => {
       async function loadEligibleWords() {
-        const stored = await loadProgress();
-        const eligible = blocks.filter(b => getStage(stored, b.id) >= 2);
-        setProgress(stored);
+        const progressMap = await loadProgress();
+        const eligible = blocks.filter(b => getStage(progressMap, b.id) === 3);
+
+        setProgress(progressMap);
         setShuffledBlocks(shuffleArray(eligible));
         setCurrentIndex(0);
       }
+
       loadEligibleWords();
     }, [])
   );
 
-  // 🔈 Auto-play native audio on word change
-  useEffect(() => {
+  const playAudio = async () => {
+    const asset = current?.audio && audioMap[current.audio];
     if (!asset) return;
 
+    try {
+      await Audio.setAudioModeAsync({
+        playsInSilentModeIOS: true,
+        allowsRecordingIOS: false,
+      });
+
+      const { sound: newSound } = await Audio.Sound.createAsync(asset);
+      setSound(newSound);
+      await newSound.replayAsync();
+    } catch (err) {
+      console.warn('Audio error:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (!current) return;
+
     const loadAndPlay = async () => {
+      const asset = current.audio && audioMap[current.audio];
+      if (!asset) return;
+
       try {
         await Audio.setAudioModeAsync({
           playsInSilentModeIOS: true,
           allowsRecordingIOS: false,
         });
 
-        const { sound } = await Audio.Sound.createAsync(asset, { volume: 1.0 });
-        setNativeSound(sound);
-        await sound.playAsync();
-        const status = await sound.getStatusAsync();
-        const duration = status?.durationMillis || 2000;
-        await delay(duration + 200);
+        const { sound: newSound } = await Audio.Sound.createAsync(asset);
+        setSound(newSound);
+        await newSound.replayAsync();
       } catch (err) {
-        console.warn('⚠️ Auto-play failed:', err);
+        console.warn('Auto-play error:', err);
       }
     };
 
     loadAndPlay();
 
     return () => {
-      if (nativeSound) {
-        nativeSound.unloadAsync().catch(() => {});
+      if (sound) {
+        sound.unloadAsync().catch(() => {});
       }
     };
   }, [current]);
 
   const handleNext = () => {
-    if (currentIndex === shuffledBlocks.length - 1) {
-      const reshuffled = shuffleArray(shuffledBlocks);
-      setShuffledBlocks(reshuffled);
-      setCurrentIndex(0);
-    } else {
-      setCurrentIndex(prev => prev + 1);
-    }
-
     setShowAnswer(false);
-    setUserRecordingUri(null);
-    setShowEnglish(false);
     setShowTip(false);
+    setShowEnglish(false);
+
+    if (shuffledBlocks.length === 0) return;
+
+    setCurrentIndex((prev) => Math.min(prev + 1, shuffledBlocks.length - 1));
   };
 
-  const handleRecordingFinished = (uri) => {
-    setUserRecordingUri(uri);
-  };
+  const handleStageSelect = async (stage) => {
+    if (!current?.id) return;
 
-  const playNativeAudio = async () => {
-    if (!asset) return;
-    try {
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        allowsRecordingIOS: false,
-      });
-      const { sound } = await Audio.Sound.createAsync(asset, { volume: 1.0 });
-      await sound.playAsync();
-      const status = await sound.getStatusAsync();
-      const duration = status?.durationMillis || 2000;
-      await delay(duration + 200);
-      await sound.unloadAsync();
-    } catch (err) {
-      console.warn('❌ Failed to play native audio:', err);
-    }
-  };
+    const wordId = current.id;
+    await updateWordStage(wordId, stage);
+    const updated = await loadProgress();
+    setProgress(updated);
 
-  const playUserRecording = async () => {
-    if (!userRecordingUri) return;
-    try {
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        allowsRecordingIOS: false,
-      });
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: userRecordingUri },
-        { volume: 1.0 }
-      );
-      await sound.playAsync();
-      const status = await sound.getStatusAsync();
-      const duration = status?.durationMillis || 2000;
-      await delay(duration + 200);
-      await sound.unloadAsync();
-    } catch (err) {
-      console.warn('❌ Failed to play user recording:', err);
+    if (stage > currentStage) {
+      setShuffledBlocks((prev) => prev.filter((b) => b.id !== wordId));
     }
   };
 
@@ -141,7 +122,7 @@ export default function PracticeSpeakScreen() {
     return (
       <View style={styles.centeredContainer}>
         <Text style={styles.emptyText}>
-          No eligible words. Go to Explore → tap stars → then mark as 'Familiar'.
+          No eligible words. Go to Explore → tap star → then mark as Confident.
         </Text>
       </View>
     );
@@ -149,90 +130,37 @@ export default function PracticeSpeakScreen() {
 
   return (
     <View style={styles.container}>
-      <WordRecordLayout
-        block={current}
-        imageAsset={imageMap[current.image]}
-        showImage={true}
-        showTipIcon={showAnswer}
-        showInfoIcon={true}
-        showEnglish={showEnglish}
-        hideThaiText={!showAnswer}
-        hidePhonetic={!showAnswer}
-        hideAudioButton={true}
-        onToggleEnglish={() => setShowEnglish(!showEnglish)}
-        onShowTip={() => setShowTip(true)}
-        bottomContent={
-          showAnswer ? (
-            <View>
-              <View style={styles.iconButtonRow}>
-                <View style={styles.iconWrapper}>
-                  <Ionicons
-                    name="play-circle"
-                    size={64}
-                    color="#1E90FF"
-                    onPress={playNativeAudio}
-                  />
-                </View>
-                <View style={styles.iconWrapper}>
-                  <Ionicons
-                    name="play-circle"
-                    size={64}
-                    color="#32CD32"
-                    onPress={playUserRecording}
-                  />
-                </View>
-              </View>
+      <View style={styles.topHalf}>
+        <WordRecordLayout
+          block={current}
+          imageAsset={imageMap[current.image]}
+          showImage={true}
+          showTipIcon={false}
+          showInfoIcon={true}
+          showEnglish={showEnglish}
+          hideThaiText={true}
+          hidePhonetic={true}
+          hideAudioButton={true}
+          onPlayAudio={playAudio}
+          onToggleEnglish={() => setShowEnglish(true)}
+          onShowTip={() => setShowTip(true)}
+          onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
+        />
+        {!showAnswer && (
+          <View style={styles.japaneseWrapper}>
+            <Text style={styles.japaneseText}>{current?.foreign}</Text>
+          </View>
+        )}
+      </View>
 
-              <ProgressSelector
-                currentStage={getStage(progress, current.id)}
-                onSelect={async (stage) => {
-                  await updateWordStage(current.id, stage);
-                  const updated = await loadProgress();
-                  setProgress(updated);
-                }}
-              />
-
-              <View style={styles.buttonRow}>
-                <Button title="Next" onPress={handleNext} />
-              </View>
-            </View>
-          ) : userRecordingUri ? (
-            <View style={styles.iconButtonRow}>
-              <View style={styles.iconWrapper}>
-                <Ionicons
-                  name="play-circle"
-                  size={64}
-                  color="#1E90FF"
-                  onPress={playUserRecording}
-                />
-              </View>
-              <View style={styles.iconWrapper}>
-                <Ionicons
-                  name="mic-circle"
-                  size={64}
-                  color="#FFA500"
-                  onPress={() => setUserRecordingUri(null)}
-                />
-              </View>
-            </View>
-          ) : (
-            <RecorderBlock onRecordingFinished={handleRecordingFinished} />
-          )
-        }
-      />
-
-      {showTip && (
-        <View style={styles.tipOverlay}>
-          <Text style={styles.tipText}>{current.tip}</Text>
-          <Text style={styles.closeTip} onPress={() => setShowTip(false)}>✕</Text>
-        </View>
-      )}
-
-      {!showAnswer && (
-        <View style={styles.buttonContainer}>
-          <Button title="Show Answer" onPress={() => setShowAnswer(true)} />
-        </View>
-      )}
+      <View style={styles.buttonArea}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={showAnswer ? handleNext : () => setShowAnswer(true)}
+        >
+          <Text style={styles.buttonText}>{showAnswer ? 'Next' : 'Show Answer'}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -241,6 +169,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  topHalf: {
+    height: '58%',
+    position: 'relative',
+  },
+  japaneseWrapper: {
+    position: 'absolute',
+    bottom: -36,
+    width: '100%',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  japaneseText: {
+    color: 'white',
+    fontSize: 38,
+    fontWeight: '600',
+    textShadowColor: 'black',
+    textShadowRadius: 4,
+  },
+  buttonArea: {
+    position: 'absolute',
+    bottom: 28,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  button: {
+    backgroundColor: '#444',
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
   },
   centeredContainer: {
     flex: 1,
@@ -253,46 +218,5 @@ const styles = StyleSheet.create({
     color: 'gray',
     textAlign: 'center',
     paddingHorizontal: 24,
-  },
-  tipOverlay: {
-    position: 'absolute',
-    top: '30%',
-    left: 20,
-    right: 20,
-    backgroundColor: '#333',
-    padding: 20,
-    borderRadius: 12,
-    zIndex: 999,
-  },
-  tipText: {
-    color: 'white',
-    fontSize: 18,
-    textAlign: 'center',
-  },
-  closeTip: {
-    color: '#FFD700',
-    fontSize: 22,
-    textAlign: 'center',
-    marginTop: 16,
-  },
-  buttonContainer: {
-    marginBottom: 30,
-    alignItems: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-    marginBottom: 30,
-  },
-  iconButtonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 30,
-    paddingHorizontal: 60,
-  },
-  iconWrapper: {
-    flex: 1,
-    alignItems: 'center',
   },
 });
