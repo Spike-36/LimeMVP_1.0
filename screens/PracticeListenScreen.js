@@ -1,14 +1,13 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Audio } from 'expo-av';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import StageAdvanceButton from '../components/StageAdvanceButton';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
+import useForeignAudio from '../hooks/useForeignAudio';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 function shuffleArray(array) {
@@ -19,18 +18,16 @@ function shuffleArray(array) {
 }
 
 export default function PracticeListenScreen() {
-  console.log('🎧 PracticeListenScreen mounted');
-
   const navigation = useNavigation();
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState({});
-  const [sound, setSound] = useState(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
 
   const current = shuffledBlocks[currentIndex];
   const currentStage = getStage(progress, current?.id);
+  const { playAudio, isLoaded } = useForeignAudio(current);
 
   useFocusEffect(
     useCallback(() => {
@@ -53,30 +50,10 @@ export default function PracticeListenScreen() {
   }, [currentIndex]);
 
   useEffect(() => {
-    if (!current) return;
-
-    const play = async () => {
-      const asset = current.audio && audioMap[current.audio];
-      if (!asset) return;
-
-      try {
-        await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
-        const { sound: newSound } = await Audio.Sound.createAsync(asset);
-        setSound(newSound);
-        await newSound.replayAsync();
-      } catch (err) {
-        console.warn('Audio playback error:', err);
-      }
-    };
-
-    play();
-
-    return () => {
-      if (sound) {
-        sound.unloadAsync().catch(() => {});
-      }
-    };
-  }, [current]);
+    if (current && isLoaded) {
+      playAudio();
+    }
+  }, [current, isLoaded]);
 
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % shuffledBlocks.length);
@@ -137,10 +114,10 @@ export default function PracticeListenScreen() {
           block={current}
           stage={currentStage}
           onStageChange={handleStageSelect}
-          onPlayAudio={() => {}}
+          onPlayAudio={playAudio}
           showStars={false}
           showInstruction={!showAnswer}
-          showPhonetic={showAnswer} // 👈 Only show phonetic in reveal
+          showPhonetic={showAnswer}
         />
 
         <TouchableOpacity

@@ -1,11 +1,13 @@
+// App.js
 import { Entypo, Feather, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import { Audio } from 'expo-av';
 import { useEffect } from 'react';
 
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ExploreStack from './screens/ExploreStack';
-import FindStack from './screens/FindStack'; // ✅ VoiceSearch + FindWordRecord live here
+import FindStack from './screens/FindStack';
 import LearnWordScreen from './screens/LearnWordScreen';
 import PracticeListenScreen from './screens/PracticeListenScreen';
 import PracticeSpeakScreen from './screens/PracticeSpeakScreen';
@@ -15,16 +17,27 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   useEffect(() => {
-    (async () => {
+    const init = async () => {
       try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          playsInSilentModeIOS: true,
+          staysActiveInBackground: false,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+        });
+        console.log('✅ Global audio mode set');
+
         const saved = await AsyncStorage.getItem('savedWords');
         if (saved) {
           console.log('❤️ Saved Words:', JSON.parse(saved));
         }
       } catch (err) {
-        console.error('⚠️ Failed to load savedWords:', err);
+        console.error('⚠️ App init failed:', err);
       }
-    })();
+    };
+
+    init();
   }, []);
 
   return (
@@ -84,14 +97,12 @@ export default function App() {
             ),
           }}
         />
-
-        {/* ✅ Hidden entry point for VoiceSearch / FindWordRecord */}
         <Tab.Screen
           name="Find"
           component={FindStack}
           options={{
             tabBarButton: () => null,
-            tabBarItemStyle: { display: 'none' }, // ✅ prevent ghost tab layout
+            tabBarItemStyle: { display: 'none' },
           }}
         />
       </Tab.Navigator>

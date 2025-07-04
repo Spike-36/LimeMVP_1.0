@@ -1,15 +1,14 @@
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import StageAdvanceButton from '../components/StageAdvanceButton';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
+import useForeignAudio from '../hooks/useForeignAudio';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function WordRecordScreen() {
@@ -28,58 +27,25 @@ export default function WordRecordScreen() {
   const word = words[index];
   const wordId = word?.id;
 
-  const [sound, setSound] = useState(null);
   const [showEnglish, setShowEnglish] = useState(false);
   const [showTip, setShowTip] = useState(false);
   const [progress, setProgress] = useState({});
 
   const stage = getStage(progress, wordId);
+  const { playAudio, isLoaded } = useForeignAudio(word);
 
   useEffect(() => {
     loadProgress().then(setProgress);
   }, []);
 
   useEffect(() => {
-    let loadedSound;
-    const audioAsset = word?.audio && audioMap[word.audio];
-    if (!audioAsset) return;
-
-    const loadAudio = async () => {
-      try {
-        const { sound: newSound } = await Audio.Sound.createAsync(audioAsset);
-        setSound(newSound);
-        loadedSound = newSound;
-      } catch (err) {
-        console.warn('Audio preload error:', err);
-      }
-    };
-
-    loadAudio();
-
-    return () => {
-      if (loadedSound) loadedSound.unloadAsync();
-    };
-  }, [word?.audio]);
-
-  useEffect(() => {
-    if (sound) {
-      sound.replayAsync().catch(err => console.warn('Auto-play error:', err));
+    if (word && isLoaded) {
+      playAudio();
     }
-  }, [sound]);
-
-  const playAudio = async () => {
-    if (sound) {
-      try {
-        await sound.replayAsync();
-      } catch (e) {
-        console.warn('Playback error:', e);
-      }
-    }
-  };
+  }, [word, isLoaded]);
 
   const handleSetStage = async (newStage) => {
     if (!wordId) return;
-
     await updateWordStage(wordId, newStage);
     const updated = await loadProgress();
     setProgress(updated);
@@ -112,7 +78,7 @@ export default function WordRecordScreen() {
           onPlayAudio={playAudio}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onShowTip={() => setShowTip(true)}
-          onPressFind={() => navigation.navigate('VoiceSearch')}
+          onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         />
 
         {wordId && mode === 'explore' && stage === 0 && (

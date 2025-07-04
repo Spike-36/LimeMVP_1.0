@@ -1,53 +1,25 @@
-// screens/FindWordRecord.js
 import { useNavigation } from '@react-navigation/native';
-import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
+import useForeignAudio from '../hooks/useForeignAudio';
 
 export default function FindWordRecord({ route }) {
   const navigation = useNavigation();
   const word = route.params?.word;
-  const [sound, setSound] = useState(null);
   const [showEnglish, setShowEnglish] = useState(false);
   const [showTip, setShowTip] = useState(false);
 
-  const audioAsset = word ? audioMap[word.audio] : null;
   const imageAsset = word ? imageMap[word.image] : null;
+  const { playAudio, isLoaded } = useForeignAudio(word);
 
   useEffect(() => {
-    let loadedSound;
-    const loadAudio = async () => {
-      if (audioAsset) {
-        try {
-          const { sound: newSound } = await Audio.Sound.createAsync(audioAsset);
-          setSound(newSound);
-          loadedSound = newSound;
-        } catch (err) {
-          console.warn('❌ Failed to preload audio:', err);
-        }
-      }
-    };
-    loadAudio();
-    return () => {
-      if (loadedSound) loadedSound.unloadAsync();
-    };
-  }, [word?.audio]);
-
-  const playAudio = async () => {
-    if (sound) {
-      try {
-        await sound.replayAsync();
-      } catch (e) {
-        console.warn('⚠️ Audio playback error:', e);
-      }
-    }
-  };
+    if (word && isLoaded) playAudio();
+  }, [word, isLoaded]);
 
   if (!word) {
     return (

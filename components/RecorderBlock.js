@@ -1,102 +1,101 @@
 // components/RecorderBlock.js
-import { Ionicons } from '@expo/vector-icons';
-import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
-import { useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
+import { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function RecorderBlock({ onRecordingFinished }) {
-  const recordingRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [recording, setRecording] = useState(null);
+  const [error, setError] = useState('');
+  const recordingRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (recordingRef.current) {
+        recordingRef.current.stopAndUnloadAsync().catch(() => {});
+      }
+    };
+  }, []);
 
   const startRecording = async () => {
+    if (isRecording) return;
+    setIsRecording(true);
+    setError('');
+
     try {
-      const { status } = await Audio.requestPermissionsAsync();
-      if (status !== 'granted') {
-        console.warn('🎙 Permission to record not granted');
-        return;
-      }
-
-      if (recordingRef.current) {
-        try {
-          await recordingRef.current.stopAndUnloadAsync();
-        } catch (e) {
-          console.log('ℹ️ Previous recording cleanup failed or already stopped.');
-        }
-        recordingRef.current = null;
-      }
-
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
-        interruptionModeIOS: InterruptionModeIOS.DoNotMix,
-        interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
-        shouldDuckAndroid: true,
       });
 
-      const recording = new Audio.Recording();
-      await recording.prepareToRecordAsync({
-        android: {
-          extension: '.m4a',
-          outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
-          audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
-          sampleRate: 44100,
-          numberOfChannels: 2,
-          bitRate: 128000,
-        },
-        ios: {
-          extension: '.m4a',
-          audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
-          sampleRate: 44100,
-          numberOfChannels: 2,
-          bitRate: 128000,
-          linearPCMBitDepth: 16,
-          linearPCMIsBigEndian: false,
-          linearPCMIsFloat: false,
-        },
-        web: undefined,
-      });
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+      );
 
-      await recording.startAsync();
       recordingRef.current = recording;
-      setIsRecording(true);
+      setRecording(recording);
+      await recording.startAsync();
     } catch (err) {
       console.error('❌ Failed to start recording:', err);
+      setError('Failed to start recording');
       setIsRecording(false);
     }
   };
 
   const stopRecording = async () => {
     try {
-      if (!recordingRef.current) return;
+      const rec = recordingRef.current;
+      if (!rec) return;
 
-      await recordingRef.current.stopAndUnloadAsync();
-      const uri = recordingRef.current.getURI();
+      await rec.stopAndUnloadAsync();
+      const uri = rec.getURI();
+      console.log('✅ Recording saved at:', uri);
+      onRecordingFinished(uri);
+      setRecording(null);
       recordingRef.current = null;
-      setIsRecording(false);
-
-      if (onRecordingFinished) {
-        onRecordingFinished(uri);
-      }
     } catch (err) {
       console.error('❌ Failed to stop recording:', err);
+      setError('Failed to stop recording');
+    } finally {
+      setIsRecording(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Ionicons
-        name={isRecording ? 'stop-circle' : 'mic-circle'}
-        size={64}
-        color={isRecording ? '#FF6347' : '#32CD32'}
+    <View style={styles.wrapper}>
+      <TouchableOpacity
+        style={[
+          styles.recordButton,
+          isRecording ? styles.recording : styles.idle,
+        ]}
         onPress={isRecording ? stopRecording : startRecording}
-      />
+      >
+        <FontAwesome
+          name="microphone"
+          size={28}
+          color={isRecording ? 'white' : 'black'}
+        />
+      </TouchableOpacity>
+      {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginVertical: 20,
-    alignItems: 'center',
+  wrapper: { alignItems: 'center' },
+  recordButton: {
+    borderRadius: 50,
+    padding: 20,
+  },
+  idle: {
+    backgroundColor: '#FFD700', // yellow
+  },
+  recording: {
+    backgroundColor: 'red',
+  },
+  error: {
+    color: 'red',
+    marginTop: 6,
   },
 });

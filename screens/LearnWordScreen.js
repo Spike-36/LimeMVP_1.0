@@ -1,23 +1,21 @@
 import { Feather } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import StageAdvanceButton from '../components/StageAdvanceButton';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
+import useForeignAudio from '../hooks/useForeignAudio';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function LearnWordScreen() {
   const navigation = useNavigation();
   const [eligibleWords, setEligibleWords] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [sound, setSound] = useState(null);
   const [showEnglish, setShowEnglish] = useState(false);
   const [showTip, setShowTip] = useState(false);
   const [progress, setProgress] = useState({});
@@ -26,12 +24,13 @@ export default function LearnWordScreen() {
   const wordId = word?.id;
   const stage = getStage(progress, wordId);
 
+  const { playAudio, isLoaded } = useForeignAudio(word);
+
   useFocusEffect(
     useCallback(() => {
       const fetchProgress = async () => {
         const stored = await loadProgress();
         const filtered = blocks.filter(b => getStage(stored, b.id) === 1);
-        console.log('🧠 Eligible stage-1 words:', filtered.map(w => w.id));
         setProgress(stored);
         setEligibleWords(filtered);
         setCurrentIndex(0);
@@ -46,42 +45,10 @@ export default function LearnWordScreen() {
   }, [currentIndex]);
 
   useEffect(() => {
-    let loadedSound;
-    const audioAsset = word?.audio && audioMap[word.audio];
-    if (!audioAsset) return;
-
-    const loadAudio = async () => {
-      try {
-        const { sound: newSound } = await Audio.Sound.createAsync(audioAsset);
-        setSound(newSound);
-        loadedSound = newSound;
-      } catch (err) {
-        console.warn('Audio preload error:', err);
-      }
-    };
-
-    loadAudio();
-
-    return () => {
-      if (loadedSound) loadedSound.unloadAsync();
-    };
-  }, [word?.audio]);
-
-  useEffect(() => {
-    if (sound) {
-      sound.replayAsync().catch(err => console.warn('Auto-play error:', err));
+    if (word && isLoaded) {
+      playAudio();
     }
-  }, [sound]);
-
-  const playAudio = async () => {
-    if (sound) {
-      try {
-        await sound.replayAsync();
-      } catch (e) {
-        console.warn('Playback error:', e);
-      }
-    }
-  };
+  }, [word, isLoaded]);
 
   const handleSetStage = async (newStage) => {
     if (!wordId) return;
@@ -91,9 +58,7 @@ export default function LearnWordScreen() {
     const updatedEligible = blocks.filter(b => getStage(updated, b.id) === 1);
     setProgress(updated);
     setEligibleWords(updatedEligible);
-
-    const remaining = updatedEligible.filter(w => w.id !== wordId);
-    setCurrentIndex(remaining.length > 0 ? 0 : 0);
+    setCurrentIndex(updatedEligible.findIndex(w => w.id === wordId) || 0);
   };
 
   const goToPrev = () => {
