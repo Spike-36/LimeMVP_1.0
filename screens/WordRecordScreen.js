@@ -115,7 +115,8 @@ export default function WordRecordScreen() {
             name="chevron-left"
             size={48}
             color={index === 0 ? 'gray' : '#888'}
-            style={{ transform: [{ scaleY: 1.4 }] }}
+           style={{ transform: [{ scaleX: 1 }, { scaleY: 1.4 }] }}
+
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={goToNext} disabled={index >= words.length - 1}>
@@ -123,7 +124,8 @@ export default function WordRecordScreen() {
             name="chevron-right"
             size={48}
             color={index >= words.length - 1 ? 'gray' : '#888'}
-            style={{ transform: [{ scaleY: 1.4 }] }}
+            style={{ transform: [{ scaleX: 1 }, { scaleY: 1.4 }] }}
+
           />
         </TouchableOpacity>
       </View>
@@ -173,7 +175,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingBottom: 0,
     position: 'absolute',
-    bottom: 0,
+    bottom: 40,
     left: 0,
     right: 0,
     zIndex: 10,

@@ -56,13 +56,16 @@ export default function PracticeSpeakScreen() {
   const playRecording = async () => {
     if (!recordingUri) return;
     try {
+      console.log('🎧 Attempting playback of user recording');
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
-        interruptionModeIOS: 1,
-        interruptionModeAndroid: 1,
+        shouldDuckAndroid: false,
+        interruptionModeIOS: 1,     // MIX_WITH_OTHERS for iOS
+        interruptionModeAndroid: 1, // MIX_WITH_OTHERS for Android
       });
+      console.log('✅ Global audio mode set');
 
       const { sound } = await Audio.Sound.createAsync(
         { uri: recordingUri },
@@ -71,7 +74,7 @@ export default function PracticeSpeakScreen() {
       setPlaybackSound(sound);
       await sound.playAsync();
     } catch (err) {
-      console.error('Playback error:', err);
+      console.error('❌ Playback error:', err);
     }
   };
 

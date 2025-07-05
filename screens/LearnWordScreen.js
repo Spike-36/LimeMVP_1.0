@@ -12,6 +12,13 @@ import blocks from '../data/blocks.json';
 import useForeignAudio from '../hooks/useForeignAudio';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
+function shuffleArray(array) {
+  return array
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
+
 export default function LearnWordScreen() {
   const navigation = useNavigation();
   const [eligibleWords, setEligibleWords] = useState([]);
@@ -23,14 +30,13 @@ export default function LearnWordScreen() {
   const word = eligibleWords[currentIndex];
   const wordId = word?.id;
   const stage = getStage(progress, wordId);
-
   const { playAudio, isLoaded } = useForeignAudio(word);
 
   useFocusEffect(
     useCallback(() => {
       const fetchProgress = async () => {
         const stored = await loadProgress();
-        const filtered = blocks.filter(b => getStage(stored, b.id) === 1);
+        const filtered = shuffleArray(blocks.filter(b => getStage(stored, b.id) === 1));
         setProgress(stored);
         setEligibleWords(filtered);
         setCurrentIndex(0);
@@ -52,21 +58,20 @@ export default function LearnWordScreen() {
 
   const handleSetStage = async (newStage) => {
     if (!wordId) return;
-
     await updateWordStage(wordId, newStage);
     const updated = await loadProgress();
-    const updatedEligible = blocks.filter(b => getStage(updated, b.id) === 1);
+    const filtered = shuffleArray(blocks.filter(b => getStage(updated, b.id) === 1));
     setProgress(updated);
-    setEligibleWords(updatedEligible);
-    setCurrentIndex(updatedEligible.findIndex(w => w.id === wordId) || 0);
+    setEligibleWords(filtered);
+    setCurrentIndex(0);
   };
 
   const goToPrev = () => {
-    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
+    setCurrentIndex(prev => (prev === 0 ? eligibleWords.length - 1 : prev - 1));
   };
 
   const goToNext = () => {
-    if (currentIndex < eligibleWords.length - 1) setCurrentIndex(currentIndex + 1);
+    setCurrentIndex(prev => (prev + 1) % eligibleWords.length);
   };
 
   if (!word) {
@@ -125,19 +130,19 @@ export default function LearnWordScreen() {
       )}
 
       <View style={styles.navButtons}>
-        <TouchableOpacity onPress={goToPrev} disabled={currentIndex === 0}>
+        <TouchableOpacity onPress={goToPrev}>
           <Feather
             name="chevron-left"
             size={48}
-            color={currentIndex === 0 ? 'gray' : '#888'}
-            style={{ transform: [{ scaleY: 1.4 }] }}
+            color="#888"
+            style={{ transform: [{ scaleY: 1.55 }] }}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={goToNext} disabled={currentIndex >= eligibleWords.length - 1}>
+        <TouchableOpacity onPress={goToNext}>
           <Feather
             name="chevron-right"
             size={48}
-            color={currentIndex >= eligibleWords.length - 1 ? 'gray' : '#888'}
+            color="#888"
             style={{ transform: [{ scaleY: 1.4 }] }}
           />
         </TouchableOpacity>
@@ -194,7 +199,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingBottom: 0,
     position: 'absolute',
-    bottom: 0,
+    bottom: 40,
     left: 0,
     right: 0,
     zIndex: 10,

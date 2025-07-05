@@ -24,6 +24,7 @@ export default function PracticeListenScreen() {
   const [progress, setProgress] = useState({});
   const [showAnswer, setShowAnswer] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0); // 🔁
 
   const current = shuffledBlocks[currentIndex];
   const currentStage = getStage(progress, current?.id);
@@ -41,7 +42,7 @@ export default function PracticeListenScreen() {
       }
 
       loadEligibleWords();
-    }, [])
+    }, [refreshKey]) // ✅ respond to refresh
   );
 
   useEffect(() => {
@@ -67,10 +68,8 @@ export default function PracticeListenScreen() {
 
     setProgress(updated);
     setShuffledBlocks(shuffleArray(eligible));
-    setCurrentIndex((prev) => {
-      const nextIndex = prev >= eligible.length ? eligible.length - 1 : prev;
-      return Math.max(0, nextIndex);
-    });
+    setCurrentIndex(0); // 🔄 reset to start
+    setRefreshKey(prev => prev + 1); // 🔁 trigger reload
   };
 
   if (!current) {
