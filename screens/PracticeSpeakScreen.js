@@ -56,17 +56,14 @@ export default function PracticeSpeakScreen() {
   const playRecording = async () => {
     if (!recordingUri) return;
     try {
-      console.log('🎧 Attempting playback of user recording');
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
         shouldDuckAndroid: false,
-        interruptionModeIOS: 1,     // MIX_WITH_OTHERS for iOS
-        interruptionModeAndroid: 1, // MIX_WITH_OTHERS for Android
+        interruptionModeIOS: 1,
+        interruptionModeAndroid: 1,
       });
-      console.log('✅ Global audio mode set');
-
       const { sound } = await Audio.Sound.createAsync(
         { uri: recordingUri },
         { volume: 1.0, shouldPlay: true }
@@ -147,18 +144,22 @@ export default function PracticeSpeakScreen() {
         {!showAnswer && !recordingUri && (
           <>
             <Text style={styles.japaneseText}>{current?.foreign}</Text>
-            <RecorderBlock onRecordingFinished={setRecordingUri} />
+            <View style={styles.offsetRow}>
+              <RecorderBlock onRecordingFinished={setRecordingUri} />
+            </View>
           </>
         )}
 
         {!showAnswer && recordingUri && (
           <>
             <Text style={styles.japaneseText}>{current?.foreign}</Text>
-            <View style={styles.recordingRow}>
-              <RecorderBlock onRecordingFinished={setRecordingUri} />
-              <TouchableOpacity style={styles.playButton} onPress={playRecording}>
-                <FontAwesome name="play" size={28} color="black" />
-              </TouchableOpacity>
+            <View style={styles.offsetRow}>
+              <View style={styles.recordingRow}>
+                <RecorderBlock onRecordingFinished={setRecordingUri} />
+                <TouchableOpacity style={styles.playButton} onPress={playRecording}>
+                  <FontAwesome name="play" size={28} color="black" />
+                </TouchableOpacity>
+              </View>
             </View>
           </>
         )}
@@ -211,10 +212,13 @@ const styles = StyleSheet.create({
     textShadowColor: 'black',
     textShadowRadius: 4,
   },
+  offsetRow: {
+    marginTop: 40,
+  },
   recordingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 20,
+    gap: 60,
   },
   playButton: {
     backgroundColor: '#ADD8E6',
