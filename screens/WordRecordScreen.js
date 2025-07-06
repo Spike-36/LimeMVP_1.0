@@ -5,13 +5,12 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { imageMap } from '../components/imageMap';
-import StageAdvanceButton from '../components/StageAdvanceButton';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import useForeignAudio from '../hooks/useForeignAudio';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
-export default function WordRecordScreen() {
+export default function WordRecordScreenMVP() {
   const navigation = useNavigation();
   const route = useRoute();
   const { words, index = 0, mode = 'explore' } = route.params || {};
@@ -51,6 +50,13 @@ export default function WordRecordScreen() {
     setProgress(updated);
   };
 
+  const handleAdvanceFromStage0 = async () => {
+    await updateWordStage(wordId, 2); // ✅ TEMP: Skip Learn (stage 1)
+    const updated = await loadProgress();
+    setProgress(updated);
+    navigation.navigate('Listen'); // jump straight to Listen tab
+  };
+
   const goToPrev = () => {
     if (index > 0) {
       navigation.push('WordRecord', { words, index: index - 1, mode });
@@ -82,12 +88,11 @@ export default function WordRecordScreen() {
         />
 
         {wordId && mode === 'explore' && stage === 0 && (
-          <StageAdvanceButton
-            wordId={wordId}
-            currentStage={stage}
-            requiredStage={0}
-            onStageChange={handleSetStage}
-          />
+          <TouchableOpacity onPress={handleAdvanceFromStage0}>
+            <View style={styles.advanceButton}>
+              <Text style={styles.advanceText}>Listen</Text>
+            </View>
+          </TouchableOpacity>
         )}
       </View>
 
@@ -115,8 +120,7 @@ export default function WordRecordScreen() {
             name="chevron-left"
             size={48}
             color={index === 0 ? 'gray' : '#888'}
-           style={{ transform: [{ scaleX: 1 }, { scaleY: 1.4 }] }}
-
+            style={{ transform: [{ scaleX: 1 }, { scaleY: 1.4 }] }}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={goToNext} disabled={index >= words.length - 1}>
@@ -125,7 +129,6 @@ export default function WordRecordScreen() {
             size={48}
             color={index >= words.length - 1 ? 'gray' : '#888'}
             style={{ transform: [{ scaleX: 1 }, { scaleY: 1.4 }] }}
-
           />
         </TouchableOpacity>
       </View>
@@ -147,6 +150,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 30,
+  },
+  advanceButton: {
+    backgroundColor: '#FFD700',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+    alignSelf: 'center',
+    marginTop: 12,
+  },
+  advanceText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   tipOverlay: {
     position: 'absolute',

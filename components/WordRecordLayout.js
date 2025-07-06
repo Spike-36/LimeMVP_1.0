@@ -4,7 +4,7 @@ import StageAdvanceButton from './StageAdvanceButton';
 
 const { height: screenHeight } = Dimensions.get('window');
 
-export default function WordRecordLayout({
+export default function WordRecordLayoutMVP({
   block,
   imageAsset,
   showImage = true,
@@ -22,9 +22,9 @@ export default function WordRecordLayout({
   topContent,
   bottomContent,
   showAnswer = true,
-  stage,              // ✅ NEW
-  wordId,             // ✅ NEW
-  onAdvanceStage = () => {},  // ✅ optional callback
+  stage,
+  wordId,
+  onAdvanceStage = () => {},
 }) {
   return (
     <View style={styles.container}>
@@ -33,24 +33,20 @@ export default function WordRecordLayout({
           <Image source={imageAsset} style={styles.image} resizeMode="cover" />
         )}
 
-        {/* Stars on top-left */}
         {stars && <View style={styles.starRow}>{stars}</View>}
 
-        {/* Find icon top-right */}
         {onPressFind && (
           <TouchableOpacity style={styles.findButton} onPress={onPressFind}>
             <Ionicons name="search" size={25} color="white" />
           </TouchableOpacity>
         )}
 
-        {/* EN badge bottom-left */}
         {showInfoIcon && showImage && !showEnglish && (
           <TouchableOpacity style={styles.langBadge} onPress={onToggleEnglish}>
             <Text style={styles.langBadgeText}>EN</Text>
           </TouchableOpacity>
         )}
 
-        {/* English text overlay */}
         {showEnglish && (
           <View style={styles.englishOverlay}>
             <View style={styles.englishBackground}>
@@ -59,12 +55,13 @@ export default function WordRecordLayout({
           </View>
         )}
 
-        {/* ✅ StageAdvanceButton, bottom-right */}
+        {/* ✅ StageAdvanceButton with skipLearn enabled */}
         {typeof stage === 'number' && stage < 4 && wordId && (
           <StageAdvanceButton
             wordId={wordId}
             currentStage={stage}
             onStageChange={onAdvanceStage}
+            skipLearn={true} // ✅ MVP logic: skip stage 1
           />
         )}
       </View>

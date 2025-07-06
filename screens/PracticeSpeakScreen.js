@@ -1,11 +1,8 @@
-import { FontAwesome } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Audio } from 'expo-av';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { imageMap } from '../components/imageMap';
-import RecorderBlock from '../components/RecorderBlock';
 import StageAdvanceButton from '../components/StageAdvanceButton';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
@@ -26,12 +23,9 @@ export default function PracticeSpeakScreen() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
   const [progress, setProgress] = useState({});
-  const [recordingUri, setRecordingUri] = useState(null);
-  const [playbackSound, setPlaybackSound] = useState(null);
 
   const current = shuffledBlocks[currentIndex];
   const currentStage = current?.id ? getStage(progress, current.id) : 0;
-
   const { playAudio, isLoaded } = useForeignAudio(current);
 
   useFocusEffect(
@@ -53,38 +47,9 @@ export default function PracticeSpeakScreen() {
     }
   }, [current, isLoaded, showAnswer]);
 
-  const playRecording = async () => {
-    if (!recordingUri) return;
-    try {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: false,
-        interruptionModeIOS: 1,
-        interruptionModeAndroid: 1,
-      });
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: recordingUri },
-        { volume: 1.0, shouldPlay: true }
-      );
-      setPlaybackSound(sound);
-      await sound.playAsync();
-    } catch (err) {
-      console.error('❌ Playback error:', err);
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (playbackSound) playbackSound.unloadAsync().catch(() => {});
-    };
-  }, [current]);
-
   const handleNext = () => {
     setShowAnswer(false);
     setShowEnglish(false);
-    setRecordingUri(null);
     if (shuffledBlocks.length === 0) return;
     setCurrentIndex((prev) => Math.min(prev + 1, shuffledBlocks.length - 1));
   };
@@ -105,7 +70,7 @@ export default function PracticeSpeakScreen() {
     return (
       <View style={styles.centeredContainer}>
         <Text style={styles.emptyText}>
-          No eligible words. Go to Explore → tap star → then mark as Confident.
+          No eligible words. Go to Level 1 → tap star → then mark as Confident.
         </Text>
       </View>
     );
@@ -141,44 +106,15 @@ export default function PracticeSpeakScreen() {
       </View>
 
       <View style={styles.centeredContent}>
-        {!showAnswer && !recordingUri && (
-          <>
-            <Text style={styles.japaneseText}>{current?.foreign}</Text>
-            <View style={styles.offsetRow}>
-              <RecorderBlock onRecordingFinished={setRecordingUri} />
-            </View>
-          </>
-        )}
-
-        {!showAnswer && recordingUri && (
-          <>
-            <Text style={styles.japaneseText}>{current?.foreign}</Text>
-            <View style={styles.offsetRow}>
-              <View style={styles.recordingRow}>
-                <RecorderBlock onRecordingFinished={setRecordingUri} />
-                <TouchableOpacity style={styles.playButton} onPress={playRecording}>
-                  <FontAwesome name="play" size={28} color="black" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </>
-        )}
-
-        {showAnswer && (
+        {showAnswer ? (
           <>
             <Text style={styles.phoneticText}>{current?.phonetic}</Text>
             <TouchableOpacity onPress={playAudio}>
               <Text style={styles.japaneseText}>{current?.foreign}</Text>
             </TouchableOpacity>
-            <View style={styles.recordingRow}>
-              <RecorderBlock onRecordingFinished={setRecordingUri} />
-              {recordingUri && (
-                <TouchableOpacity style={styles.playButton} onPress={playRecording}>
-                  <FontAwesome name="play" size={28} color="black" />
-                </TouchableOpacity>
-              )}
-            </View>
           </>
+        ) : (
+          <Text style={styles.japaneseText}>{current?.foreign}</Text>
         )}
       </View>
 
@@ -211,19 +147,6 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     textShadowColor: 'black',
     textShadowRadius: 4,
-  },
-  offsetRow: {
-    marginTop: 40,
-  },
-  recordingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 60,
-  },
-  playButton: {
-    backgroundColor: '#ADD8E6',
-    borderRadius: 50,
-    padding: 20,
   },
   buttonArea: {
     position: 'absolute',

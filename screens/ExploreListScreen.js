@@ -15,7 +15,7 @@ import WordListItem from '../components/WordListItem';
 import blocks from '../data/blocks.json';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
-export default function ExploreListScreen() {
+export default function ExploreListScreenMVP() {
   const navigation = useNavigation();
   const scrollRef = useRef(null);
   const [progress, setProgress] = useState({});
@@ -39,7 +39,7 @@ export default function ExploreListScreen() {
     }
   }, []);
 
-  const handleToggleStage1 = async (id) => {
+  const handleToggleStage = async (id) => {
     const current = getStage(progress, id);
     console.log(`⭐ Toggle Pressed — ID: ${id}, Current Stage: ${current}`);
 
@@ -61,7 +61,8 @@ export default function ExploreListScreen() {
         ]
       );
     } else {
-      await updateWordStage(id, 1);
+      // ⬇️ TEMPORARY CHANGE: Skip Learn (stage 1) and go directly to Listen (stage 2)
+      await updateWordStage(id, 2);
       const updated = await loadProgress();
       setProgress(updated);
     }
@@ -152,7 +153,7 @@ export default function ExploreListScreen() {
                   key={item.id}
                   word={item}
                   wordStage={getStage(progress, item.id)}
-                  onToggleFavorite={() => handleToggleStage1(item.id)}
+                  onToggleFavorite={() => handleToggleStage(item.id)}
                   onPress={() => {
                     const index = orderedWords.findIndex((w) => w.id === item.id);
                     if (index !== -1) {

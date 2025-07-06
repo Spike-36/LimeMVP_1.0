@@ -1,5 +1,3 @@
-// components/BottomNav.js
-
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -7,7 +5,7 @@ export default function BottomNav({ active }) {
   const navigation = useNavigation();
   const tabs = [
     { name: 'Explore', route: 'Explore' },
-    { name: 'Learn', route: 'Learn' },
+    // { name: 'Learn', route: 'Learn' }, // 🟡 Temporarily removed
     { name: 'Listen', route: 'PracticeListen' },
     { name: 'Speak', route: 'PracticeSpeak' },
     { name: 'Review', route: 'Review' },

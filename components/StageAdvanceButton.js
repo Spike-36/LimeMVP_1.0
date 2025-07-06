@@ -8,10 +8,13 @@ export default function StageAdvanceButton({
   currentStage,
   onStageChange,
   requiredStage = 0,
+  skipLearn = false, // ⬅️ New optional prop
 }) {
   if (currentStage == null || currentStage !== requiredStage || currentStage >= 4) return null;
 
-  const nextStage = currentStage + 1;
+  const isSkipping = skipLearn && currentStage === 0;
+  const nextStage = isSkipping ? 2 : currentStage + 1;
+  const nextLabel = stageLabels[nextStage - 1] || 'Next';
 
   const handleAdvance = async () => {
     await updateWordStage(wordId, nextStage);
@@ -21,7 +24,7 @@ export default function StageAdvanceButton({
 
   return (
     <TouchableOpacity style={styles.button} onPress={handleAdvance}>
-      <Text style={styles.buttonText}>{stageLabels[currentStage]}</Text>
+      <Text style={styles.buttonText}>{nextLabel}</Text>
     </TouchableOpacity>
   );
 }
