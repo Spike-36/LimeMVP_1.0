@@ -51,10 +51,10 @@ export default function WordRecordScreenMVP() {
   };
 
   const handleAdvanceFromStage0 = async () => {
-    await updateWordStage(wordId, 2); // ✅ TEMP: Skip Learn (stage 1)
+    await updateWordStage(wordId, 2); // ✅ Skip to stage 2
     const updated = await loadProgress();
     setProgress(updated);
-    navigation.navigate('Listen'); // jump straight to Listen tab
+    // ⛔ Don't navigate away — just refresh stage and hide button
   };
 
   const goToPrev = () => {
@@ -87,10 +87,11 @@ export default function WordRecordScreenMVP() {
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         />
 
+        {/* ✅ Only show Learn button if stage is 0 */}
         {wordId && mode === 'explore' && stage === 0 && (
           <TouchableOpacity onPress={handleAdvanceFromStage0}>
             <View style={styles.advanceButton}>
-              <Text style={styles.advanceText}>Listen</Text>
+              <Text style={styles.advanceText}>Learn</Text>
             </View>
           </TouchableOpacity>
         )}
