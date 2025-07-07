@@ -1,9 +1,6 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Alert,
-  Modal,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,60 +10,23 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import WordListItem from '../components/WordListItem';
 import blocks from '../data/blocks.json';
-import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
+import { getStage, loadProgress } from '../utils/progressStorage';
 
-export default function ExploreListScreenMVP() {
+export default function ExploreListScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
   const scrollRef = useRef(null);
-  const [progress, setProgress] = useState({});
-  const [sectionMenuVisible, setSectionMenuVisible] = useState(false);
-  const [activeSection, setActiveSection] = useState('');
-  const [showHeader, setShowHeader] = useState(true);
   const sectionRefs = useRef({});
   const yPositions = useRef({});
-  const hasOpenedInitially = useRef(false);
+  const suppressScroll = useRef(false); // 🛑 NEW
+  const [progress, setProgress] = useState({});
+  const [activeSection, setActiveSection] = useState('');
 
   useFocusEffect(
     useCallback(() => {
       loadProgress().then(setProgress);
     }, [])
   );
-
-  useEffect(() => {
-    if (!hasOpenedInitially.current) {
-      hasOpenedInitially.current = true;
-      setSectionMenuVisible(true);
-    }
-  }, []);
-
-  const handleToggleStage = async (id) => {
-    const current = getStage(progress, id);
-    console.log(`⭐ Toggle Pressed — ID: ${id}, Current Stage: ${current}`);
-
-    if (current >= 1) {
-      Alert.alert(
-        'Reset?',
-        'Do you want to reset this word?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Reset',
-            style: 'destructive',
-            onPress: async () => {
-              await updateWordStage(id, 0, true);
-              const updated = await loadProgress();
-              setProgress(updated);
-            },
-          },
-        ]
-      );
-    } else {
-      // ⬇️ TEMPORARY CHANGE: Skip Learn (stage 1) and go directly to Listen (stage 2)
-      await updateWordStage(id, 2);
-      const updated = await loadProgress();
-      setProgress(updated);
-    }
-  };
 
   const groupedBlocks = blocks.reduce((acc, word) => {
     const type = word.type || 'other';
@@ -86,23 +46,8 @@ export default function ExploreListScreenMVP() {
   const sectionTitles = Object.keys(groupedBlocks).sort();
   const orderedWords = sectionTitles.flatMap((title) => groupedBlocks[title]);
 
-  const scrollToSection = (title) => {
-    const node = sectionRefs.current[title];
-    setShowHeader(false);
-    setSectionMenuVisible(false);
-    if (node && scrollRef.current) {
-      node.measureLayout(
-        scrollRef.current,
-        (x, y) => {
-          scrollRef.current.scrollTo({ y: y + 35, animated: true });
-          setTimeout(() => setShowHeader(true), 600);
-        },
-        () => {}
-      );
-    }
-  };
-
   const handleScroll = (event) => {
+    if (suppressScroll.current) return; // ⛔ prevent scroll reaction when ticking
     const y = event.nativeEvent.contentOffset.y;
     let current = '';
     for (let i = sectionTitles.length - 1; i >= 0; i--) {
@@ -116,11 +61,34 @@ export default function ExploreListScreenMVP() {
     setActiveSection(current);
   };
 
+  useEffect(() => {
+    const scrollToType = route.params?.scrollToType;
+    if (!scrollToType) return;
+
+    const tryScroll = () => {
+      const y = yPositions.current[scrollToType];
+      if (y != null && scrollRef.current) {
+        scrollRef.current.scrollTo({ y: y + 35, animated: true });
+      }
+    };
+
+    const timeout = setTimeout(tryScroll, 500);
+    return () => clearTimeout(timeout);
+  }, [route.params, progress]);
+
+  const handleUpdateProgress = async (newProgress) => {
+    suppressScroll.current = true;
+    setProgress(newProgress);
+    setTimeout(() => {
+      suppressScroll.current = false;
+    }, 300); // short delay to let re-render settle
+  };
+
   return (
     <SafeAreaView style={styles.safeContainer} edges={['top']}>
       <View style={styles.content}>
-        <TouchableOpacity style={styles.topBar} onPress={() => setSectionMenuVisible(true)}>
-          <Text style={styles.topBarText}>{showHeader ? activeSection || 'Words' : ''}</Text>
+        <TouchableOpacity style={styles.topBar}>
+          <Text style={styles.topBarText}>{activeSection || 'Words'}</Text>
         </TouchableOpacity>
 
         <ScrollView
@@ -148,12 +116,13 @@ export default function ExploreListScreenMVP() {
               >
                 <Text style={styles.headerText}>{title}</Text>
               </View>
+
               {groupedBlocks[title].map((item) => (
                 <WordListItem
                   key={item.id}
                   word={item}
                   wordStage={getStage(progress, item.id)}
-                  onToggleFavorite={() => handleToggleStage(item.id)}
+                  onUpdateProgress={handleUpdateProgress} // ✅ patched
                   onPress={() => {
                     const index = orderedWords.findIndex((w) => w.id === item.id);
                     if (index !== -1) {
@@ -162,35 +131,14 @@ export default function ExploreListScreenMVP() {
                         index,
                         mode: 'explore',
                       });
-                    } else {
-                      console.warn('Word not found in ordered list:', item.id);
                     }
                   }}
+                  showImage={false}
                 />
               ))}
             </View>
           ))}
         </ScrollView>
-
-        <Modal
-          visible={sectionMenuVisible}
-          animationType="slide"
-          transparent
-          onRequestClose={() => setSectionMenuVisible(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              {sectionTitles.map((title) => (
-                <Pressable key={title} onPress={() => scrollToSection(title)}>
-                  <Text style={styles.modalItem}>{title}</Text>
-                </Pressable>
-              ))}
-              <Pressable onPress={() => setSectionMenuVisible(false)}>
-                <Text style={styles.modalClose}>Cancel</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
       </View>
     </SafeAreaView>
   );
@@ -233,29 +181,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFD700',
     textTransform: 'capitalize',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: '#000000aa',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    backgroundColor: '#111',
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-  },
-  modalItem: {
-    fontSize: 18,
-    color: 'white',
-    paddingVertical: 10,
-    textAlign: 'center',
-  },
-  modalClose: {
-    fontSize: 16,
-    color: '#FFD700',
-    marginTop: 16,
-    textAlign: 'center',
   },
 });

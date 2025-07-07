@@ -51,10 +51,31 @@ export default function PracticeListenScreen() {
   }, [currentIndex]);
 
   useEffect(() => {
-    if (current && isLoaded) {
-      playAudio();
-    }
-  }, [current, isLoaded]);
+    if (!current?.audio) return;
+
+    let retryCount = 0;
+    let isActive = true;
+
+    const tryPlay = async () => {
+      while (isActive && retryCount < 5) {
+        if (isLoaded) {
+          await playAudio();
+          return;
+        }
+        retryCount++;
+        await new Promise(res => setTimeout(res, 200));
+      }
+      if (isActive && !isLoaded) {
+        console.warn('⚠️ Audio still not loaded after retries');
+      }
+    };
+
+    tryPlay();
+
+    return () => {
+      isActive = false;
+    };
+  }, [current?.id, isLoaded]);
 
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % shuffledBlocks.length);
@@ -66,7 +87,6 @@ export default function PracticeListenScreen() {
     const updated = await loadProgress();
     const eligible = blocks.filter(b => getStage(updated, b.id) === 2);
 
-    // ✅ Reset pre-reveal state
     setShowAnswer(false);
     setShowEnglish(false);
 

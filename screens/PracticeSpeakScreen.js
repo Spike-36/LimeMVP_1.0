@@ -51,7 +51,7 @@ export default function PracticeSpeakScreen() {
     setShowAnswer(false);
     setShowEnglish(false);
     if (shuffledBlocks.length === 0) return;
-    setCurrentIndex((prev) => Math.min(prev + 1, shuffledBlocks.length - 1));
+    setCurrentIndex(prev => (prev + 1) % shuffledBlocks.length);
   };
 
   const handleStageSelect = async (stage) => {
@@ -61,8 +61,13 @@ export default function PracticeSpeakScreen() {
     const updated = await loadProgress();
     setProgress(updated);
     if (stage > currentStage) {
-      setShuffledBlocks((prev) => prev.filter((b) => b.id !== wordId));
-      handleNext();
+      const nextBlocks = shuffledBlocks.filter(b => b.id !== wordId);
+      setShuffledBlocks(nextBlocks);
+      if (nextBlocks.length === 0) {
+        setCurrentIndex(0);
+      } else {
+        setCurrentIndex(prev => prev % nextBlocks.length);
+      }
     }
   };
 

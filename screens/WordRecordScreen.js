@@ -1,4 +1,4 @@
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
@@ -50,11 +50,11 @@ export default function WordRecordScreenMVP() {
     setProgress(updated);
   };
 
-  const handleAdvanceFromStage0 = async () => {
-    await updateWordStage(wordId, 2); // ✅ Skip to stage 2
+  const handleAdvanceToStage1 = async () => {
+    if (stage >= 1 || !wordId) return;
+    await updateWordStage(wordId, 2); // Skip Learn, go directly to Listen
     const updated = await loadProgress();
     setProgress(updated);
-    // ⛔ Don't navigate away — just refresh stage and hide button
   };
 
   const goToPrev = () => {
@@ -87,11 +87,14 @@ export default function WordRecordScreenMVP() {
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         />
 
-        {/* ✅ Only show Learn button if stage is 0 */}
-        {wordId && mode === 'explore' && stage === 0 && (
-          <TouchableOpacity onPress={handleAdvanceFromStage0}>
-            <View style={styles.advanceButton}>
-              <Text style={styles.advanceText}>Learn</Text>
+        {mode === 'explore' && (
+          <TouchableOpacity style={styles.tickIconWrapper} onPress={handleAdvanceToStage1}>
+            <View style={styles.tickIconCircle}>
+              <MaterialCommunityIcons
+                name={stage >= 1 ? 'check-circle' : 'check-circle-outline'}
+                size={32}
+                color={stage >= 1 ? 'limegreen' : 'gray'}
+              />
             </View>
           </TouchableOpacity>
         )}
@@ -145,25 +148,24 @@ const styles = StyleSheet.create({
   },
   topHalf: {
     height: '58%',
+    position: 'relative',
+  },
+  tickIconWrapper: {
+    position: 'absolute',
+    bottom: 36,
+    right: 20,
+    zIndex: 5,
+  },
+  tickIconCircle: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 24,
+    padding: 6,
   },
   interactionBlock: {
     height: '42%',
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 30,
-  },
-  advanceButton: {
-    backgroundColor: '#FFD700',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 10,
-    alignSelf: 'center',
-    marginTop: 12,
-  },
-  advanceText: {
-    color: '#000',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   tipOverlay: {
     position: 'absolute',

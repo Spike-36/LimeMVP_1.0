@@ -1,43 +1,88 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { imageMap } from './imageMap'; // adjust path if needed
+import { Feather } from '@expo/vector-icons';
+import { useState } from 'react';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { imageMap } from '../components/imageMap';
+import useForeignAudio from '../hooks/useForeignAudio';
+import { loadProgress, updateWordStage } from '../utils/progressStorage';
 
-export default function WordListItem({ word, wordStage = 0, onToggleFavorite, onPress }) {
-  const imageSource = imageMap[word.image];
-
-  // Determine star appearance based on stage
-  let starName = 'star-outline';
-  let starColor = '#444';
-
-  if (wordStage === 4) {
-    starName = 'star';
-    starColor = '#FFD700'; // gold for review
-  } else if (wordStage >= 1) {
-    starName = 'star';
-    starColor = 'gray'; // selected but not yet Review
+export default function WordListItem({
+  word,
+  wordStage = 0,
+  onPress,
+  onUpdateProgress,
+  showTickBackground = false,
+  showImage = true,
+}) {
+  if (!word || typeof word !== 'object') {
+    console.warn('Invalid word:', word);
+    return null;
   }
+
+  const [isTicking, setIsTicking] = useState(false);
+  const imageSource = imageMap[word.image];
+  const { playAudio } = useForeignAudio(word);
+
+  const refreshProgress = async () => {
+    const updated = await loadProgress();
+    onUpdateProgress(updated);
+  };
+
+  const handleToggleStage = () => {
+    if (!word?.id || !onUpdateProgress) return;
+
+    const newStage = wordStage >= 1 ? 0 : 2;
+
+    const doUpdate = async () => {
+      setIsTicking(true);
+      await updateWordStage(word.id, newStage, true);
+      await refreshProgress();
+      setIsTicking(false);
+    };
+
+    if (newStage === 0) {
+      Alert.alert(
+        'Remove tick?',
+        'This will reset progress for this word.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Yes', onPress: doUpdate },
+        ],
+        { cancelable: true }
+      );
+    } else {
+      doUpdate();
+    }
+  };
+
+  const handlePlay = () => {
+    if (word.audio) {
+      playAudio();
+    }
+  };
+
+  const tickColor = wordStage >= 2 ? '#00FF00' : 'gray';
+  const tickStyle = showTickBackground
+    ? [styles.tickButton, { backgroundColor: 'rgba(255,255,255,0.15)' }]
+    : styles.tickButton;
 
   return (
     <View style={styles.item}>
-      <TouchableOpacity style={styles.touchableArea} onPress={onPress}>
-        {imageSource && (
+      <TouchableOpacity style={styles.leftArea} onPress={onPress}>
+        {showImage && imageSource && (
           <Image source={imageSource} style={styles.image} resizeMode="contain" />
         )}
-        <View style={styles.textContainer}>
-          <Text style={styles.term}>{word.english}</Text>
-          <Text style={styles.translation}>{word.foreign}</Text>
-        </View>
+        <Text style={styles.term}>{word.english}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => {
-          console.log(`⭐ Star tapped — ID: ${word.id}, Stage: ${wordStage}`);
-          onToggleFavorite();
-        }}
-        style={styles.starButton}
-      >
-        <Ionicons name={starName} size={24} color={starColor} />
-      </TouchableOpacity>
+      <View style={styles.rightCluster}>
+        <TouchableOpacity onPress={handlePlay} style={styles.translationWrapper}>
+          <Text style={styles.translation}>{word.foreign}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleToggleStage} style={tickStyle}>
+          <Feather name="check-circle" size={26} color={tickColor} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -52,7 +97,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     justifyContent: 'space-between',
   },
-  touchableArea: {
+  leftArea: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
@@ -63,20 +108,30 @@ const styles = StyleSheet.create({
     marginRight: 16,
     borderRadius: 8,
   },
-  textContainer: {
-    flexShrink: 1,
-  },
   term: {
     fontSize: 18,
     color: '#FFD700',
     fontWeight: '600',
   },
-  translation: {
-    fontSize: 16,
-    color: '#aaa',
-    marginTop: 4,
+  rightCluster: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
+    paddingLeft: 8,
   },
-  starButton: {
-    paddingLeft: 12,
+  translationWrapper: {
+    width: 100, // ✅ fixed width to allow left justification
+    justifyContent: 'center',
+    alignItems: 'flex-start', // ✅ align content to the left
+  },
+  translation: {
+    fontSize: 18,
+    color: '#aaa',
+    textAlign: 'left',
+    alignSelf: 'flex-start', // ✅ extra safety for alignment
+  },
+  tickButton: {
+    padding: 6,
+    borderRadius: 20,
   },
 });
