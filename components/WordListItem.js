@@ -20,7 +20,7 @@ export default function WordListItem({
 
   const [isTicking, setIsTicking] = useState(false);
   const imageSource = imageMap[word.image];
-  const { playAudio } = useForeignAudio(word);
+  const { playAudio, isLoaded } = useForeignAudio(word); // ✅ grab isLoaded
 
   const refreshProgress = async () => {
     const updated = await loadProgress();
@@ -55,8 +55,10 @@ export default function WordListItem({
   };
 
   const handlePlay = () => {
-    if (word.audio) {
+    if (word.audio && isLoaded) {
       playAudio();
+    } else {
+      console.warn('⚠️ Tried to play before sound was loaded (WordListItem)');
     }
   };
 
@@ -75,8 +77,14 @@ export default function WordListItem({
       </TouchableOpacity>
 
       <View style={styles.rightCluster}>
-        <TouchableOpacity onPress={handlePlay} style={styles.translationWrapper}>
-          <Text style={styles.translation}>{word.foreign}</Text>
+        <TouchableOpacity
+          onPress={handlePlay}
+          style={styles.translationWrapper}
+          disabled={!isLoaded} // ✅ optional: disables while loading
+        >
+          <Text style={[styles.translation, !isLoaded && { opacity: 0.4 }]}>
+            {word.foreign}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleToggleStage} style={tickStyle}>
@@ -116,19 +124,18 @@ const styles = StyleSheet.create({
   rightCluster: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 20,
-    paddingLeft: 8,
+    gap: 16,
   },
   translationWrapper: {
-    width: 100, // ✅ fixed width to allow left justification
+    maxWidth: 120,
+    alignItems: 'flex-start',
     justifyContent: 'center',
-    alignItems: 'flex-start', // ✅ align content to the left
   },
   translation: {
     fontSize: 18,
     color: '#aaa',
     textAlign: 'left',
-    alignSelf: 'flex-start', // ✅ extra safety for alignment
+    alignSelf: 'flex-start',
   },
   tickButton: {
     padding: 6,
