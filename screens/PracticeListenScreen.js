@@ -1,13 +1,14 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useState } from 'react';
+import { Audio } from 'expo-av';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import StageAdvanceButton from '../components/StageAdvanceButton';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
-import useForeignAudio from '../hooks/useForeignAudio';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 function shuffleArray(array) {
@@ -28,7 +29,7 @@ export default function PracticeListenScreen() {
 
   const current = shuffledBlocks[currentIndex];
   const currentStage = getStage(progress, current?.id);
-  const { playAudio, isLoaded } = useForeignAudio(current);
+  const soundRef = useRef(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -51,31 +52,51 @@ export default function PracticeListenScreen() {
   }, [currentIndex]);
 
   useEffect(() => {
-    if (!current?.audio) return;
+    if (!current?.audio || !audioMap[current.audio]) return;
 
-    let retryCount = 0;
-    let isActive = true;
+    let isMounted = true;
 
-    const tryPlay = async () => {
-      while (isActive && retryCount < 5) {
-        if (isLoaded) {
-          await playAudio();
-          return;
+    const loadAndPlay = async () => {
+      try {
+        if (soundRef.current) {
+          await soundRef.current.unloadAsync();
+          soundRef.current.setOnPlaybackStatusUpdate(null);
+          soundRef.current = null;
         }
-        retryCount++;
-        await new Promise(res => setTimeout(res, 200));
-      }
-      if (isActive && !isLoaded) {
-        console.warn('⚠️ Audio still not loaded after retries');
+
+        const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
+        soundRef.current = sound;
+
+        if (isMounted) {
+          await sound.playAsync();
+        }
+      } catch (err) {
+        console.warn('❌ Audio error in PracticeListen:', err.message);
       }
     };
 
-    tryPlay();
+    loadAndPlay();
 
     return () => {
-      isActive = false;
+      isMounted = false;
+      if (soundRef.current) {
+        soundRef.current.unloadAsync();
+        soundRef.current = null;
+      }
     };
-  }, [current?.id, isLoaded]);
+  }, [current?.audio]);
+
+  const playAudio = async () => {
+    if (!soundRef.current) {
+      console.warn('⚠️ Tried to play before audio loaded');
+      return;
+    }
+    try {
+      await soundRef.current.replayAsync();
+    } catch (err) {
+      console.warn('❌ Manual replay error:', err.message);
+    }
+  };
 
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % shuffledBlocks.length);
@@ -117,6 +138,7 @@ export default function PracticeListenScreen() {
           showInfoIcon={showAnswer}
           showEnglish={showEnglish}
           hideAudioButton={true}
+          onPlayAudio={playAudio}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         />

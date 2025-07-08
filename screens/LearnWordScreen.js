@@ -1,15 +1,16 @@
 import { Feather } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import StageAdvanceButton from '../components/StageAdvanceButton';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
-import useForeignAudio from '../hooks/useForeignAudio';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 function shuffleArray(array) {
@@ -27,11 +28,12 @@ export default function LearnWordScreen() {
   const [showTip, setShowTip] = useState(false);
   const [progress, setProgress] = useState({});
 
+  const soundRef = useRef(null);
   const word = eligibleWords[currentIndex];
   const wordId = word?.id;
   const stage = getStage(progress, wordId);
-  const { playAudio, isLoaded } = useForeignAudio(word);
 
+  // Fetch eligible words and progress
   useFocusEffect(
     useCallback(() => {
       const fetchProgress = async () => {
@@ -45,16 +47,63 @@ export default function LearnWordScreen() {
     }, [])
   );
 
+  // Reset tip/English toggle when switching words
   useEffect(() => {
     setShowEnglish(false);
     setShowTip(false);
   }, [currentIndex]);
 
+  // Load and play audio when word changes
   useEffect(() => {
-    if (word && isLoaded) {
-      playAudio();
+    let isMounted = true;
+
+    const loadAndPlay = async () => {
+      if (!word?.audio || !audioMap[word.audio]) {
+        console.warn('⚠️ No audio found for:', word?.audio);
+        return;
+      }
+
+      try {
+        if (soundRef.current) {
+          await soundRef.current.unloadAsync();
+          soundRef.current.setOnPlaybackStatusUpdate(null);
+          soundRef.current = null;
+        }
+
+        const { sound } = await Audio.Sound.createAsync(audioMap[word.audio]);
+        soundRef.current = sound;
+
+        if (isMounted) {
+          await sound.playAsync();
+        }
+      } catch (err) {
+        console.warn('❌ Audio playback error:', err.message);
+      }
+    };
+
+    loadAndPlay();
+
+    return () => {
+      isMounted = false;
+      if (soundRef.current) {
+        soundRef.current.unloadAsync();
+        soundRef.current = null;
+      }
+    };
+  }, [word?.audio]);
+
+  const playAudio = async () => {
+    if (!soundRef.current) {
+      console.warn('⚠️ Tried to play before sound loaded');
+      return;
     }
-  }, [word, isLoaded]);
+
+    try {
+      await soundRef.current.replayAsync();
+    } catch (err) {
+      console.warn('❌ Manual playback error:', err.message);
+    }
+  };
 
   const handleSetStage = async (newStage) => {
     if (!wordId) return;

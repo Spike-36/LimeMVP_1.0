@@ -1,12 +1,13 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useState } from 'react';
+import { Audio } from 'expo-av';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import StageAdvanceButton from '../components/StageAdvanceButton';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
-import useForeignAudio from '../hooks/useForeignAudio';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 function shuffleArray(array) {
@@ -23,10 +24,10 @@ export default function PracticeSpeakScreen() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
   const [progress, setProgress] = useState({});
+  const soundRef = useRef(null);
 
   const current = shuffledBlocks[currentIndex];
   const currentStage = current?.id ? getStage(progress, current.id) : 0;
-  const { playAudio, isLoaded } = useForeignAudio(current);
 
   useFocusEffect(
     useCallback(() => {
@@ -42,10 +43,48 @@ export default function PracticeSpeakScreen() {
   );
 
   useEffect(() => {
-    if (current && isLoaded && showAnswer) {
-      playAudio();
+    if (!current?.audio || !showAnswer) return;
+
+    let isMounted = true;
+
+    const loadAndPlay = async () => {
+      try {
+        if (soundRef.current) {
+          await soundRef.current.unloadAsync();
+          soundRef.current.setOnPlaybackStatusUpdate(null);
+          soundRef.current = null;
+        }
+
+        const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
+        soundRef.current = sound;
+
+        if (isMounted) {
+          await sound.playAsync();
+        }
+      } catch (err) {
+        console.warn('❌ Speak audio error:', err.message);
+      }
+    };
+
+    loadAndPlay();
+
+    return () => {
+      isMounted = false;
+      if (soundRef.current) {
+        soundRef.current.unloadAsync();
+        soundRef.current = null;
+      }
+    };
+  }, [current?.id, showAnswer]);
+
+  const playAudio = async () => {
+    if (!soundRef.current) return;
+    try {
+      await soundRef.current.replayAsync();
+    } catch (err) {
+      console.warn('⚠️ Replay failed:', err.message);
     }
-  }, [current, isLoaded, showAnswer]);
+  };
 
   const handleNext = () => {
     setShowAnswer(false);
@@ -60,14 +99,11 @@ export default function PracticeSpeakScreen() {
     await updateWordStage(wordId, stage);
     const updated = await loadProgress();
     setProgress(updated);
+
     if (stage > currentStage) {
       const nextBlocks = shuffledBlocks.filter(b => b.id !== wordId);
       setShuffledBlocks(nextBlocks);
-      if (nextBlocks.length === 0) {
-        setCurrentIndex(0);
-      } else {
-        setCurrentIndex(prev => prev % nextBlocks.length);
-      }
+      setCurrentIndex(nextBlocks.length > 0 ? 0 : 0);
     }
   };
 

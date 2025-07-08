@@ -1,25 +1,64 @@
 import { useNavigation } from '@react-navigation/native';
+import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
-import useForeignAudio from '../hooks/useForeignAudio';
 
 export default function FindWordRecord({ route }) {
   const navigation = useNavigation();
   const word = route.params?.word;
   const [showEnglish, setShowEnglish] = useState(false);
   const [showTip, setShowTip] = useState(false);
-
-  const imageAsset = word ? imageMap[word.image] : null;
-  const { playAudio, isLoaded } = useForeignAudio(word);
+  const soundRef = useRef(null);
 
   useEffect(() => {
-    if (word && isLoaded) playAudio();
-  }, [word, isLoaded]);
+    if (!word?.audio) return;
+
+    let isMounted = true;
+
+    const loadAndPlay = async () => {
+      try {
+        if (soundRef.current) {
+          await soundRef.current.unloadAsync();
+          soundRef.current.setOnPlaybackStatusUpdate(null);
+          soundRef.current = null;
+        }
+
+        const { sound } = await Audio.Sound.createAsync(audioMap[word.audio]);
+        soundRef.current = sound;
+
+        if (isMounted) {
+          await sound.playAsync();
+        }
+      } catch (err) {
+        console.warn('❌ Find audio error:', err.message);
+      }
+    };
+
+    loadAndPlay();
+
+    return () => {
+      isMounted = false;
+      if (soundRef.current) {
+        soundRef.current.unloadAsync();
+        soundRef.current = null;
+      }
+    };
+  }, [word?.id]);
+
+  const playAudio = async () => {
+    if (!soundRef.current) return;
+    try {
+      await soundRef.current.replayAsync();
+    } catch (err) {
+      console.warn('⚠️ Replay failed:', err.message);
+    }
+  };
 
   if (!word) {
     return (
@@ -28,6 +67,8 @@ export default function FindWordRecord({ route }) {
       </View>
     );
   }
+
+  const imageAsset = word.image ? imageMap[word.image] : null;
 
   return (
     <View style={styles.container}>
