@@ -1,8 +1,9 @@
 import { Feather } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
 import { useState } from 'react';
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { imageMap } from '../components/imageMap';
-import useForeignAudio from '../hooks/useForeignAudio';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { audioMap } from '../components/audioMap';
 import { loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function WordListItem({
@@ -10,8 +11,6 @@ export default function WordListItem({
   wordStage = 0,
   onPress,
   onUpdateProgress,
-  showTickBackground = false,
-  showImage = true,
 }) {
   if (!word || typeof word !== 'object') {
     console.warn('Invalid word:', word);
@@ -19,8 +18,7 @@ export default function WordListItem({
   }
 
   const [isTicking, setIsTicking] = useState(false);
-  const imageSource = imageMap[word.image];
-  const { playAudio, isLoaded } = useForeignAudio(word); // ✅ grab isLoaded
+  const [sound, setSound] = useState(null);
 
   const refreshProgress = async () => {
     const updated = await loadProgress();
@@ -54,43 +52,46 @@ export default function WordListItem({
     }
   };
 
-  const handlePlay = () => {
-    if (word.audio && isLoaded) {
-      playAudio();
-    } else {
-      console.warn('⚠️ Tried to play before sound was loaded (WordListItem)');
+  const handlePlay = async () => {
+    if (!word.audio || !audioMap[word.audio]) {
+      console.warn('⚠️ Audio not found for:', word.audio);
+      return;
+    }
+
+    try {
+      if (sound) {
+        await sound.unloadAsync();
+        setSound(null);
+      }
+
+      const { sound: newSound } = await Audio.Sound.createAsync(audioMap[word.audio]);
+      setSound(newSound);
+      await newSound.replayAsync();
+    } catch (err) {
+      console.warn('❌ Audio playback error:', err.message);
     }
   };
 
   const tickColor = wordStage >= 2 ? '#00FF00' : 'gray';
-  const tickStyle = showTickBackground
-    ? [styles.tickButton, { backgroundColor: 'rgba(255,255,255,0.15)' }]
-    : styles.tickButton;
 
   return (
     <View style={styles.item}>
-      <TouchableOpacity style={styles.leftArea} onPress={onPress}>
-        {showImage && imageSource && (
-          <Image source={imageSource} style={styles.image} resizeMode="contain" />
-        )}
-        <Text style={styles.term}>{word.english}</Text>
+      {/* English: triggers navigation */}
+      <TouchableOpacity onPress={onPress} style={styles.englishZone}>
+        <Text style={styles.english}>{word.english}</Text>
       </TouchableOpacity>
 
-      <View style={styles.rightCluster}>
-        <TouchableOpacity
-          onPress={handlePlay}
-          style={styles.translationWrapper}
-          disabled={!isLoaded} // ✅ optional: disables while loading
-        >
-          <Text style={[styles.translation, !isLoaded && { opacity: 0.4 }]}>
-            {word.foreign}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleToggleStage} style={tickStyle}>
-          <Feather name="check-circle" size={26} color={tickColor} />
+      {/* Japanese: triggers audio */}
+      <View style={styles.japaneseZone}>
+        <TouchableOpacity onPress={handlePlay} style={styles.japaneseWrapper}>
+          <Text style={styles.japanese}>{word.foreign}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Tick */}
+      <TouchableOpacity onPress={handleToggleStage} style={styles.tickButton}>
+        <Feather name="check-circle" size={26} color={tickColor} />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -99,46 +100,38 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
     backgroundColor: '#1c1c1c',
     borderBottomColor: '#333',
     borderBottomWidth: 1,
-    justifyContent: 'space-between',
   },
-  leftArea: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
+  englishZone: {
+    width: 130, // ⬅️ Increased from 100 → more space for English
+    marginRight: 8,
   },
-  image: {
-    width: 60,
-    height: 60,
-    marginRight: 16,
-    borderRadius: 8,
-  },
-  term: {
+  english: {
     fontSize: 18,
     color: '#FFD700',
     fontWeight: '600',
   },
-  rightCluster: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  translationWrapper: {
-    maxWidth: 120,
+  japaneseZone: {
+    flex: 1,
     alignItems: 'flex-start',
-    justifyContent: 'center',
+    paddingLeft: 16, // ⬅️ Adds more space between English and Japanese
   },
-  translation: {
+  japaneseWrapper: {
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+  },
+  japanese: {
     fontSize: 18,
     color: '#aaa',
     textAlign: 'left',
-    alignSelf: 'flex-start',
   },
   tickButton: {
     padding: 6,
     borderRadius: 20,
+    marginLeft: 8,
   },
 });

@@ -3,9 +3,9 @@ import { Audio } from 'expo-av';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
-import StageAdvanceButton from '../components/StageAdvanceButton';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
@@ -36,7 +36,6 @@ export default function PracticeListenScreen() {
       async function loadEligibleWords() {
         const progressMap = await loadProgress();
         const eligible = blocks.filter(b => getStage(progressMap, b.id) === 2);
-
         setProgress(progressMap);
         setShuffledBlocks(shuffleArray(eligible));
         setCurrentIndex(0);
@@ -98,8 +97,17 @@ export default function PracticeListenScreen() {
     }
   };
 
+  const handleAdvanceToStage3 = async () => {
+    if (!current?.id || currentStage >= 3) return;
+    await updateWordStage(current.id, 3);
+    const updatedProgress = await loadProgress();
+    setProgress(updatedProgress); // ✅ just update tick to green
+  };
+
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % shuffledBlocks.length);
+    const nextIndex = (currentIndex + 1) % shuffledBlocks.length;
+    setCurrentIndex(nextIndex);
+    setRefreshKey(prev => prev + 1); // 🔄 triggers fresh list and reshuffle
   };
 
   const handleStageSelect = async (stage) => {
@@ -107,10 +115,8 @@ export default function PracticeListenScreen() {
     await updateWordStage(wordId, stage);
     const updated = await loadProgress();
     const eligible = blocks.filter(b => getStage(updated, b.id) === 2);
-
     setShowAnswer(false);
     setShowEnglish(false);
-
     setProgress(updated);
     setShuffledBlocks(shuffleArray(eligible));
     setCurrentIndex(0);
@@ -143,14 +149,19 @@ export default function PracticeListenScreen() {
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         />
 
-        {showAnswer && current?.id && currentStage === 2 && (
-          <StageAdvanceButton
-            key={current.id}
-            wordId={current.id}
-            currentStage={currentStage}
-            requiredStage={2}
-            onStageChange={handleStageSelect}
-          />
+        {showAnswer && currentStage >= 2 && (
+          <TouchableOpacity
+            onPress={handleAdvanceToStage3}
+            style={styles.tickIconWrapper}
+          >
+            <View style={styles.tickIconCircle}>
+              <MaterialCommunityIcons
+                name={currentStage >= 3 ? 'check-circle' : 'check-circle-outline'}
+                size={32}
+                color={currentStage >= 3 ? 'limegreen' : 'gray'}
+              />
+            </View>
+          </TouchableOpacity>
         )}
       </View>
 
@@ -183,6 +194,7 @@ const styles = StyleSheet.create({
   },
   topHalf: {
     height: '58%',
+    position: 'relative',
   },
   bottomHalf: {
     height: '42%',
@@ -200,6 +212,17 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 18,
+  },
+  tickIconWrapper: {
+    position: 'absolute',
+    bottom: 36,
+    right: 20,
+    zIndex: 5,
+  },
+  tickIconCircle: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 24,
+    padding: 6,
   },
   centeredContainer: {
     flex: 1,

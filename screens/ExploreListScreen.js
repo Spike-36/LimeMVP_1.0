@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import WordListItem from '../components/WordListItem';
 import blocks from '../data/blocks.json';
 import { getStage, loadProgress } from '../utils/progressStorage';
@@ -18,13 +19,20 @@ export default function ExploreListScreen() {
   const scrollRef = useRef(null);
   const sectionRefs = useRef({});
   const yPositions = useRef({});
-  const suppressScroll = useRef(false); // 🛑 NEW
+  const suppressScroll = useRef(false);
   const [progress, setProgress] = useState({});
   const [activeSection, setActiveSection] = useState('');
 
   useFocusEffect(
     useCallback(() => {
-      loadProgress().then(setProgress);
+      loadProgress().then((next) => {
+        setProgress((prev) => {
+          if (JSON.stringify(prev) !== JSON.stringify(next)) {
+            return next;
+          }
+          return prev;
+        });
+      });
     }, [])
   );
 
@@ -47,7 +55,8 @@ export default function ExploreListScreen() {
   const orderedWords = sectionTitles.flatMap((title) => groupedBlocks[title]);
 
   const handleScroll = (event) => {
-    if (suppressScroll.current) return; // ⛔ prevent scroll reaction when ticking
+    if (suppressScroll.current) return;
+
     const y = event.nativeEvent.contentOffset.y;
     let current = '';
     for (let i = sectionTitles.length - 1; i >= 0; i--) {
@@ -79,9 +88,12 @@ export default function ExploreListScreen() {
   const handleUpdateProgress = async (newProgress) => {
     suppressScroll.current = true;
     setProgress(newProgress);
-    setTimeout(() => {
-      suppressScroll.current = false;
-    }, 300); // short delay to let re-render settle
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        suppressScroll.current = false;
+      }, 150);
+    });
   };
 
   return (
@@ -122,7 +134,7 @@ export default function ExploreListScreen() {
                   key={item.id}
                   word={item}
                   wordStage={getStage(progress, item.id)}
-                  onUpdateProgress={handleUpdateProgress} // ✅ patched
+                  onUpdateProgress={handleUpdateProgress}
                   onPress={() => {
                     const index = orderedWords.findIndex((w) => w.id === item.id);
                     if (index !== -1) {

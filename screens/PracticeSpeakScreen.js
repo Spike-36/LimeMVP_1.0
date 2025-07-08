@@ -3,9 +3,9 @@ import { Audio } from 'expo-av';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
-import StageAdvanceButton from '../components/StageAdvanceButton';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
@@ -86,25 +86,22 @@ export default function PracticeSpeakScreen() {
     }
   };
 
+  const handleAdvanceToStage4 = async () => {
+    if (!current?.id || currentStage >= 4) return;
+    await updateWordStage(current.id, 4);
+    const updated = await loadProgress();
+    setProgress(updated);
+    // Tick turns green, but we don't remove yet
+  };
+
   const handleNext = () => {
     setShowAnswer(false);
     setShowEnglish(false);
-    if (shuffledBlocks.length === 0) return;
-    setCurrentIndex(prev => (prev + 1) % shuffledBlocks.length);
-  };
 
-  const handleStageSelect = async (stage) => {
-    if (!current?.id) return;
-    const wordId = current.id;
-    await updateWordStage(wordId, stage);
-    const updated = await loadProgress();
-    setProgress(updated);
-
-    if (stage > currentStage) {
-      const nextBlocks = shuffledBlocks.filter(b => b.id !== wordId);
-      setShuffledBlocks(nextBlocks);
-      setCurrentIndex(nextBlocks.length > 0 ? 0 : 0);
-    }
+    const nextBlocks = shuffledBlocks.filter(b => getStage(progress, b.id) === 3);
+    const nextIndex = nextBlocks.length > 0 ? 0 : 0;
+    setShuffledBlocks(shuffleArray(nextBlocks));
+    setCurrentIndex(nextIndex);
   };
 
   if (!current) {
@@ -135,14 +132,19 @@ export default function PracticeSpeakScreen() {
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         />
 
-        {showAnswer && current?.id && currentStage === 3 && (
-          <StageAdvanceButton
-            key={current.id}
-            wordId={current.id}
-            currentStage={currentStage}
-            requiredStage={3}
-            onStageChange={handleStageSelect}
-          />
+        {showAnswer && currentStage >= 3 && (
+          <TouchableOpacity
+            onPress={handleAdvanceToStage4}
+            style={styles.tickIconWrapper}
+          >
+            <View style={styles.tickIconCircle}>
+              <MaterialCommunityIcons
+                name={currentStage >= 4 ? 'check-circle' : 'check-circle-outline'}
+                size={32}
+                color={currentStage >= 4 ? 'limegreen' : 'gray'}
+              />
+            </View>
+          </TouchableOpacity>
         )}
       </View>
 
@@ -188,6 +190,17 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     textShadowColor: 'black',
     textShadowRadius: 4,
+  },
+  tickIconWrapper: {
+    position: 'absolute',
+    bottom: 36,
+    right: 20,
+    zIndex: 5,
+  },
+  tickIconCircle: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 24,
+    padding: 6,
   },
   buttonArea: {
     position: 'absolute',
