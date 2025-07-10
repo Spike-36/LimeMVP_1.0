@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
@@ -11,23 +11,13 @@ export default function WordListItem({
   wordStage = 0,
   onPress,
   onUpdateProgress,
-  persist = true, // ⬅️ allows reuse in non-persistent views
 }) {
   if (!word || typeof word !== 'object') {
     console.warn('Invalid word:', word);
     return null;
   }
 
-  const [isTicking, setIsTicking] = useState(false);
   const [sound, setSound] = useState(null);
-
-  useEffect(() => {
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
-  }, [sound]);
 
   const refreshProgress = async () => {
     const updated = await loadProgress();
@@ -37,22 +27,14 @@ export default function WordListItem({
   const handleToggleStage = () => {
     if (!word?.id || !onUpdateProgress) return;
 
-    const newStage = wordStage >= 1 ? 0 : 2;
+    const newStage = wordStage >= 2 ? 0 : 2;
 
     const doUpdate = async () => {
-      setIsTicking(true);
-
-      if (persist) {
-        await updateWordStage(word.id, newStage, true);
-        await refreshProgress();
-      } else {
-        onUpdateProgress(prev => ({ ...prev, [word.id]: newStage }));
-      }
-
-      setIsTicking(false);
+      await updateWordStage(word.id, newStage, true);
+      await refreshProgress();
     };
 
-    if (newStage === 0 && persist) {
+    if (newStage === 0) {
       Alert.alert(
         'Remove tick?',
         'This will reset progress for this word.',
@@ -96,7 +78,7 @@ export default function WordListItem({
         <Text style={styles.english}>{word.english}</Text>
       </TouchableOpacity>
 
-      {/* Foreign: triggers audio */}
+      {/* Japanese: triggers audio */}
       <View style={styles.japaneseZone}>
         <TouchableOpacity onPress={handlePlay} style={styles.japaneseWrapper}>
           <Text style={styles.japanese}>{word.foreign}</Text>

@@ -9,9 +9,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import WordListItem from '../components/WordListItem';
+import WordListItem from '../components/WordListItemLite';
 import blocks from '../data/blocks.json';
-import { getStage, loadProgress } from '../utils/progressStorage';
+import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function ExploreListScreen() {
   const navigation = useNavigation();
@@ -87,15 +87,29 @@ export default function ExploreListScreen() {
     return () => clearTimeout(timeout);
   }, [route.params, progress]);
 
-  const handleUpdateProgress = async (newProgress) => {
-    suppressScroll.current = true;
-    setProgress(newProgress);
+  const refreshProgress = async () => {
+    const updated = await loadProgress();
+    setProgress(updated);
+  };
 
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        suppressScroll.current = false;
-      }, 150);
-    });
+  const handleToggleSection = async (title) => {
+    console.log(`\u25B6\uFE0F handleToggleSection called for: ${title}`);
+    const sectionWords = groupedBlocks[title] || [];
+
+    const isFullySelected =
+      sectionWords.length > 0 &&
+      sectionWords.every((word) => getStage(progress, word.id) >= 2);
+
+    for (const word of sectionWords) {
+      const current = getStage(progress, word.id);
+      const newStage = isFullySelected ? 0 : 2;
+
+      if (current !== newStage) {
+        await updateWordStage(word.id, newStage, true);
+      }
+    }
+
+    await refreshProgress();
   };
 
   return (
@@ -111,47 +125,62 @@ export default function ExploreListScreen() {
           onScroll={handleScroll}
           scrollEventThrottle={16}
         >
-          {sectionTitles.map((title) => (
-            <View key={title}>
-              <View
-                ref={(ref) => {
-                  if (ref && scrollRef.current) {
-                    sectionRefs.current[title] = ref;
-                    ref.measureLayout(
-                      scrollRef.current,
-                      (x, y) => {
-                        yPositions.current[title] = y;
-                      },
-                      () => {}
-                    );
-                  }
-                }}
-                style={styles.headerContainer}
-              >
-                <Text style={styles.headerText}>{title}</Text>
-              </View>
+          {sectionTitles.map((title) => {
+            const sectionWords = groupedBlocks[title] || [];
+            const isFullySelected =
+              sectionWords.length > 0 &&
+              sectionWords.every((word) => getStage(progress, word.id) >= 2);
 
-              {groupedBlocks[title].map((item) => (
-                <WordListItem
-                  key={item.id}
-                  word={item}
-                  wordStage={getStage(progress, item.id)}
-                  onUpdateProgress={handleUpdateProgress}
-                  onPress={() => {
-                    const index = orderedWords.findIndex((w) => w.id === item.id);
-                    if (index !== -1) {
-                      navigation.push('WordRecord', {
-                        words: orderedWords,
-                        index,
-                        mode: 'explore',
-                      });
+            return (
+              <View key={title}>
+                <View
+                  ref={(ref) => {
+                    if (ref && scrollRef.current) {
+                      sectionRefs.current[title] = ref;
+                      try {
+                        ref.measureLayout(
+                          scrollRef.current,
+                          (x, y) => {
+                            yPositions.current[title] = y;
+                          },
+                          () => {}
+                        );
+                      } catch (e) {
+                        console.warn(`measureLayout failed for ${title}`, e);
+                      }
                     }
                   }}
-                  showImage={false}
-                />
-              ))}
-            </View>
-          ))}
+                  style={styles.headerContainer}
+                >
+                  <View style={styles.headerRow}>
+                    <Text style={styles.headerText}>{title}</Text>
+                    <TouchableOpacity onPress={() => handleToggleSection(title)}>
+                      <Text style={styles.tickText}>{isFullySelected ? '✗' : '✓'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {sectionWords.map((item) => (
+                  <WordListItem
+                    key={item.id}
+                    word={item}
+                    wordStage={getStage(progress, item.id)}
+                    onUpdateProgress={setProgress}
+                    onPress={() => {
+                      const index = orderedWords.findIndex((w) => w.id === item.id);
+                      if (index !== -1) {
+                        navigation.push('WordRecord', {
+                          words: orderedWords,
+                          index,
+                          mode: 'explore',
+                        });
+                      }
+                    }}
+                  />
+                ))}
+              </View>
+            );
+          })}
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -185,15 +214,26 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     backgroundColor: '#222',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
     borderTopWidth: 1,
     borderTopColor: '#444',
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 6,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   headerText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#FFD700',
     textTransform: 'capitalize',
+  },
+  tickText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFD700',
   },
 });
