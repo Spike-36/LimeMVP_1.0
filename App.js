@@ -1,17 +1,39 @@
-// App.js — Tab labels changed to Level 1–4
+// App.js — Tab labels changed to Level 1–4, audio stays active in background
 import { Entypo, Feather, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import { Audio } from 'expo-av';
+import { useEffect } from 'react';
 
 import ExploreStack from './screens/ExploreStack';
 import FindStack from './screens/FindStack';
 import PracticeListenScreen from './screens/PracticeListenScreen';
 import PracticeSpeakScreen from './screens/PracticeSpeakScreen';
-import ReviewScreen from './screens/ReviewScreen';
+import ReviewStack from './screens/ReviewStack'; // ✅ NEW: stack includes Review + ReviewWord
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  useEffect(() => {
+    const configureAudio = async () => {
+      try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: true,
+          playsInSilentModeIOS: true,
+          interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+          interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+        });
+      } catch (err) {
+        console.warn('Audio mode setup failed:', err);
+      }
+    };
+
+    configureAudio();
+  }, []);
+
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -56,7 +78,7 @@ export default function App() {
         />
         <Tab.Screen
           name="Review"
-          component={ReviewScreen}
+          component={ReviewStack} // ✅ Replace ReviewScreen with ReviewStack
           options={{
             tabBarLabel: 'Level 4',
             tabBarIcon: ({ color, size }) => (
@@ -70,6 +92,7 @@ export default function App() {
           options={{
             tabBarButton: () => null,
             tabBarItemStyle: { display: 'none' },
+            tabBarLabel: () => null,
           }}
         />
       </Tab.Navigator>

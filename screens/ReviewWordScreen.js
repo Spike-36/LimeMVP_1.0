@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -8,46 +8,30 @@ import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
-import blocks from '../data/blocks.json';
-import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
+import { getStage, loadProgress } from '../utils/progressStorage';
 
-function shuffleArray(array) {
-  return array
-    .map(value => ({ value, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ value }) => value);
-}
-
-export default function PracticeListenScreen() {
+export default function ReviewWordScreen() {
   const navigation = useNavigation();
-  const [shuffledBlocks, setShuffledBlocks] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const route = useRoute();
+  const { words = [], index = 0 } = route.params || {};
+
+  const [currentIndex, setCurrentIndex] = useState(index);
   const [progress, setProgress] = useState({});
   const [showAnswer, setShowAnswer] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [pendingRemovalId, setPendingRemovalId] = useState(null);
   const [autoplay, setAutoplay] = useState(false);
 
-  const current = shuffledBlocks[currentIndex];
+  const current = words[currentIndex];
   const currentStage = getStage(progress, current?.id);
   const soundRef = useRef(null);
   const autoplayTimer = useRef(null);
 
-  const REPLAY_DELAY = 2000; // Delay between first and second audio play (ms)
+  const REPLAY_DELAY = 2000;
 
   useFocusEffect(
     useCallback(() => {
-      async function loadEligibleWords() {
-        const progressMap = await loadProgress();
-        const eligible = blocks.filter(b => getStage(progressMap, b.id) === 2);
-        setProgress(progressMap);
-        setShuffledBlocks(shuffleArray(eligible));
-        setCurrentIndex(0);
-        setPendingRemovalId(null);
-      }
-      loadEligibleWords();
-    }, [refreshKey])
+      loadProgress().then(setProgress);
+    }, [])
   );
 
   useEffect(() => {
@@ -77,7 +61,7 @@ export default function PracticeListenScreen() {
             setTimeout(() => {
               if (isMounted) {
                 sound.replayAsync().catch(err =>
-                  console.warn('❌ Error during delayed replay:', err.message)
+                  console.warn('❌ Error during delayed replay in ReviewWordScreen:', err.message)
                 );
               }
             }, REPLAY_DELAY);
@@ -85,7 +69,7 @@ export default function PracticeListenScreen() {
           }
         });
       } catch (err) {
-        console.warn('❌ Audio error in PracticeListen:', err.message);
+        console.warn('❌ Audio error in ReviewWordScreen:', err.message);
       }
     };
 
@@ -133,35 +117,9 @@ export default function PracticeListenScreen() {
     }
   };
 
-  const handleAdvanceToStage3 = async () => {
-    if (!current?.id || currentStage >= 3) return;
-    await updateWordStage(current.id, 3);
-    const updatedProgress = await loadProgress();
-    setProgress(updatedProgress);
-    setPendingRemovalId(current.id);
-  };
-
   const handleNext = () => {
-    let nextList = [...shuffledBlocks];
-    if (pendingRemovalId) {
-      nextList = nextList.filter(b => b.id !== pendingRemovalId);
-      setPendingRemovalId(null);
-    }
-    const nextIndex = (currentIndex + 1) % nextList.length;
-    setShuffledBlocks(nextList);
-    setCurrentIndex(nextIndex >= nextList.length ? 0 : nextIndex);
-  };
-
-  const handleStageSelect = async (stage) => {
-    await updateWordStage(current.id, stage);
-    const updated = await loadProgress();
-    const eligible = blocks.filter(b => getStage(updated, b.id) === 2);
-    setShowAnswer(false);
-    setShowEnglish(false);
-    setProgress(updated);
-    setShuffledBlocks(shuffleArray(eligible));
-    setCurrentIndex(0);
-    setRefreshKey(prev => prev + 1);
+    const nextIndex = (currentIndex + 1) % words.length;
+    setCurrentIndex(nextIndex);
   };
 
   const toggleAutoplay = () => {
@@ -171,9 +129,7 @@ export default function PracticeListenScreen() {
   if (!current) {
     return (
       <View style={styles.centeredContainer}>
-        <Text style={styles.emptyText}>
-          No eligible words. Go to Learn → progress some → return here.
-        </Text>
+        <Text style={styles.emptyText}>No words available to review.</Text>
       </View>
     );
   }
@@ -201,25 +157,13 @@ export default function PracticeListenScreen() {
             color={autoplay ? 'limegreen' : '#aaa'}
           />
         </TouchableOpacity>
-
-        {showAnswer && currentStage >= 2 && (
-          <TouchableOpacity onPress={handleAdvanceToStage3} style={styles.tickIconWrapper}>
-            <View style={styles.tickIconCircle}>
-              <MaterialCommunityIcons
-                name={currentStage >= 3 ? 'check-circle' : 'check-circle-outline'}
-                size={32}
-                color={currentStage >= 3 ? 'limegreen' : 'gray'}
-              />
-            </View>
-          </TouchableOpacity>
-        )}
       </View>
 
       <View style={styles.bottomHalf}>
         <WordInteractionBlock
           block={current}
           stage={currentStage}
-          onStageChange={handleStageSelect}
+          onStageChange={() => {}}
           onPlayAudio={playAudio}
           showStars={false}
           showInstruction={!showAnswer}
@@ -256,17 +200,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonText: { color: 'white', fontSize: 18 },
-  tickIconWrapper: {
-    position: 'absolute',
-    bottom: 36,
-    right: 20,
-    zIndex: 5,
-  },
-  tickIconCircle: {
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 24,
-    padding: 6,
-  },
   autoPlayIconWrapper: {
     position: 'absolute',
     top: 75,

@@ -37,7 +37,7 @@ export default function WordRecordLayoutMVP({
 
         {onPressFind && (
           <TouchableOpacity style={styles.findButton} onPress={onPressFind}>
-            <Ionicons name="search" size={25} color="white" />
+            <Ionicons name="search" size={25} color="#aaa" />
           </TouchableOpacity>
         )}
 
@@ -55,13 +55,12 @@ export default function WordRecordLayoutMVP({
           </View>
         )}
 
-        {/* ✅ StageAdvanceButton with skipLearn enabled */}
         {typeof stage === 'number' && stage < 4 && wordId && (
           <StageAdvanceButton
             wordId={wordId}
             currentStage={stage}
             onStageChange={onAdvanceStage}
-            skipLearn={true} // ✅ MVP logic: skip stage 1
+            skipLearn={true}
           />
         )}
       </View>

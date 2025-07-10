@@ -20,6 +20,7 @@ export default function ExploreListScreen() {
   const sectionRefs = useRef({});
   const yPositions = useRef({});
   const suppressScroll = useRef(false);
+  const hasScrolledToType = useRef(false);
   const [progress, setProgress] = useState({});
   const [activeSection, setActiveSection] = useState('');
 
@@ -72,12 +73,13 @@ export default function ExploreListScreen() {
 
   useEffect(() => {
     const scrollToType = route.params?.scrollToType;
-    if (!scrollToType) return;
+    if (!scrollToType || hasScrolledToType.current) return;
 
     const tryScroll = () => {
       const y = yPositions.current[scrollToType];
       if (y != null && scrollRef.current) {
         scrollRef.current.scrollTo({ y: y + 35, animated: true });
+        hasScrolledToType.current = true;
       }
     };
 
