@@ -1,7 +1,8 @@
-// ReviewScreen.js — Shows full list of Level 4 words using Explore-style layout
+// ReviewScreen.js — Shows full list of Level 4 words with tick-all-to-reset
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useRef, useState } from 'react';
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,7 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import WordListItem from '../components/WordListItem';
 import blocks from '../data/blocks.json';
-import { getStage, loadProgress } from '../utils/progressStorage';
+import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function ReviewScreen() {
   const navigation = useNavigation();
@@ -70,6 +71,33 @@ export default function ReviewScreen() {
     setActiveSection(current);
   };
 
+  const refreshProgress = async () => {
+    const updated = await loadProgress();
+    setProgress(updated);
+  };
+
+  const handleResetSection = async (title) => {
+    const words = groupedBlocks[title] || [];
+
+    Alert.alert(
+      'Reset progress?',
+      `This will set all words in "${title}" back to stage 0.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: async () => {
+            for (const word of words) {
+              await updateWordStage(word.id, 0, true);
+            }
+            await refreshProgress();
+          },
+        },
+      ]
+    );
+  };
+
   const handleUpdateProgress = async (newProgress) => {
     suppressScroll.current = true;
     setProgress(newProgress);
@@ -110,7 +138,12 @@ export default function ReviewScreen() {
                 }}
                 style={styles.headerContainer}
               >
-                <Text style={styles.headerText}>{title}</Text>
+                <View style={styles.headerRow}>
+                  <Text style={styles.headerText}>{title}</Text>
+                  <TouchableOpacity onPress={() => handleResetSection(title)}>
+                    <Text style={styles.tickText}>✗</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
 
               {groupedBlocks[title].map((item) => (
@@ -176,11 +209,21 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#444',
   },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   headerText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#FFD700',
     textTransform: 'capitalize',
+  },
+  tickText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFD700',
   },
   empty: {
     color: 'gray',
