@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   english: {
     fontSize: 18,
-    color: '#FFD700',
+     color: '#FFFFFF', // white
     fontWeight: '600',
   },
   japaneseZone: {

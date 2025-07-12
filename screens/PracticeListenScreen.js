@@ -1,8 +1,9 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
+import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
@@ -33,8 +34,9 @@ export default function PracticeListenScreen() {
   const currentStage = getStage(progress, current?.id);
   const soundRef = useRef(null);
   const autoplayTimer = useRef(null);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  const REPLAY_DELAY = 2000; // Delay between first and second audio play (ms)
+  const REPLAY_DELAY = 2000;
 
   useFocusEffect(
     useCallback(() => {
@@ -133,8 +135,32 @@ export default function PracticeListenScreen() {
     }
   };
 
+  const triggerTickAnimation = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 1.3,
+        duration: 120,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
   const handleAdvanceToStage3 = async () => {
     if (!current?.id || currentStage >= 3) return;
+
+    triggerTickAnimation();
+
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    } catch (err) {
+      console.warn('Haptics error:', err.message);
+    }
+
     await updateWordStage(current.id, 3);
     const updatedProgress = await loadProgress();
     setProgress(updatedProgress);
@@ -203,15 +229,15 @@ export default function PracticeListenScreen() {
         </TouchableOpacity>
 
         {showAnswer && currentStage >= 2 && (
-          <TouchableOpacity onPress={handleAdvanceToStage3} style={styles.tickIconWrapper}>
-            <View style={styles.tickIconCircle}>
+          <Animated.View style={[styles.tickIconWrapper, { transform: [{ scale: scaleAnim }] }]}>
+            <TouchableOpacity onPress={handleAdvanceToStage3} style={styles.tickIconCircle}>
               <MaterialCommunityIcons
                 name={currentStage >= 3 ? 'check-circle' : 'check-circle-outline'}
                 size={32}
                 color={currentStage >= 3 ? 'limegreen' : 'gray'}
               />
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </Animated.View>
         )}
       </View>
 

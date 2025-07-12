@@ -1,6 +1,7 @@
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Animated,
   ScrollView,
   StyleSheet,
   Text,
@@ -23,6 +24,7 @@ export default function ExploreListScreen() {
   const hasScrolledToType = useRef(false);
   const [progress, setProgress] = useState({});
   const [activeSection, setActiveSection] = useState('');
+  const animRefs = useRef({});
 
   useFocusEffect(
     useCallback(() => {
@@ -92,8 +94,26 @@ export default function ExploreListScreen() {
     setProgress(updated);
   };
 
+  const triggerTickBounce = (title) => {
+    const anim = animRefs.current[title];
+    if (!anim) return;
+
+    Animated.sequence([
+      Animated.timing(anim, {
+        toValue: 1.3,
+        duration: 120,
+        useNativeDriver: true,
+      }),
+      Animated.spring(anim, {
+        toValue: 1,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
   const handleToggleSection = async (title) => {
-    console.log(`\u25B6\uFE0F handleToggleSection called for: ${title}`);
+    triggerTickBounce(title);
     const sectionWords = groupedBlocks[title] || [];
 
     const isFullySelected =
@@ -131,6 +151,10 @@ export default function ExploreListScreen() {
               sectionWords.length > 0 &&
               sectionWords.every((word) => getStage(progress, word.id) >= 2);
 
+            if (!animRefs.current[title]) {
+              animRefs.current[title] = new Animated.Value(1);
+            }
+
             return (
               <View key={title}>
                 <View
@@ -155,7 +179,14 @@ export default function ExploreListScreen() {
                   <View style={styles.headerRow}>
                     <Text style={styles.headerText}>{title}</Text>
                     <TouchableOpacity onPress={() => handleToggleSection(title)}>
-                      <Text style={styles.tickText}>{isFullySelected ? '✗' : '✓'}</Text>
+                      <Animated.Text
+                        style={[
+                          styles.tickText,
+                          { transform: [{ scale: animRefs.current[title] }] },
+                        ]}
+                      >
+                        {isFullySelected ? '✗' : '✓'}
+                      </Animated.Text>
                     </TouchableOpacity>
                   </View>
                 </View>

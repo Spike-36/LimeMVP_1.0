@@ -1,7 +1,8 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
+import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { audioMap } from '../components/audioMap';
@@ -25,6 +26,7 @@ export default function PracticeSpeakScreen() {
   const [showEnglish, setShowEnglish] = useState(false);
   const [progress, setProgress] = useState({});
   const soundRef = useRef(null);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const current = shuffledBlocks[currentIndex];
   const currentStage = current?.id ? getStage(progress, current.id) : 0;
@@ -86,12 +88,37 @@ export default function PracticeSpeakScreen() {
     }
   };
 
+  const triggerTickAnimation = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 1.3,
+        duration: 120,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
   const handleAdvanceToStage4 = async () => {
     if (!current?.id || currentStage >= 4) return;
+
+    triggerTickAnimation();
+
+    if (currentStage === 3) {
+      try {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      } catch (err) {
+        console.warn('Haptics error:', err.message);
+      }
+    }
+
     await updateWordStage(current.id, 4);
     const updated = await loadProgress();
     setProgress(updated);
-    // Tick turns green, but we don't remove yet
   };
 
   const handleNext = () => {
@@ -133,18 +160,15 @@ export default function PracticeSpeakScreen() {
         />
 
         {showAnswer && currentStage >= 3 && (
-          <TouchableOpacity
-            onPress={handleAdvanceToStage4}
-            style={styles.tickIconWrapper}
-          >
-            <View style={styles.tickIconCircle}>
+          <Animated.View style={[styles.tickIconWrapper, { transform: [{ scale: scaleAnim }] }]}>
+            <TouchableOpacity onPress={handleAdvanceToStage4} style={styles.tickIconCircle}>
               <MaterialCommunityIcons
                 name={currentStage >= 4 ? 'check-circle' : 'check-circle-outline'}
                 size={32}
                 color={currentStage >= 4 ? 'limegreen' : 'gray'}
               />
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </Animated.View>
         )}
       </View>
 
