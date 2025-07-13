@@ -14,7 +14,6 @@ import {
   View,
 } from 'react-native';
 
-import BottomNav from '../components/BottomNav';
 import blocks from '../data/blocks.json';
 
 export default function VoiceSearchScreen() {
@@ -154,8 +153,6 @@ export default function VoiceSearchScreen() {
         {isListening && <Text style={styles.listening}>🎤 Listening...</Text>}
         {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
       </View>
-
-      <BottomNav active="search" />
     </SafeAreaView>
   );
 }

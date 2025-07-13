@@ -1,1 +1,1432 @@
-[	{		"audio" : "J003.curry_rice.japan.mp3",		"english" : "curry rice",		"foreign" : "カレーライス",		"id" : "J003",		"image" : "J003.curry_rice.jpg",		"phonetic" : "karē raisu",		"type" : "dine",		"value" : 0	},	{		"audio" : "J004.ramen.japan.mp3",		"english" : "ramen",		"foreign" : "ラーメン",		"id" : "J004",		"image" : "J004.ramen.jpg",		"phonetic" : "rāmen",		"type" : "dine",		"value" : 0	},	{		"audio" : "J005.sushi.japan.mp3",		"english" : "sushi",		"foreign" : "寿司",		"id" : "J005",		"image" : "J005.sushi.jpg",		"phonetic" : "sushi",		"type" : "dine",		"value" : 0	},	{		"audio" : "J006.rice_bowl.japan.mp3",		"english" : "rice bowl",		"foreign" : "丼",		"id" : "J006",		"image" : "J006.rice_bowl.jpg",		"phonetic" : "donburi",		"type" : "dine",		"value" : 0	},	{		"audio" : "J007.tempura.japan.mp3",		"english" : "tempura",		"foreign" : "天ぷら",		"id" : "J007",		"image" : "J007.tempura.jpg",		"phonetic" : "tenpura",		"type" : "dine",		"value" : 0	},	{		"audio" : "J008.buckwheat_noodles.japan.mp3",		"english" : "buckwheat noodles",		"foreign" : "そば",		"id" : "J008",		"image" : "J008.buckwheat_noodles.jpg",		"phonetic" : "soba",		"type" : "dine",		"value" : 0	},	{		"audio" : "J009.thick_wheat_noodles.japan.mp3",		"english" : "thick wheat noodles",		"foreign" : "うどん",		"id" : "J009",		"image" : "J009.thick_wheat_noodles.jpg",		"phonetic" : "udon",		"type" : "dine",		"value" : 0	},	{		"audio" : "J010.pork_cutlet.japan.mp3",		"english" : "pork cutlet",		"foreign" : "豚カツ",		"id" : "J010",		"image" : "J010.pork_cutlet.jpg",		"phonetic" : "tonkatsu",		"type" : "dine",		"value" : 0	},	{		"audio" : "J011.savory_pancake.japan.mp3",		"english" : "savory pancake",		"foreign" : "お好み焼き",		"id" : "J011",		"image" : "J011.savory_pancake.jpg",		"phonetic" : "okonomiyaki",		"type" : "dine",		"value" : 0	},	{		"audio" : "J012.grilled_chicken_skewers.japan.mp3",		"english" : "grilled chicken skewers",		"foreign" : "焼き鳥",		"id" : "J012",		"image" : "J012.grilled_chicken_skewers.jpg",		"phonetic" : "yakitori",		"type" : "dine",		"value" : 0	},	{		"audio" : "J013.rice_ball.japan.mp3",		"english" : "rice ball",		"foreign" : "おにぎり",		"id" : "J013",		"image" : "J013.rice_ball.jpg",		"phonetic" : "onigiri",		"type" : "dine",		"value" : 0	},	{		"audio" : "J018.miso.japan.mp3",		"english" : "miso",		"foreign" : "味噌汁",		"id" : "J018",		"image" : "J018.miso.jpg",		"phonetic" : "misoshiru",		"type" : "dine",		"value" : 0	},	{		"audio" : "0180.coffee.japan.mp3",		"english" : "coffee",		"foreign" : "コーヒー",		"id" : "0180",		"image" : "0180.coffee.jpg",		"phonetic" : "koohii",		"type" : "drinks",		"value" : 0	},	{		"audio" : "0438.tea.japan.mp3",		"english" : "tea",		"foreign" : "お茶",		"id" : "0438",		"image" : "0438.tea.jpg",		"phonetic" : "ocha",		"type" : "drinks",		"value" : 0	},	{		"audio" : "0232.beer.japan.mp3",		"english" : "beer",		"foreign" : "ビール",		"id" : "0232",		"image" : "0232.beer.jpg",		"phonetic" : "biiru",		"type" : "drinks",		"value" : 0	},	{		"audio" : "1829.iced_coffee.japan.mp3",		"english" : "iced coffee",		"foreign" : "アイスコーヒー",		"id" : "1829",		"image" : "1829.iced_coffee.jpg",		"phonetic" : "aisukoohii",		"type" : "drinks",		"value" : 0	},	{		"audio" : "1842.espresso.japan.mp3",		"english" : "espresso",		"foreign" : "エスプレッソ",		"id" : "1842",		"image" : "1842.espresso.jpg",		"phonetic" : "esupuresso",		"type" : "drinks",		"value" : 0	},	{		"audio" : "1843.cappuccino.japan.mp3",		"english" : "cappuccino",		"foreign" : "カプチーノ",		"id" : "1843",		"image" : "1843.cappuccino.jpg",		"phonetic" : "kapuchīno",		"type" : "drinks",		"value" : 0	},	{		"audio" : "0439.wine.japan.mp3",		"english" : "wine",		"foreign" : "ワイン",		"id" : "0439",		"image" : "0439.wine.jpg",		"phonetic" : "wain",		"type" : "headings",		"value" : 0	},	{		"audio" : "0273.fish.japan.mp3",		"english" : "fish",		"foreign" : "魚",		"id" : "0273",		"image" : "0273.fish.jpg",		"phonetic" : "sakana",		"type" : "headings",		"value" : 0	},	{		"audio" : "0416.bread.japan.mp3",		"english" : "bread",		"foreign" : "パン",		"id" : "0416",		"image" : "0416.bread.jpg",		"phonetic" : "pan",		"type" : "headings",		"value" : 0	},	{		"audio" : "0081.orange.japan.mp3",		"english" : "orange",		"foreign" : "オレンジ",		"id" : "0081",		"image" : "0081.orange.jpg",		"phonetic" : "orenji",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0189.banana.japan.mp3",		"english" : "banana",		"foreign" : "バナナ",		"id" : "0189",		"image" : "0189.banana.jpg",		"phonetic" : "banana",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0209.chicken.japan.mp3",		"english" : "chicken",		"foreign" : "鶏肉",		"id" : "0209",		"image" : "0209.chicken.jpg",		"phonetic" : "toriniku",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0211.beef.japan.mp3",		"english" : "beef",		"foreign" : "牛肉",		"id" : "0211",		"image" : "0211.beef.jpg",		"phonetic" : "gyuuniku",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0212.lamb.japan.mp3",		"english" : "lamb",		"foreign" : "ラム肉",		"id" : "0212",		"image" : "0212.lamb.jpg",		"phonetic" : "ramu niku",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0217.ice_cream.japan.mp3",		"english" : "ice cream",		"foreign" : "アイスクリーム",		"id" : "0217",		"image" : "0217.ice_cream.jpg",		"phonetic" : "aisukurīmu",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0226.potato.japan.mp3",		"english" : "potato",		"foreign" : "じゃがいも",		"id" : "0226",		"image" : "0226.potato.jpg",		"phonetic" : "jagaimo",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0414.egg.japan.mp3",		"english" : "egg",		"foreign" : "卵",		"id" : "0414",		"image" : "0414.egg.jpg",		"phonetic" : "tamago",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0419.apple.japan.mp3",		"english" : "apple",		"foreign" : "りんご",		"id" : "0419",		"image" : "0419.apple.jpg",		"phonetic" : "ringo",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0423.rice.japan.mp3",		"english" : "rice",		"foreign" : "ご飯",		"id" : "0423",		"image" : "0423.rice.jpg",		"phonetic" : "gohan",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0434.sugar.japan.mp3",		"english" : "sugar",		"foreign" : "砂糖",		"id" : "0434",		"image" : "0434.sugar.jpg",		"phonetic" : "satou",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0435.salt.japan.mp3",		"english" : "salt",		"foreign" : "塩",		"id" : "0435",		"image" : "0435.salt.jpg",		"phonetic" : "shio",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0441.milk.japan.mp3",		"english" : "milk",		"foreign" : "牛乳",		"id" : "0441",		"image" : "0441.milk.jpg",		"phonetic" : "gyūnyū",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1012.butter.japan.mp3",		"english" : "butter",		"foreign" : "バター",		"id" : "1012",		"image" : "1012.butter.jpg",		"phonetic" : "batā",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1013.vegetables.japan.mp3",		"english" : "vegetables",		"foreign" : "野菜",		"id" : "1013",		"image" : "1013.vegetables.jpg",		"phonetic" : "yasai",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1014.meat.japan.mp3",		"english" : "meat",		"foreign" : "肉",		"id" : "1014",		"image" : "1014.meat.jpg",		"phonetic" : "niku",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1501.tomato.japan.mp3",		"english" : "tomato",		"foreign" : "トマト",		"id" : "1501",		"image" : "1501.tomato.jpg",		"phonetic" : "tomato",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1502.onion.japan.mp3",		"english" : "onion",		"foreign" : "玉ねぎ",		"id" : "1502",		"image" : "1502.onion.jpg",		"phonetic" : "tamanegi",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1503.garlic.japan.mp3",		"english" : "garlic",		"foreign" : "にんにく",		"id" : "1503",		"image" : "1503.garlic.jpg",		"phonetic" : "ninniku",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1505.chocolate.japan.mp3",		"english" : "chocolate",		"foreign" : "チョコレート",		"id" : "1505",		"image" : "1505.chocolate.jpg",		"phonetic" : "chokoreeto",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1444.fruit.japan.mp3",		"english" : "fruit",		"foreign" : "果物",		"id" : "1444",		"image" : "1444.fruit.jpg",		"phonetic" : "kudamono",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1543.noodle.japan.mp3",		"english" : "noodle",		"foreign" : "麺",		"id" : "1543",		"image" : "1543.noodle.jpg",		"phonetic" : "men",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0158.prawn.japan.mp3",		"english" : "prawn",		"foreign" : "海老",		"id" : "0158",		"image" : "0158.prawn.jpg",		"phonetic" : "ebi",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0178.squid.japan.mp3",		"english" : "squid",		"foreign" : "いか",		"id" : "0178",		"image" : "0178.squid.jpg",		"phonetic" : "ika",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1571.crab.japan.mp3",		"english" : "crab",		"foreign" : "蟹",		"id" : "1571",		"image" : "1571.crab.jpg",		"phonetic" : "kani",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1582.duck.japan.mp3",		"english" : "duck",		"foreign" : "鴨",		"id" : "1582",		"image" : "1582.duck.jpg",		"phonetic" : "kamo",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1595.vinegar.japan.mp3",		"english" : "vinegar",		"foreign" : "酢",		"id" : "1595",		"image" : "1595.vinegar.jpg",		"phonetic" : "su",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1598.soya_sauce.japan.mp3",		"english" : "soya sauce",		"foreign" : "醤油",		"id" : "1598",		"image" : "1598.soya_sauce.jpg",		"phonetic" : "shōyu",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0210.pork.japan.mp3",		"english" : "pork",		"foreign" : "豚肉",		"id" : "0210",		"image" : "0210.pork.jpg",		"phonetic" : "butaniku",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1616.carrot.japan.mp3",		"english" : "carrot",		"foreign" : "人参",		"id" : "1616",		"image" : "1616.carrot.jpg",		"phonetic" : "ninjin",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1619.pepper.japan.mp3",		"english" : "pepper",		"foreign" : "胡椒",		"id" : "1619",		"image" : "1619.pepper.jpg",		"phonetic" : "koshou",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1620.mushroom.japan.mp3",		"english" : "mushroom",		"foreign" : "きのこ",		"id" : "1620",		"image" : "1620.mushroom.jpg",		"phonetic" : "kinoko",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1520.cucumber.japan.mp3",		"english" : "cucumber",		"foreign" : "胡瓜",		"id" : "1520",		"image" : "1520.cucumber.jpg",		"phonetic" : "kyuuri",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1623.lettuce.japan.mp3",		"english" : "lettuce",		"foreign" : "レタス",		"id" : "1623",		"image" : "1623.lettuce.jpg",		"phonetic" : "retasu",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1642.tuna.japan.mp3",		"english" : "tuna",		"foreign" : "ツナ",		"id" : "1642",		"image" : "1642.tuna.jpg",		"phonetic" : "tsuna",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1717.ham.japan.mp3",		"english" : "ham",		"foreign" : "ハム",		"id" : "1717",		"image" : "1717.ham.jpg",		"phonetic" : "hamu",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1722.sausage.japan.mp3",		"english" : "sausage",		"foreign" : "ソーセージ",		"id" : "1722",		"image" : "1722.sausage.jpg",		"phonetic" : "sōsēji",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1756.offal.japan.mp3",		"english" : "offal",		"foreign" : "ホルモン",		"id" : "1756",		"image" : "1756.offal.jpg",		"phonetic" : "horumon",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0145.water.japan.mp3",		"english" : "water",		"foreign" : "水",		"id" : "0145",		"image" : "0145.water.jpg",		"phonetic" : "mizu",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1983.oil.japan.mp3",		"english" : "oil",		"foreign" : "油",		"id" : "1983",		"image" : "1983.oil.jpg",		"phonetic" : "abura",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0126.ice.japan.mp3",		"english" : "ice",		"foreign" : "氷",		"id" : "0126",		"image" : "0126.ice.jpg",		"phonetic" : "koori",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "2000.noodles.japan.mp3",		"english" : "noodles",		"foreign" : "麺",		"id" : "2000",		"image" : "2000.noodles.jpg",		"phonetic" : "men",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "1641.salmon.japan.mp3",		"english" : "salmon",		"foreign" : "鮭",		"id" : "1641",		"image" : "1641.salmon.jpg",		"phonetic" : "sake",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "2003.eel.japan.mp3",		"english" : "eel",		"foreign" : "鰻",		"id" : "2003",		"image" : "2003.eel.jpg",		"phonetic" : "unagi",		"type" : "ingredients",		"value" : 0	},	{		"audio" : "0015.three.japan.mp3",		"english" : "three",		"foreign" : "三",		"id" : "0015",		"image" : "0015.three.jpg",		"phonetic" : "san",		"type" : "number",		"value" : 3	},	{		"audio" : "0052.four.japan.mp3",		"english" : "four",		"foreign" : "四",		"id" : "0052",		"image" : "0052.four.jpg",		"phonetic" : "yon",		"type" : "number",		"value" : 4	},	{		"audio" : "0153.two.japan.mp3",		"english" : "two",		"foreign" : "二",		"id" : "0153",		"image" : "0153.two.jpg",		"phonetic" : "ni",		"type" : "number",		"value" : 2	},	{		"audio" : "0168.five.japan.mp3",		"english" : "five",		"foreign" : "五",		"id" : "0168",		"image" : "0168.five.jpg",		"phonetic" : "go",		"type" : "number",		"value" : 5	},	{		"audio" : "0012.one.japan.mp3",		"english" : "one",		"foreign" : "一",		"id" : "0012",		"image" : "0012.one.jpg",		"phonetic" : "ichi",		"type" : "number",		"value" : 1	},	{		"audio" : "0032.seven.japan.mp3",		"english" : "seven",		"foreign" : "七",		"id" : "0032",		"image" : "0032.seven.jpg",		"phonetic" : "nana",		"type" : "number",		"value" : 7	},	{		"audio" : "0089.nine.japan.mp3",		"english" : "nine",		"foreign" : "九",		"id" : "0089",		"image" : "0089.nine.jpg",		"phonetic" : "kyuu",		"type" : "number",		"value" : 9	},	{		"audio" : "0152.ten.japan.mp3",		"english" : "ten",		"foreign" : "十",		"id" : "0152",		"image" : "0152.ten.jpg",		"phonetic" : "juu",		"type" : "number",		"value" : 10	},	{		"audio" : "0167.fifty.japan.mp3",		"english" : "fifty",		"foreign" : "五十",		"id" : "0167",		"image" : "0167.fifty.jpg",		"phonetic" : "gojuu",		"type" : "number",		"value" : 50	},	{		"audio" : "0241.five_hundred.japan.mp3",		"english" : "five hundred",		"foreign" : "五百",		"id" : "0241",		"image" : "0241.five_hundred.jpg",		"phonetic" : "gohyaku",		"type" : "number",		"value" : 500	},	{		"audio" : "1918.one_hundred.japan.mp3",		"english" : "one hundred",		"foreign" : "百",		"id" : "1918",		"image" : "1918.one_hundred.jpg",		"phonetic" : "hyaku",		"type" : "number",		"value" : 100	},	{		"audio" : "1920.one_thousand.japan.mp3",		"english" : "one thousand",		"foreign" : "千",		"id" : "1920",		"image" : "1920.one_thousand.jpg",		"phonetic" : "sen",		"type" : "number",		"value" : 1000	},	{		"audio" : "0031.six.japan.mp3",		"english" : "six",		"foreign" : "六",		"id" : "0031",		"image" : "0031.six.jpg",		"phonetic" : "roku",		"type" : "number",		"value" : 6	},	{		"audio" : "0119.eight.japan.mp3",		"english" : "eight",		"foreign" : "八",		"id" : "0119",		"image" : "0119.eight.jpg",		"phonetic" : "hachi",		"type" : "number",		"value" : 8	},	{		"audio" : "0001.zero.japan.mp3",		"english" : "zero",		"foreign" : "ゼロ",		"id" : "0001",		"image" : "0001.zero.jpg",		"phonetic" : "zero",		"type" : "number",		"value" : 0	},	{		"audio" : "1921.chopsticks.japan.mp3",		"english" : "chopsticks",		"foreign" : "箸",		"id" : "1921",		"image" : "1921.chopsticks.jpg",		"phonetic" : "hashi",		"type" : "objects",		"value" : 0	},	{		"audio" : "2004.bank_card.japan.mp3",		"english" : "bank card",		"foreign" : "キャッシュカード",		"id" : "2004",		"image" : "2004.bank_card.jpg",		"phonetic" : "kyasshu kādo",		"type" : "objects",		"value" : 0	},	{		"audio" : "0472.bag.japan.mp3",		"english" : "bag",		"foreign" : "袋",		"id" : "0472",		"image" : "0472.bag.jpg",		"phonetic" : "fukuro",		"type" : "objects",		"value" : 0	},	{		"audio" : "1406.scotland.japan.mp3",		"english" : "Scotland",		"foreign" : "スコットランド",		"id" : "1406",		"image" : "1406.scotland.jpg",		"phonetic" : "Sukottorando",		"type" : "place",		"value" : 0	},	{		"audio" : "J014.japan.japan.mp3",		"english" : "Japan",		"foreign" : "日本",		"id" : "J014",		"image" : "J014.japan.jpg",		"phonetic" : "nihon",		"type" : "place",		"value" : 0	},	{		"audio" : "J015.tokyo.japan.mp3",		"english" : "Tokyo",		"foreign" : "東京",		"id" : "J015",		"image" : "J015.tokyo.jpg",		"phonetic" : "tōkyō",		"type" : "place",		"value" : 0	},	{		"audio" : "J016.osaka.japan.mp3",		"english" : "Osaka",		"foreign" : "大阪",		"id" : "J016",		"image" : "J016.osaka.jpg",		"phonetic" : "ōsaka",		"type" : "place",		"value" : 0	},	{		"audio" : "J017.kyoto.japan.mp3",		"english" : "Kyoto",		"foreign" : "京都",		"id" : "J017",		"image" : "J017.kyoto.jpg",		"phonetic" : "kyōto",		"type" : "place",		"value" : 0	},	{		"audio" : "0078.yes.japan.mp3",		"english" : "yes",		"foreign" : "はい",		"id" : "0078",		"image" : "0078.yes.jpg",		"phonetic" : "hai",		"type" : "speech",		"value" : 0	},	{		"audio" : "0085.no.japan.mp3",		"english" : "no",		"foreign" : "いいえ",		"id" : "0085",		"image" : "0085.no.jpg",		"phonetic" : "iie",		"type" : "speech",		"value" : 0	},	{		"audio" : "0101.thank_you.japan.mp3",		"english" : "thank you",		"foreign" : "ありがとう",		"id" : "0101",		"image" : "0101.thank_you.jpg",		"phonetic" : "arigatou",		"type" : "speech",		"value" : 0	},	{		"audio" : "0184.hello.japan.mp3",		"english" : "hello",		"foreign" : "こんにちは",		"id" : "0184",		"image" : "0184.hello.jpg",		"phonetic" : "konnichiwa",		"type" : "speech",		"value" : 0	},	{		"audio" : "0188.good.japan.mp3",		"english" : "good",		"foreign" : "良い",		"id" : "0188",		"image" : "0188.good.jpg",		"phonetic" : "ii",		"type" : "speech",		"value" : 0	},	{		"audio" : "0237.please.japan.mp3",		"english" : "please",		"foreign" : "ワイン",		"id" : "0237",		"image" : "0237.please.jpg",		"phonetic" : "wain",		"type" : "speech",		"value" : 0	},	{		"audio" : "1438.sorry.japan.mp3",		"english" : "sorry",		"foreign" : "ごめんなさい",		"id" : "1438",		"image" : "1438.sorry.jpg",		"phonetic" : "gomennasai",		"type" : "speech",		"value" : 0	},	{		"audio" : "1396.taxi.japan.mp3",		"english" : "taxi",		"foreign" : "タクシー",		"id" : "1396",		"image" : "1396.taxi.jpg",		"phonetic" : "takushī",		"type" : "speech",		"value" : 0	},	{		"audio" : "1398.toilet.japan.mp3",		"english" : "toilet",		"foreign" : "トイレ",		"id" : "1398",		"image" : "1398.toilet.jpg",		"phonetic" : "toire",		"type" : "speech",		"value" : 0	},	{		"audio" : "1401.bill.japan.mp3",		"english" : "bill",		"foreign" : "会計",		"id" : "1401",		"image" : "1401.bill.jpg",		"phonetic" : "kaikei",		"type" : "speech",		"value" : 0	},	{		"audio" : "1402.goodbye.japan.mp3",		"english" : "goodbye",		"foreign" : "スコットランド",		"id" : "1402",		"image" : "1402.goodbye.jpg",		"phonetic" : "sukottorando",		"type" : "speech",		"value" : 0	},	{		"audio" : "1403.delicious.japan.mp3",		"english" : "delicious",		"foreign" : "美味しい",		"id" : "1403",		"image" : "1403.delicious.jpg",		"phonetic" : "oishii",		"type" : "speech",		"value" : 0	},	{		"audio" : "1405.cheers.japan.mp3",		"english" : "cheers",		"foreign" : "乾杯",		"id" : "1405",		"image" : "1405.cheers.jpg",		"phonetic" : "kanpai",		"type" : "speech",		"value" : 0	},	{		"audio" : "1395.menu.japan.mp3",		"english" : "menu",		"foreign" : "メニュー",		"id" : "1395",		"image" : "1395.menu.jpg",		"phonetic" : "menyuu",		"type" : "speech",		"value" : 0	},	{		"audio" : "0114.i_don't_understand.japan.mp3",		"english" : "I don't understand",		"foreign" : "わかりません",		"id" : "0114",		"image" : "0114.i_don't_understand.jpg",		"phonetic" : "wakarimasen",		"type" : "speech",		"value" : 0	},	{		"audio" : "1426.the_bill_please.japan.mp3",		"english" : "the bill please",		"foreign" : "お会計お願いします",		"id" : "1426",		"image" : "1426.the_bill_please.jpg",		"phonetic" : "okaikei onegaishimasu",		"type" : "speech",		"value" : 0	},	{		"audio" : "1989.a_little.japan.mp3",		"english" : "a little",		"foreign" : "少し",		"id" : "1989",		"image" : "1989.a_little.jpg",		"phonetic" : "sukoshi",		"type" : "speech",		"value" : 0	},	{		"audio" : "1990.a_lot.japan.mp3",		"english" : "a lot",		"foreign" : "たくさん",		"id" : "1990",		"image" : "1990.a_lot.jpg",		"phonetic" : "takusan",		"type" : "speech",		"value" : 0	},	{		"audio" : "0607.hot.japan.mp3",		"english" : "hot",		"foreign" : "熱い",		"id" : "0607",		"image" : "0607.hot.jpg",		"phonetic" : "atsui",		"type" : "speech",		"value" : 0	},	{		"audio" : "0608.cold.japan.mp3",		"english" : "cold",		"foreign" : "冷たい",		"id" : "0608",		"image" : "0608.cold.jpg",		"phonetic" : "tsumetai",		"type" : "speech",		"value" : 0	},	{		"audio" : "1995.sweet.japan.mp3",		"english" : "sweet",		"foreign" : "甘い",		"id" : "1995",		"image" : "1995.sweet.jpg",		"phonetic" : "amai",		"type" : "speech",		"value" : 0	},	{		"audio" : "1996.sour.japan.mp3",		"english" : "sour",		"foreign" : "酸っぱい",		"id" : "1996",		"image" : "1996.sour.jpg",		"phonetic" : "suppai",		"type" : "speech",		"value" : 0	},	{		"audio" : "1997.bitter.japan.mp3",		"english" : "bitter",		"foreign" : "苦い",		"id" : "1997",		"image" : "1997.bitter.jpg",		"phonetic" : "nigai",		"type" : "speech",		"value" : 0	},	{		"audio" : "1998.spicy.japan.mp3",		"english" : "spicy",		"foreign" : "辛い",		"id" : "1998",		"image" : "1998.spicy.jpg",		"phonetic" : "karai",		"type" : "speech",		"value" : 0	},	{		"audio" : "1999.not_spicy.japan.mp3",		"english" : "not spicy",		"foreign" : "辛くない",		"id" : "1999",		"image" : "1999.not_spicy.jpg",		"phonetic" : "karakunai",		"type" : "speech",		"value" : 0	},	{		"audio" : "0935.how_much.japan.mp3",		"english" : "how much",		"foreign" : "いくら",		"id" : "0935",		"image" : "0935.how_much.jpg",		"phonetic" : "ikura",		"type" : "speech",		"value" : 0	},	{		"audio" : "2002.excellent.japan.mp3",		"english" : "excellent",		"foreign" : "素晴らしい",		"id" : "2002",		"image" : "2002.excellent.jpg",		"phonetic" : "subarashii",		"type" : "speech",		"value" : 0	}]
+[
+	{
+		"audio" : "1989.a_little.japan.mp3",
+		"english" : "a little",
+		"foreign" : "少し",
+		"id" : "1989",
+		"image" : "1989.a_little.jpg",
+		"phonetic" : "sukoshi",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "1990.a_lot.japan.mp3",
+		"english" : "a lot",
+		"foreign" : "たくさん",
+		"id" : "1990",
+		"image" : "1990.a_lot.jpg",
+		"phonetic" : "takusan",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0419.apple.japan.mp3",
+		"english" : "apple",
+		"foreign" : "りんご",
+		"id" : "0419",
+		"image" : "0419.apple.jpg",
+		"phonetic" : "ringo",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0472.bag.japan.mp3",
+		"english" : "bag",
+		"foreign" : "袋",
+		"id" : "0472",
+		"image" : "0472.bag.jpg",
+		"phonetic" : "fukuro",
+		"type" : "objects",
+		"value" : 0
+	},
+	{
+		"audio" : "0189.banana.japan.mp3",
+		"english" : "banana",
+		"foreign" : "バナナ",
+		"id" : "0189",
+		"image" : "0189.banana.jpg",
+		"phonetic" : "banana",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "2004.bank_card.japan.mp3",
+		"english" : "bank card",
+		"foreign" : "キャッシュカード",
+		"id" : "2004",
+		"image" : "2004.bank_card.jpg",
+		"phonetic" : "kyasshu kādo",
+		"type" : "objects",
+		"value" : 0
+	},
+	{
+		"audio" : "J039.bbq_meat.japan.mp3",
+		"english" : "bbq meat",
+		"foreign" : "焼肉",
+		"id" : "J039",
+		"image" : "J039.bbq_meat.jpg",
+		"phonetic" : "yakiniku",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "0211.beef.japan.mp3",
+		"english" : "beef",
+		"foreign" : "牛肉",
+		"id" : "0211",
+		"image" : "0211.beef.jpg",
+		"phonetic" : "gyuuniku",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J040.beef_hotpot.japan.mp3",
+		"english" : "beef hotpot",
+		"foreign" : "すき焼き",
+		"id" : "J040",
+		"image" : "J040.beef_hotpot.jpg",
+		"phonetic" : "sukiyaki",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "0232.beer.japan.mp3",
+		"english" : "beer",
+		"foreign" : "ビール",
+		"id" : "0232",
+		"image" : "0232.beer.jpg",
+		"phonetic" : "biiru",
+		"type" : "drinks",
+		"value" : 0
+	},
+	{
+		"audio" : "1401.bill.japan.mp3",
+		"english" : "bill",
+		"foreign" : "会計",
+		"id" : "1401",
+		"image" : "1401.bill.jpg",
+		"phonetic" : "kaikei",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0416.bread.japan.mp3",
+		"english" : "bread",
+		"foreign" : "パン",
+		"id" : "0416",
+		"image" : "0416.bread.jpg",
+		"phonetic" : "pan",
+		"type" : "headings",
+		"value" : 0
+	},
+	{
+		"audio" : "J053.broth.japan.mp3",
+		"english" : "broth",
+		"foreign" : "出汁",
+		"id" : "J053",
+		"image" : "J053.broth.jpg",
+		"phonetic" : "dashi",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J008.buckwheat_noodles.japan.mp3",
+		"english" : "buckwheat noodles",
+		"foreign" : "そば",
+		"id" : "J008",
+		"image" : "J008.buckwheat_noodles.jpg",
+		"phonetic" : "soba",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "1012.butter.japan.mp3",
+		"english" : "butter",
+		"foreign" : "バター",
+		"id" : "1012",
+		"image" : "1012.butter.jpg",
+		"phonetic" : "batā",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1843.cappuccino.japan.mp3",
+		"english" : "cappuccino",
+		"foreign" : "カプチーノ",
+		"id" : "1843",
+		"image" : "1843.cappuccino.jpg",
+		"phonetic" : "kapuchīno",
+		"type" : "drinks",
+		"value" : 0
+	},
+	{
+		"audio" : "1616.carrot.japan.mp3",
+		"english" : "carrot",
+		"foreign" : "人参",
+		"id" : "1616",
+		"image" : "1616.carrot.jpg",
+		"phonetic" : "ninjin",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1405.cheers.japan.mp3",
+		"english" : "cheers",
+		"foreign" : "乾杯",
+		"id" : "1405",
+		"image" : "1405.cheers.jpg",
+		"phonetic" : "kanpai",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0209.chicken.japan.mp3",
+		"english" : "chicken",
+		"foreign" : "鶏肉",
+		"id" : "0209",
+		"image" : "0209.chicken.jpg",
+		"phonetic" : "toriniku",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1505.chocolate.japan.mp3",
+		"english" : "chocolate",
+		"foreign" : "チョコレート",
+		"id" : "1505",
+		"image" : "1505.chocolate.jpg",
+		"phonetic" : "chokoreeto",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1921.chopsticks.japan.mp3",
+		"english" : "chopsticks",
+		"foreign" : "箸",
+		"id" : "1921",
+		"image" : "1921.chopsticks.jpg",
+		"phonetic" : "hashi",
+		"type" : "objects",
+		"value" : 0
+	},
+	{
+		"audio" : "0180.coffee.japan.mp3",
+		"english" : "coffee",
+		"foreign" : "コーヒー",
+		"id" : "0180",
+		"image" : "0180.coffee.jpg",
+		"phonetic" : "koohii",
+		"type" : "drinks",
+		"value" : 0
+	},
+	{
+		"audio" : "0608.cold.japan.mp3",
+		"english" : "cold",
+		"foreign" : "冷たい",
+		"id" : "0608",
+		"image" : "0608.cold.jpg",
+		"phonetic" : "tsumetai",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "1571.crab.japan.mp3",
+		"english" : "crab",
+		"foreign" : "蟹",
+		"id" : "1571",
+		"image" : "1571.crab.jpg",
+		"phonetic" : "kani",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1520.cucumber.japan.mp3",
+		"english" : "cucumber",
+		"foreign" : "胡瓜",
+		"id" : "1520",
+		"image" : "1520.cucumber.jpg",
+		"phonetic" : "kyuuri",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J003.curry_rice.japan.mp3",
+		"english" : "curry rice",
+		"foreign" : "カレーライス",
+		"id" : "J003",
+		"image" : "J003.curry_rice.jpg",
+		"phonetic" : "karē raisu",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "1403.delicious.japan.mp3",
+		"english" : "delicious",
+		"foreign" : "美味しい",
+		"id" : "1403",
+		"image" : "1403.delicious.jpg",
+		"phonetic" : "oishii",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0406.down.japan.mp3",
+		"english" : "down",
+		"foreign" : "下",
+		"id" : "0406",
+		"image" : "0406.down.jpg",
+		"phonetic" : "shita",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "J050.dried_seaweed_sheets.japan.mp3",
+		"english" : "dried seaweed sheets",
+		"foreign" : "海苔",
+		"id" : "J050",
+		"image" : "J050.dried_seaweed_sheets.jpg",
+		"phonetic" : "nori",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1582.duck.japan.mp3",
+		"english" : "duck",
+		"foreign" : "鴨",
+		"id" : "1582",
+		"image" : "1582.duck.jpg",
+		"phonetic" : "kamo",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J046.dumplings.japan.mp3",
+		"english" : "dumplings",
+		"foreign" : "餃子",
+		"id" : "J046",
+		"image" : "J046.dumplings.jpg",
+		"phonetic" : "gyoza",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "2003.eel.japan.mp3",
+		"english" : "eel",
+		"foreign" : "鰻",
+		"id" : "2003",
+		"image" : "2003.eel.jpg",
+		"phonetic" : "unagi",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0414.egg.japan.mp3",
+		"english" : "egg",
+		"foreign" : "卵",
+		"id" : "0414",
+		"image" : "0414.egg.jpg",
+		"phonetic" : "tamago",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0119.eight.japan.mp3",
+		"english" : "eight",
+		"foreign" : "八",
+		"id" : "0119",
+		"image" : "0119.eight.jpg",
+		"phonetic" : "hachi",
+		"type" : "number",
+		"value" : 8
+	},
+	{
+		"audio" : "1842.espresso.japan.mp3",
+		"english" : "espresso",
+		"foreign" : "エスプレッソ",
+		"id" : "1842",
+		"image" : "1842.espresso.jpg",
+		"phonetic" : "esupuresso",
+		"type" : "drinks",
+		"value" : 0
+	},
+	{
+		"audio" : "2002.excellent.japan.mp3",
+		"english" : "excellent",
+		"foreign" : "素晴らしい",
+		"id" : "2002",
+		"image" : "2002.excellent.jpg",
+		"phonetic" : "subarashii",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "1435.excuse_me.japan.mp3",
+		"english" : "excuse me",
+		"foreign" : "すみません",
+		"id" : "1435",
+		"image" : "1435.excuse_me.jpg",
+		"phonetic" : "sumimasen",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0167.fifty.japan.mp3",
+		"english" : "fifty",
+		"foreign" : "五十",
+		"id" : "0167",
+		"image" : "0167.fifty.jpg",
+		"phonetic" : "gojuu",
+		"type" : "number",
+		"value" : 50
+	},
+	{
+		"audio" : "0273.fish.japan.mp3",
+		"english" : "fish",
+		"foreign" : "魚",
+		"id" : "0273",
+		"image" : "0273.fish.jpg",
+		"phonetic" : "sakana",
+		"type" : "headings",
+		"value" : 0
+	},
+	{
+		"audio" : "0168.five.japan.mp3",
+		"english" : "five",
+		"foreign" : "五",
+		"id" : "0168",
+		"image" : "0168.five.jpg",
+		"phonetic" : "go",
+		"type" : "number",
+		"value" : 5
+	},
+	{
+		"audio" : "0241.five_hundred.japan.mp3",
+		"english" : "five hundred",
+		"foreign" : "五百",
+		"id" : "0241",
+		"image" : "0241.five_hundred.jpg",
+		"phonetic" : "gohyaku",
+		"type" : "number",
+		"value" : 500
+	},
+	{
+		"audio" : "0052.four.japan.mp3",
+		"english" : "four",
+		"foreign" : "四",
+		"id" : "0052",
+		"image" : "0052.four.jpg",
+		"phonetic" : "yon",
+		"type" : "number",
+		"value" : 4
+	},
+	{
+		"audio" : "1444.fruit.japan.mp3",
+		"english" : "fruit",
+		"foreign" : "果物",
+		"id" : "1444",
+		"image" : "1444.fruit.jpg",
+		"phonetic" : "kudamono",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J029.fukuoka.japan.mp3",
+		"english" : "Fukuoka",
+		"foreign" : "福岡",
+		"id" : "J029",
+		"image" : "J029.fukuoka.jpg",
+		"phonetic" : "Fukuoka",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "1503.garlic.japan.mp3",
+		"english" : "garlic",
+		"foreign" : "にんにく",
+		"id" : "1503",
+		"image" : "1503.garlic.jpg",
+		"phonetic" : "ninniku",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0188.good.japan.mp3",
+		"english" : "good",
+		"foreign" : "良い",
+		"id" : "0188",
+		"image" : "0188.good.jpg",
+		"phonetic" : "ii",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "2006.good_evening.japan.mp3",
+		"english" : "good evening",
+		"foreign" : "こんばんは",
+		"id" : "2006",
+		"image" : "2006.good_evening.jpg",
+		"phonetic" : "konbanwa",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0219.good_morning.japan.mp3",
+		"english" : "good morning",
+		"foreign" : "おはようございます",
+		"id" : "0219",
+		"image" : "0219.good_morning.jpg",
+		"phonetic" : "ohayou gozaimasu",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "1402.goodbye.japan.mp3",
+		"english" : "goodbye",
+		"foreign" : "スコットランド",
+		"id" : "1402",
+		"image" : "1402.goodbye.jpg",
+		"phonetic" : "sukottorando",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "J041.griddle_grill.japan.mp3",
+		"english" : "griddle grill",
+		"foreign" : "鉄板焼き",
+		"id" : "J041",
+		"image" : "J041.griddle_grill.jpg",
+		"phonetic" : "teppanyaki",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "J012.grilled_chicken_skewers.japan.mp3",
+		"english" : "grilled chicken skewers",
+		"foreign" : "焼き鳥",
+		"id" : "J012",
+		"image" : "J012.grilled_chicken_skewers.jpg",
+		"phonetic" : "yakitori",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "1717.ham.japan.mp3",
+		"english" : "ham",
+		"foreign" : "ハム",
+		"id" : "1717",
+		"image" : "1717.ham.jpg",
+		"phonetic" : "hamu",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0184.hello.japan.mp3",
+		"english" : "hello",
+		"foreign" : "こんにちは",
+		"id" : "0184",
+		"image" : "0184.hello.jpg",
+		"phonetic" : "konnichiwa",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "J028.hiroshima.japan.mp3",
+		"english" : "Hiroshima",
+		"foreign" : "広島",
+		"id" : "J028",
+		"image" : "J028.hiroshima.jpg",
+		"phonetic" : "Hiroshima",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "J055.hokkaido.japan.mp3",
+		"english" : "Hokkaido",
+		"foreign" : "北海道",
+		"id" : "J055",
+		"image" : "J055.hokkaido.jpg",
+		"phonetic" : "Hokkaidō",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "J031.honshu.japan.mp3",
+		"english" : "Honshu",
+		"foreign" : "本州",
+		"id" : "J031",
+		"image" : "J031.honshu.jpg",
+		"phonetic" : "Honshū",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "0607.hot.japan.mp3",
+		"english" : "hot",
+		"foreign" : "熱い",
+		"id" : "0607",
+		"image" : "0607.hot.jpg",
+		"phonetic" : "atsui",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0935.how_much.japan.mp3",
+		"english" : "how much",
+		"foreign" : "いくら",
+		"id" : "0935",
+		"image" : "0935.how_much.jpg",
+		"phonetic" : "ikura",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0114.i_dont_understand.japan.mp3",
+		"english" : "I don't understand",
+		"foreign" : "わかりません",
+		"id" : "0114",
+		"image" : "0114.i_dont_understand.jpg",
+		"phonetic" : "wakarimasen",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0126.ice.japan.mp3",
+		"english" : "ice",
+		"foreign" : "氷",
+		"id" : "0126",
+		"image" : "0126.ice.jpg",
+		"phonetic" : "koori",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0217.ice_cream.japan.mp3",
+		"english" : "ice cream",
+		"foreign" : "アイスクリーム",
+		"id" : "0217",
+		"image" : "0217.ice_cream.jpg",
+		"phonetic" : "aisukurīmu",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1829.iced_coffee.japan.mp3",
+		"english" : "iced coffee",
+		"foreign" : "アイスコーヒー",
+		"id" : "1829",
+		"image" : "1829.iced_coffee.jpg",
+		"phonetic" : "aisukoohii",
+		"type" : "drinks",
+		"value" : 0
+	},
+	{
+		"audio" : "J014.japan.japan.mp3",
+		"english" : "Japan",
+		"foreign" : "日本",
+		"id" : "J014",
+		"image" : "J014.japan.jpg",
+		"phonetic" : "nihon",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "J054.kelp.japan.mp3",
+		"english" : "kelp",
+		"foreign" : "昆布",
+		"id" : "J054",
+		"image" : "J054.kelp.jpg",
+		"phonetic" : "kombu",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J027.kumamoto.japan.mp3",
+		"english" : "Kumamoto",
+		"foreign" : "熊本",
+		"id" : "J027",
+		"image" : "J027.kumamoto.jpg",
+		"phonetic" : "Kumamoto",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "J017.kyoto.japan.mp3",
+		"english" : "Kyoto",
+		"foreign" : "京都",
+		"id" : "J017",
+		"image" : "J017.kyoto.jpg",
+		"phonetic" : "kyōto",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "J030.kyushu.japan.mp3",
+		"english" : "Kyushu",
+		"foreign" : "九州",
+		"id" : "J030",
+		"image" : "J030.kyushu.jpg",
+		"phonetic" : "Kyūshū",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "0212.lamb.japan.mp3",
+		"english" : "lamb",
+		"foreign" : "ラム肉",
+		"id" : "0212",
+		"image" : "0212.lamb.jpg",
+		"phonetic" : "ramu niku",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1442.left.japan.mp3",
+		"english" : "left",
+		"foreign" : "左",
+		"id" : "1442",
+		"image" : "1442.left.jpg",
+		"phonetic" : "hidari",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "1623.lettuce.japan.mp3",
+		"english" : "lettuce",
+		"foreign" : "レタス",
+		"id" : "1623",
+		"image" : "1623.lettuce.jpg",
+		"phonetic" : "retasu",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1646.mackeral.japan.mp3",
+		"english" : "mackeral",
+		"foreign" : "鯖",
+		"id" : "1646",
+		"image" : "1646.mackeral.jpg",
+		"phonetic" : "saba",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1014.meat.japan.mp3",
+		"english" : "meat",
+		"foreign" : "肉",
+		"id" : "1014",
+		"image" : "1014.meat.jpg",
+		"phonetic" : "niku",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "2008.men.japan.mp3",
+		"english" : "men",
+		"foreign" : "男性",
+		"id" : "2008",
+		"image" : "2008.men.jpg",
+		"phonetic" : "dansei",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "1395.menu.japan.mp3",
+		"english" : "menu",
+		"foreign" : "メニュー",
+		"id" : "1395",
+		"image" : "1395.menu.jpg",
+		"phonetic" : "menyuu",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0441.milk.japan.mp3",
+		"english" : "milk",
+		"foreign" : "牛乳",
+		"id" : "0441",
+		"image" : "0441.milk.jpg",
+		"phonetic" : "gyūnyū",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J018.miso.japan.mp3",
+		"english" : "miso",
+		"foreign" : "味噌",
+		"id" : "J018",
+		"image" : "J018.miso.jpg",
+		"phonetic" : "miso",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "1620.mushroom.japan.mp3",
+		"english" : "mushroom",
+		"foreign" : "きのこ",
+		"id" : "1620",
+		"image" : "1620.mushroom.jpg",
+		"phonetic" : "kinoko",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J045.nigiri_sushi.japan.mp3",
+		"english" : "nigiri sushi",
+		"foreign" : "握り",
+		"id" : "J045",
+		"image" : "J045.nigiri_sushi.jpg",
+		"phonetic" : "nigiri",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "0089.nine.japan.mp3",
+		"english" : "nine",
+		"foreign" : "九",
+		"id" : "0089",
+		"image" : "0089.nine.jpg",
+		"phonetic" : "kyuu",
+		"type" : "number",
+		"value" : 9
+	},
+	{
+		"audio" : "0085.no.japan.mp3",
+		"english" : "no",
+		"foreign" : "いいえ",
+		"id" : "0085",
+		"image" : "0085.no.jpg",
+		"phonetic" : "iie",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "1543.noodle.japan.mp3",
+		"english" : "noodle",
+		"foreign" : "麺",
+		"id" : "1543",
+		"image" : "1543.noodle.jpg",
+		"phonetic" : "men",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1999.not_spicy.japan.mp3",
+		"english" : "not spicy",
+		"foreign" : "辛くない",
+		"id" : "1999",
+		"image" : "1999.not_spicy.jpg",
+		"phonetic" : "karakunai",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "J051.octopus.japan.mp3",
+		"english" : "octopus",
+		"foreign" : "蛸",
+		"id" : "J051",
+		"image" : "J051.octopus.jpg",
+		"phonetic" : "tako",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1756.offal.japan.mp3",
+		"english" : "offal",
+		"foreign" : "ホルモン",
+		"id" : "1756",
+		"image" : "1756.offal.jpg",
+		"phonetic" : "horumon",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1983.oil.japan.mp3",
+		"english" : "oil",
+		"foreign" : "油",
+		"id" : "1983",
+		"image" : "1983.oil.jpg",
+		"phonetic" : "abura",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J057.okinawa.japan.mp3",
+		"english" : "Okinawa",
+		"foreign" : "沖縄",
+		"id" : "J057",
+		"image" : "J057.okinawa.jpg",
+		"phonetic" : "Okinawa",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "0012.one.japan.mp3",
+		"english" : "one",
+		"foreign" : "一",
+		"id" : "0012",
+		"image" : "0012.one.jpg",
+		"phonetic" : "ichi",
+		"type" : "number",
+		"value" : 1
+	},
+	{
+		"audio" : "1918.one_hundred.japan.mp3",
+		"english" : "one hundred",
+		"foreign" : "百",
+		"id" : "1918",
+		"image" : "1918.one_hundred.jpg",
+		"phonetic" : "hyaku",
+		"type" : "number",
+		"value" : 100
+	},
+	{
+		"audio" : "1920.one_thousand.japan.mp3",
+		"english" : "one thousand",
+		"foreign" : "千",
+		"id" : "1920",
+		"image" : "1920.one_thousand.jpg",
+		"phonetic" : "sen",
+		"type" : "number",
+		"value" : 1000
+	},
+	{
+		"audio" : "1502.onion.japan.mp3",
+		"english" : "onion",
+		"foreign" : "玉ねぎ",
+		"id" : "1502",
+		"image" : "1502.onion.jpg",
+		"phonetic" : "tamanegi",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0081.orange.japan.mp3",
+		"english" : "orange",
+		"foreign" : "オレンジ",
+		"id" : "0081",
+		"image" : "0081.orange.jpg",
+		"phonetic" : "orenji",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J016.osaka.japan.mp3",
+		"english" : "Osaka",
+		"foreign" : "大阪",
+		"id" : "J016",
+		"image" : "J016.osaka.jpg",
+		"phonetic" : "ōsaka",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "1619.pepper.japan.mp3",
+		"english" : "pepper",
+		"foreign" : "胡椒",
+		"id" : "1619",
+		"image" : "1619.pepper.jpg",
+		"phonetic" : "koshou",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J043.pickled_ginger.japan.mp3",
+		"english" : "pickled ginger",
+		"foreign" : "ガリ",
+		"id" : "J043",
+		"image" : "J043.pickled_ginger.jpg",
+		"phonetic" : "gari",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0237.please.japan.mp3",
+		"english" : "please",
+		"foreign" : "ワイン",
+		"id" : "0237",
+		"image" : "0237.please.jpg",
+		"phonetic" : "wain",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0210.pork.japan.mp3",
+		"english" : "pork",
+		"foreign" : "豚肉",
+		"id" : "0210",
+		"image" : "0210.pork.jpg",
+		"phonetic" : "butaniku",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J010.pork_cutlet.japan.mp3",
+		"english" : "pork cutlet",
+		"foreign" : "豚カツ",
+		"id" : "J010",
+		"image" : "J010.pork_cutlet.jpg",
+		"phonetic" : "tonkatsu",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "0226.potato.japan.mp3",
+		"english" : "potato",
+		"foreign" : "じゃがいも",
+		"id" : "0226",
+		"image" : "0226.potato.jpg",
+		"phonetic" : "jagaimo",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0158.prawn.japan.mp3",
+		"english" : "prawn",
+		"foreign" : "海老",
+		"id" : "0158",
+		"image" : "0158.prawn.jpg",
+		"phonetic" : "ebi",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J004.ramen.japan.mp3",
+		"english" : "ramen",
+		"foreign" : "ラーメン",
+		"id" : "J004",
+		"image" : "J004.ramen.jpg",
+		"phonetic" : "rāmen",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "0423.rice.japan.mp3",
+		"english" : "rice",
+		"foreign" : "ご飯",
+		"id" : "0423",
+		"image" : "0423.rice.jpg",
+		"phonetic" : "gohan",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J013.rice_ball.japan.mp3",
+		"english" : "rice ball",
+		"foreign" : "おにぎり",
+		"id" : "J013",
+		"image" : "J013.rice_ball.jpg",
+		"phonetic" : "onigiri omusubi",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "J006.rice_bowl.japan.mp3",
+		"english" : "rice bowl",
+		"foreign" : "丼",
+		"id" : "J006",
+		"image" : "J006.rice_bowl.jpg",
+		"phonetic" : "donburi",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "1105.right.japan.mp3",
+		"english" : "right",
+		"foreign" : "右",
+		"id" : "1105",
+		"image" : "1105.right.jpg",
+		"phonetic" : "migi",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "1641.salmon.japan.mp3",
+		"english" : "salmon",
+		"foreign" : "鮭",
+		"id" : "1641",
+		"image" : "1641.salmon.jpg",
+		"phonetic" : "sake",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0435.salt.japan.mp3",
+		"english" : "salt",
+		"foreign" : "塩",
+		"id" : "0435",
+		"image" : "0435.salt.jpg",
+		"phonetic" : "shio",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J047.sashimi.japan.mp3",
+		"english" : "sashimi",
+		"foreign" : "刺身",
+		"id" : "J047",
+		"image" : "J047.sashimi.jpg",
+		"phonetic" : "sashimi",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "1722.sausage.japan.mp3",
+		"english" : "sausage",
+		"foreign" : "ソーセージ",
+		"id" : "1722",
+		"image" : "1722.sausage.jpg",
+		"phonetic" : "sōsēji",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J011.savory_pancake.japan.mp3",
+		"english" : "savory pancake",
+		"foreign" : "お好み焼き",
+		"id" : "J011",
+		"image" : "J011.savory_pancake.jpg",
+		"phonetic" : "okonomiyaki",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "1406.scotland.japan.mp3",
+		"english" : "Scotland",
+		"foreign" : "スコットランド",
+		"id" : "1406",
+		"image" : "1406.scotland.jpg",
+		"phonetic" : "Sukottorando",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "0032.seven.japan.mp3",
+		"english" : "seven",
+		"foreign" : "七",
+		"id" : "0032",
+		"image" : "0032.seven.jpg",
+		"phonetic" : "nana",
+		"type" : "number",
+		"value" : 7
+	},
+	{
+		"audio" : "J056.shikoku.japan.mp3",
+		"english" : "Shikoku",
+		"foreign" : "四国",
+		"id" : "J056",
+		"image" : "J056.shikoku.jpg",
+		"phonetic" : "Shikoku",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "0031.six.japan.mp3",
+		"english" : "six",
+		"foreign" : "六",
+		"id" : "0031",
+		"image" : "0031.six.jpg",
+		"phonetic" : "roku",
+		"type" : "number",
+		"value" : 6
+	},
+	{
+		"audio" : "1438.sorry.japan.mp3",
+		"english" : "sorry",
+		"foreign" : "ごめんなさい",
+		"id" : "1438",
+		"image" : "1438.sorry.jpg",
+		"phonetic" : "gomennasai",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "J042.soup_stock.japan.mp3",
+		"english" : "soup stock",
+		"foreign" : "出汁",
+		"id" : "J042",
+		"image" : "J042.soup_stock.jpg",
+		"phonetic" : "dashi",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1598.soya_sauce.japan.mp3",
+		"english" : "soya sauce",
+		"foreign" : "醤油",
+		"id" : "1598",
+		"image" : "1598.soya_sauce.jpg",
+		"phonetic" : "shōyu",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1998.spicy.japan.mp3",
+		"english" : "spicy",
+		"foreign" : "辛い",
+		"id" : "1998",
+		"image" : "1998.spicy.jpg",
+		"phonetic" : "karai",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0178.squid.japan.mp3",
+		"english" : "squid",
+		"foreign" : "いか",
+		"id" : "0178",
+		"image" : "0178.squid.jpg",
+		"phonetic" : "ika",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0434.sugar.japan.mp3",
+		"english" : "sugar",
+		"foreign" : "砂糖",
+		"id" : "0434",
+		"image" : "0434.sugar.jpg",
+		"phonetic" : "satou",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J005.sushi.japan.mp3",
+		"english" : "sushi",
+		"foreign" : "寿司",
+		"id" : "J005",
+		"image" : "J005.sushi.jpg",
+		"phonetic" : "sushi",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "J049.sushi_roll.japan.mp3",
+		"english" : "sushi roll",
+		"foreign" : "巻き",
+		"id" : "J049",
+		"image" : "J049.sushi_roll.jpg",
+		"phonetic" : "maki",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "1396.taxi.japan.mp3",
+		"english" : "taxi",
+		"foreign" : "タクシー",
+		"id" : "1396",
+		"image" : "1396.taxi.jpg",
+		"phonetic" : "takushī",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0438.tea.japan.mp3",
+		"english" : "tea",
+		"foreign" : "お茶",
+		"id" : "0438",
+		"image" : "0438.tea.jpg",
+		"phonetic" : "ocha",
+		"type" : "drinks",
+		"value" : 0
+	},
+	{
+		"audio" : "J007.tempura.japan.mp3",
+		"english" : "tempura",
+		"foreign" : "天ぷら",
+		"id" : "J007",
+		"image" : "J007.tempura.jpg",
+		"phonetic" : "tenpura",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "0152.ten.japan.mp3",
+		"english" : "ten",
+		"foreign" : "十",
+		"id" : "0152",
+		"image" : "0152.ten.jpg",
+		"phonetic" : "juu",
+		"type" : "number",
+		"value" : 10
+	},
+	{
+		"audio" : "0101.thank_you.japan.mp3",
+		"english" : "thank you",
+		"foreign" : "ありがとう",
+		"id" : "0101",
+		"image" : "0101.thank_you.jpg",
+		"phonetic" : "arigatou",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "1426.the_bill_please.japan.mp3",
+		"english" : "the bill please",
+		"foreign" : "お会計お願いします",
+		"id" : "1426",
+		"image" : "1426.the_bill_please.jpg",
+		"phonetic" : "okaikei onegaishimasu",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "J009.thick_wheat_noodles.japan.mp3",
+		"english" : "thick wheat noodles",
+		"foreign" : "うどん",
+		"id" : "J009",
+		"image" : "J009.thick_wheat_noodles.jpg",
+		"phonetic" : "udon",
+		"type" : "dine",
+		"value" : 0
+	},
+	{
+		"audio" : "0015.three.japan.mp3",
+		"english" : "three",
+		"foreign" : "三",
+		"id" : "0015",
+		"image" : "0015.three.jpg",
+		"phonetic" : "san",
+		"type" : "number",
+		"value" : 3
+	},
+	{
+		"audio" : "1398.toilet.japan.mp3",
+		"english" : "toilet",
+		"foreign" : "トイレ",
+		"id" : "1398",
+		"image" : "1398.toilet.jpg",
+		"phonetic" : "toire",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "J015.tokyo.japan.mp3",
+		"english" : "Tokyo",
+		"foreign" : "東京",
+		"id" : "J015",
+		"image" : "J015.tokyo.jpg",
+		"phonetic" : "tōkyō",
+		"type" : "place",
+		"value" : 0
+	},
+	{
+		"audio" : "1501.tomato.japan.mp3",
+		"english" : "tomato",
+		"foreign" : "トマト",
+		"id" : "1501",
+		"image" : "1501.tomato.jpg",
+		"phonetic" : "tomato",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1642.tuna.japan.mp3",
+		"english" : "tuna",
+		"foreign" : "ツナ",
+		"id" : "1642",
+		"image" : "1642.tuna.jpg",
+		"phonetic" : "tsuna",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0153.two.japan.mp3",
+		"english" : "two",
+		"foreign" : "二",
+		"id" : "0153",
+		"image" : "0153.two.jpg",
+		"phonetic" : "ni",
+		"type" : "number",
+		"value" : 2
+	},
+	{
+		"audio" : "0405.up.japan.mp3",
+		"english" : "up",
+		"foreign" : "上",
+		"id" : "0405",
+		"image" : "0405.up.jpg",
+		"phonetic" : "ue",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "1013.vegetables.japan.mp3",
+		"english" : "vegetables",
+		"foreign" : "野菜",
+		"id" : "1013",
+		"image" : "1013.vegetables.jpg",
+		"phonetic" : "yasai",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "1595.vinegar.japan.mp3",
+		"english" : "vinegar",
+		"foreign" : "酢",
+		"id" : "1595",
+		"image" : "1595.vinegar.jpg",
+		"phonetic" : "su",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "J044.wasabi_paste.japan.mp3",
+		"english" : "wasabi paste",
+		"foreign" : "わさび",
+		"id" : "J044",
+		"image" : "J044.wasabi_paste.jpg",
+		"phonetic" : "wasabi",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0145.water.japan.mp3",
+		"english" : "water",
+		"foreign" : "水",
+		"id" : "0145",
+		"image" : "0145.water.jpg",
+		"phonetic" : "mizu",
+		"type" : "ingredients",
+		"value" : 0
+	},
+	{
+		"audio" : "0439.wine.japan.mp3",
+		"english" : "wine",
+		"foreign" : "ワイン",
+		"id" : "0439",
+		"image" : "0439.wine.jpg",
+		"phonetic" : "wain",
+		"type" : "headings",
+		"value" : 0
+	},
+	{
+		"audio" : "2009.women.japan.mp3",
+		"english" : "women",
+		"foreign" : "女性",
+		"id" : "2009",
+		"image" : "2009.women.jpg",
+		"phonetic" : "josei",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0078.yes.japan.mp3",
+		"english" : "yes",
+		"foreign" : "はい",
+		"id" : "0078",
+		"image" : "0078.yes.jpg",
+		"phonetic" : "hai",
+		"type" : "speech",
+		"value" : 0
+	},
+	{
+		"audio" : "0001.zero.japan.mp3",
+		"english" : "zero",
+		"foreign" : "ゼロ",
+		"id" : "0001",
+		"image" : "0001.zero.jpg",
+		"phonetic" : "zero",
+		"type" : "number",
+		"value" : 0
+	}
+]
