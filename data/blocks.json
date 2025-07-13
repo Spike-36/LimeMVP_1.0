@@ -1,6 +1,7 @@
 [
 	{
 		"audio" : "1989.a_little.japan.mp3",
+		"audioEnglish" : "1989.a_little.english.mp3",
 		"english" : "a little",
 		"foreign" : "少し",
 		"id" : "1989",
@@ -11,6 +12,7 @@
 	},
 	{
 		"audio" : "1990.a_lot.japan.mp3",
+		"audioEnglish" : "1990.a_lot.english.mp3",
 		"english" : "a lot",
 		"foreign" : "たくさん",
 		"id" : "1990",
@@ -21,6 +23,7 @@
 	},
 	{
 		"audio" : "0419.apple.japan.mp3",
+		"audioEnglish" : "0419.apple.english.mp3",
 		"english" : "apple",
 		"foreign" : "りんご",
 		"id" : "0419",
@@ -31,6 +34,7 @@
 	},
 	{
 		"audio" : "0472.bag.japan.mp3",
+		"audioEnglish" : "0472.bag.english.mp3",
 		"english" : "bag",
 		"foreign" : "袋",
 		"id" : "0472",
@@ -41,6 +45,7 @@
 	},
 	{
 		"audio" : "0189.banana.japan.mp3",
+		"audioEnglish" : "0189.banana.english.mp3",
 		"english" : "banana",
 		"foreign" : "バナナ",
 		"id" : "0189",
@@ -51,6 +56,7 @@
 	},
 	{
 		"audio" : "2004.bank_card.japan.mp3",
+		"audioEnglish" : "2004.bank_card.english.mp3",
 		"english" : "bank card",
 		"foreign" : "キャッシュカード",
 		"id" : "2004",
@@ -61,6 +67,7 @@
 	},
 	{
 		"audio" : "J039.bbq_meat.japan.mp3",
+		"audioEnglish" : "J039.bbq_meat.english.mp3",
 		"english" : "bbq meat",
 		"foreign" : "焼肉",
 		"id" : "J039",
@@ -71,6 +78,7 @@
 	},
 	{
 		"audio" : "0211.beef.japan.mp3",
+		"audioEnglish" : "0211.beef.english.mp3",
 		"english" : "beef",
 		"foreign" : "牛肉",
 		"id" : "0211",
@@ -81,6 +89,7 @@
 	},
 	{
 		"audio" : "J040.beef_hotpot.japan.mp3",
+		"audioEnglish" : "J040.beef_hotpot.english.mp3",
 		"english" : "beef hotpot",
 		"foreign" : "すき焼き",
 		"id" : "J040",
@@ -91,6 +100,7 @@
 	},
 	{
 		"audio" : "0232.beer.japan.mp3",
+		"audioEnglish" : "0232.beer.english.mp3",
 		"english" : "beer",
 		"foreign" : "ビール",
 		"id" : "0232",
@@ -101,6 +111,7 @@
 	},
 	{
 		"audio" : "1401.bill.japan.mp3",
+		"audioEnglish" : "1401.bill.english.mp3",
 		"english" : "bill",
 		"foreign" : "会計",
 		"id" : "1401",
@@ -111,6 +122,7 @@
 	},
 	{
 		"audio" : "0416.bread.japan.mp3",
+		"audioEnglish" : "0416.bread.english.mp3",
 		"english" : "bread",
 		"foreign" : "パン",
 		"id" : "0416",
@@ -121,6 +133,7 @@
 	},
 	{
 		"audio" : "J053.broth.japan.mp3",
+		"audioEnglish" : "J053.broth.english.mp3",
 		"english" : "broth",
 		"foreign" : "出汁",
 		"id" : "J053",
@@ -131,6 +144,7 @@
 	},
 	{
 		"audio" : "J008.buckwheat_noodles.japan.mp3",
+		"audioEnglish" : "J008.buckwheat_noodles.english.mp3",
 		"english" : "buckwheat noodles",
 		"foreign" : "そば",
 		"id" : "J008",
@@ -141,6 +155,7 @@
 	},
 	{
 		"audio" : "1012.butter.japan.mp3",
+		"audioEnglish" : "1012.butter.english.mp3",
 		"english" : "butter",
 		"foreign" : "バター",
 		"id" : "1012",
@@ -151,6 +166,7 @@
 	},
 	{
 		"audio" : "1843.cappuccino.japan.mp3",
+		"audioEnglish" : "1843.cappuccino.english.mp3",
 		"english" : "cappuccino",
 		"foreign" : "カプチーノ",
 		"id" : "1843",
@@ -161,6 +177,7 @@
 	},
 	{
 		"audio" : "1616.carrot.japan.mp3",
+		"audioEnglish" : "1616.carrot.english.mp3",
 		"english" : "carrot",
 		"foreign" : "人参",
 		"id" : "1616",
@@ -171,6 +188,7 @@
 	},
 	{
 		"audio" : "1405.cheers.japan.mp3",
+		"audioEnglish" : "1405.cheers.english.mp3",
 		"english" : "cheers",
 		"foreign" : "乾杯",
 		"id" : "1405",
@@ -181,6 +199,7 @@
 	},
 	{
 		"audio" : "0209.chicken.japan.mp3",
+		"audioEnglish" : "0209.chicken.english.mp3",
 		"english" : "chicken",
 		"foreign" : "鶏肉",
 		"id" : "0209",
@@ -191,6 +210,7 @@
 	},
 	{
 		"audio" : "1505.chocolate.japan.mp3",
+		"audioEnglish" : "1505.chocolate.english.mp3",
 		"english" : "chocolate",
 		"foreign" : "チョコレート",
 		"id" : "1505",
@@ -201,6 +221,7 @@
 	},
 	{
 		"audio" : "1921.chopsticks.japan.mp3",
+		"audioEnglish" : "1921.chopsticks.english.mp3",
 		"english" : "chopsticks",
 		"foreign" : "箸",
 		"id" : "1921",
@@ -211,6 +232,7 @@
 	},
 	{
 		"audio" : "0180.coffee.japan.mp3",
+		"audioEnglish" : "0180.coffee.english.mp3",
 		"english" : "coffee",
 		"foreign" : "コーヒー",
 		"id" : "0180",
@@ -221,6 +243,7 @@
 	},
 	{
 		"audio" : "0608.cold.japan.mp3",
+		"audioEnglish" : "0608.cold.english.mp3",
 		"english" : "cold",
 		"foreign" : "冷たい",
 		"id" : "0608",
@@ -231,6 +254,7 @@
 	},
 	{
 		"audio" : "1571.crab.japan.mp3",
+		"audioEnglish" : "1571.crab.english.mp3",
 		"english" : "crab",
 		"foreign" : "蟹",
 		"id" : "1571",
@@ -241,6 +265,7 @@
 	},
 	{
 		"audio" : "1520.cucumber.japan.mp3",
+		"audioEnglish" : "1520.cucumber.english.mp3",
 		"english" : "cucumber",
 		"foreign" : "胡瓜",
 		"id" : "1520",
@@ -251,6 +276,7 @@
 	},
 	{
 		"audio" : "J003.curry_rice.japan.mp3",
+		"audioEnglish" : "J003.curry_rice.english.mp3",
 		"english" : "curry rice",
 		"foreign" : "カレーライス",
 		"id" : "J003",
@@ -261,6 +287,7 @@
 	},
 	{
 		"audio" : "1403.delicious.japan.mp3",
+		"audioEnglish" : "1403.delicious.english.mp3",
 		"english" : "delicious",
 		"foreign" : "美味しい",
 		"id" : "1403",
@@ -271,6 +298,7 @@
 	},
 	{
 		"audio" : "0406.down.japan.mp3",
+		"audioEnglish" : "0406.down.english.mp3",
 		"english" : "down",
 		"foreign" : "下",
 		"id" : "0406",
@@ -281,6 +309,7 @@
 	},
 	{
 		"audio" : "J050.dried_seaweed_sheets.japan.mp3",
+		"audioEnglish" : "J050.dried_seaweed_sheets.english.mp3",
 		"english" : "dried seaweed sheets",
 		"foreign" : "海苔",
 		"id" : "J050",
@@ -291,6 +320,7 @@
 	},
 	{
 		"audio" : "1582.duck.japan.mp3",
+		"audioEnglish" : "1582.duck.english.mp3",
 		"english" : "duck",
 		"foreign" : "鴨",
 		"id" : "1582",
@@ -301,6 +331,7 @@
 	},
 	{
 		"audio" : "J046.dumplings.japan.mp3",
+		"audioEnglish" : "J046.dumplings.english.mp3",
 		"english" : "dumplings",
 		"foreign" : "餃子",
 		"id" : "J046",
@@ -311,6 +342,7 @@
 	},
 	{
 		"audio" : "2003.eel.japan.mp3",
+		"audioEnglish" : "2003.eel.english.mp3",
 		"english" : "eel",
 		"foreign" : "鰻",
 		"id" : "2003",
@@ -321,6 +353,7 @@
 	},
 	{
 		"audio" : "0414.egg.japan.mp3",
+		"audioEnglish" : "0414.egg.english.mp3",
 		"english" : "egg",
 		"foreign" : "卵",
 		"id" : "0414",
@@ -331,6 +364,7 @@
 	},
 	{
 		"audio" : "0119.eight.japan.mp3",
+		"audioEnglish" : "0119.eight.english.mp3",
 		"english" : "eight",
 		"foreign" : "八",
 		"id" : "0119",
@@ -341,6 +375,7 @@
 	},
 	{
 		"audio" : "1842.espresso.japan.mp3",
+		"audioEnglish" : "1842.espresso.english.mp3",
 		"english" : "espresso",
 		"foreign" : "エスプレッソ",
 		"id" : "1842",
@@ -351,6 +386,7 @@
 	},
 	{
 		"audio" : "2002.excellent.japan.mp3",
+		"audioEnglish" : "2002.excellent.english.mp3",
 		"english" : "excellent",
 		"foreign" : "素晴らしい",
 		"id" : "2002",
@@ -361,6 +397,7 @@
 	},
 	{
 		"audio" : "1435.excuse_me.japan.mp3",
+		"audioEnglish" : "1435.excuse_me.english.mp3",
 		"english" : "excuse me",
 		"foreign" : "すみません",
 		"id" : "1435",
@@ -371,6 +408,7 @@
 	},
 	{
 		"audio" : "0167.fifty.japan.mp3",
+		"audioEnglish" : "0167.fifty.english.mp3",
 		"english" : "fifty",
 		"foreign" : "五十",
 		"id" : "0167",
@@ -381,6 +419,7 @@
 	},
 	{
 		"audio" : "0273.fish.japan.mp3",
+		"audioEnglish" : "0273.fish.english.mp3",
 		"english" : "fish",
 		"foreign" : "魚",
 		"id" : "0273",
@@ -391,6 +430,7 @@
 	},
 	{
 		"audio" : "0168.five.japan.mp3",
+		"audioEnglish" : "0168.five.english.mp3",
 		"english" : "five",
 		"foreign" : "五",
 		"id" : "0168",
@@ -401,6 +441,7 @@
 	},
 	{
 		"audio" : "0241.five_hundred.japan.mp3",
+		"audioEnglish" : "0241.five_hundred.english.mp3",
 		"english" : "five hundred",
 		"foreign" : "五百",
 		"id" : "0241",
@@ -411,6 +452,7 @@
 	},
 	{
 		"audio" : "0052.four.japan.mp3",
+		"audioEnglish" : "0052.four.english.mp3",
 		"english" : "four",
 		"foreign" : "四",
 		"id" : "0052",
@@ -421,6 +463,7 @@
 	},
 	{
 		"audio" : "1444.fruit.japan.mp3",
+		"audioEnglish" : "1444.fruit.english.mp3",
 		"english" : "fruit",
 		"foreign" : "果物",
 		"id" : "1444",
@@ -431,6 +474,7 @@
 	},
 	{
 		"audio" : "J029.fukuoka.japan.mp3",
+		"audioEnglish" : "J029.fukuoka.english.mp3",
 		"english" : "Fukuoka",
 		"foreign" : "福岡",
 		"id" : "J029",
@@ -441,6 +485,7 @@
 	},
 	{
 		"audio" : "1503.garlic.japan.mp3",
+		"audioEnglish" : "1503.garlic.english.mp3",
 		"english" : "garlic",
 		"foreign" : "にんにく",
 		"id" : "1503",
@@ -451,6 +496,7 @@
 	},
 	{
 		"audio" : "0188.good.japan.mp3",
+		"audioEnglish" : "0188.good.english.mp3",
 		"english" : "good",
 		"foreign" : "良い",
 		"id" : "0188",
@@ -461,6 +507,7 @@
 	},
 	{
 		"audio" : "2006.good_evening.japan.mp3",
+		"audioEnglish" : "2006.good_evening.english.mp3",
 		"english" : "good evening",
 		"foreign" : "こんばんは",
 		"id" : "2006",
@@ -471,6 +518,7 @@
 	},
 	{
 		"audio" : "0219.good_morning.japan.mp3",
+		"audioEnglish" : "0219.good_morning.english.mp3",
 		"english" : "good morning",
 		"foreign" : "おはようございます",
 		"id" : "0219",
@@ -481,6 +529,7 @@
 	},
 	{
 		"audio" : "1402.goodbye.japan.mp3",
+		"audioEnglish" : "1402.goodbye.english.mp3",
 		"english" : "goodbye",
 		"foreign" : "スコットランド",
 		"id" : "1402",
@@ -491,6 +540,7 @@
 	},
 	{
 		"audio" : "J041.griddle_grill.japan.mp3",
+		"audioEnglish" : "J041.griddle_grill.english.mp3",
 		"english" : "griddle grill",
 		"foreign" : "鉄板焼き",
 		"id" : "J041",
@@ -501,6 +551,7 @@
 	},
 	{
 		"audio" : "J012.grilled_chicken_skewers.japan.mp3",
+		"audioEnglish" : "J012.grilled_chicken_skewers.english.mp3",
 		"english" : "grilled chicken skewers",
 		"foreign" : "焼き鳥",
 		"id" : "J012",
@@ -511,6 +562,7 @@
 	},
 	{
 		"audio" : "1717.ham.japan.mp3",
+		"audioEnglish" : "1717.ham.english.mp3",
 		"english" : "ham",
 		"foreign" : "ハム",
 		"id" : "1717",
@@ -521,6 +573,7 @@
 	},
 	{
 		"audio" : "0184.hello.japan.mp3",
+		"audioEnglish" : "0184.hello.english.mp3",
 		"english" : "hello",
 		"foreign" : "こんにちは",
 		"id" : "0184",
@@ -531,6 +584,7 @@
 	},
 	{
 		"audio" : "J028.hiroshima.japan.mp3",
+		"audioEnglish" : "J028.hiroshima.english.mp3",
 		"english" : "Hiroshima",
 		"foreign" : "広島",
 		"id" : "J028",
@@ -541,6 +595,7 @@
 	},
 	{
 		"audio" : "J055.hokkaido.japan.mp3",
+		"audioEnglish" : "J055.hokkaido.english.mp3",
 		"english" : "Hokkaido",
 		"foreign" : "北海道",
 		"id" : "J055",
@@ -551,6 +606,7 @@
 	},
 	{
 		"audio" : "J031.honshu.japan.mp3",
+		"audioEnglish" : "J031.honshu.english.mp3",
 		"english" : "Honshu",
 		"foreign" : "本州",
 		"id" : "J031",
@@ -561,6 +617,7 @@
 	},
 	{
 		"audio" : "0607.hot.japan.mp3",
+		"audioEnglish" : "0607.hot.english.mp3",
 		"english" : "hot",
 		"foreign" : "熱い",
 		"id" : "0607",
@@ -571,6 +628,7 @@
 	},
 	{
 		"audio" : "0935.how_much.japan.mp3",
+		"audioEnglish" : "0935.how_much.english.mp3",
 		"english" : "how much",
 		"foreign" : "いくら",
 		"id" : "0935",
@@ -580,17 +638,19 @@
 		"value" : 0
 	},
 	{
-		"audio" : "0114.i_dont_understand.japan.mp3",
-		"english" : "I don't understand",
+		"audio" : "0114.i_do_not_understand.japan.mp3",
+		"audioEnglish" : "0114.i_do_not_understand.english.mp3",
+		"english" : "I do not understand",
 		"foreign" : "わかりません",
 		"id" : "0114",
-		"image" : "0114.i_dont_understand.jpg",
+		"image" : "0114.i_do_not_understand.jpg",
 		"phonetic" : "wakarimasen",
 		"type" : "speech",
 		"value" : 0
 	},
 	{
 		"audio" : "0126.ice.japan.mp3",
+		"audioEnglish" : "0126.ice.english.mp3",
 		"english" : "ice",
 		"foreign" : "氷",
 		"id" : "0126",
@@ -601,6 +661,7 @@
 	},
 	{
 		"audio" : "0217.ice_cream.japan.mp3",
+		"audioEnglish" : "0217.ice_cream.english.mp3",
 		"english" : "ice cream",
 		"foreign" : "アイスクリーム",
 		"id" : "0217",
@@ -611,6 +672,7 @@
 	},
 	{
 		"audio" : "1829.iced_coffee.japan.mp3",
+		"audioEnglish" : "1829.iced_coffee.english.mp3",
 		"english" : "iced coffee",
 		"foreign" : "アイスコーヒー",
 		"id" : "1829",
@@ -621,6 +683,7 @@
 	},
 	{
 		"audio" : "J014.japan.japan.mp3",
+		"audioEnglish" : "J014.japan.english.mp3",
 		"english" : "Japan",
 		"foreign" : "日本",
 		"id" : "J014",
@@ -631,6 +694,7 @@
 	},
 	{
 		"audio" : "J054.kelp.japan.mp3",
+		"audioEnglish" : "J054.kelp.english.mp3",
 		"english" : "kelp",
 		"foreign" : "昆布",
 		"id" : "J054",
@@ -641,6 +705,7 @@
 	},
 	{
 		"audio" : "J027.kumamoto.japan.mp3",
+		"audioEnglish" : "J027.kumamoto.english.mp3",
 		"english" : "Kumamoto",
 		"foreign" : "熊本",
 		"id" : "J027",
@@ -651,6 +716,7 @@
 	},
 	{
 		"audio" : "J017.kyoto.japan.mp3",
+		"audioEnglish" : "J017.kyoto.english.mp3",
 		"english" : "Kyoto",
 		"foreign" : "京都",
 		"id" : "J017",
@@ -661,6 +727,7 @@
 	},
 	{
 		"audio" : "J030.kyushu.japan.mp3",
+		"audioEnglish" : "J030.kyushu.english.mp3",
 		"english" : "Kyushu",
 		"foreign" : "九州",
 		"id" : "J030",
@@ -671,6 +738,7 @@
 	},
 	{
 		"audio" : "0212.lamb.japan.mp3",
+		"audioEnglish" : "0212.lamb.english.mp3",
 		"english" : "lamb",
 		"foreign" : "ラム肉",
 		"id" : "0212",
@@ -681,6 +749,7 @@
 	},
 	{
 		"audio" : "1442.left.japan.mp3",
+		"audioEnglish" : "1442.left.english.mp3",
 		"english" : "left",
 		"foreign" : "左",
 		"id" : "1442",
@@ -691,6 +760,7 @@
 	},
 	{
 		"audio" : "1623.lettuce.japan.mp3",
+		"audioEnglish" : "1623.lettuce.english.mp3",
 		"english" : "lettuce",
 		"foreign" : "レタス",
 		"id" : "1623",
@@ -701,6 +771,7 @@
 	},
 	{
 		"audio" : "1646.mackeral.japan.mp3",
+		"audioEnglish" : "1646.mackeral.english.mp3",
 		"english" : "mackeral",
 		"foreign" : "鯖",
 		"id" : "1646",
@@ -711,6 +782,7 @@
 	},
 	{
 		"audio" : "1014.meat.japan.mp3",
+		"audioEnglish" : "1014.meat.english.mp3",
 		"english" : "meat",
 		"foreign" : "肉",
 		"id" : "1014",
@@ -721,6 +793,7 @@
 	},
 	{
 		"audio" : "2008.men.japan.mp3",
+		"audioEnglish" : "2008.men.english.mp3",
 		"english" : "men",
 		"foreign" : "男性",
 		"id" : "2008",
@@ -731,6 +804,7 @@
 	},
 	{
 		"audio" : "1395.menu.japan.mp3",
+		"audioEnglish" : "1395.menu.english.mp3",
 		"english" : "menu",
 		"foreign" : "メニュー",
 		"id" : "1395",
@@ -741,6 +815,7 @@
 	},
 	{
 		"audio" : "0441.milk.japan.mp3",
+		"audioEnglish" : "0441.milk.english.mp3",
 		"english" : "milk",
 		"foreign" : "牛乳",
 		"id" : "0441",
@@ -751,6 +826,7 @@
 	},
 	{
 		"audio" : "J018.miso.japan.mp3",
+		"audioEnglish" : "J018.miso.english.mp3",
 		"english" : "miso",
 		"foreign" : "味噌",
 		"id" : "J018",
@@ -761,6 +837,7 @@
 	},
 	{
 		"audio" : "1620.mushroom.japan.mp3",
+		"audioEnglish" : "1620.mushroom.english.mp3",
 		"english" : "mushroom",
 		"foreign" : "きのこ",
 		"id" : "1620",
@@ -771,6 +848,7 @@
 	},
 	{
 		"audio" : "J045.nigiri_sushi.japan.mp3",
+		"audioEnglish" : "J045.nigiri_sushi.english.mp3",
 		"english" : "nigiri sushi",
 		"foreign" : "握り",
 		"id" : "J045",
@@ -781,6 +859,7 @@
 	},
 	{
 		"audio" : "0089.nine.japan.mp3",
+		"audioEnglish" : "0089.nine.english.mp3",
 		"english" : "nine",
 		"foreign" : "九",
 		"id" : "0089",
@@ -791,6 +870,7 @@
 	},
 	{
 		"audio" : "0085.no.japan.mp3",
+		"audioEnglish" : "0085.no.english.mp3",
 		"english" : "no",
 		"foreign" : "いいえ",
 		"id" : "0085",
@@ -801,6 +881,7 @@
 	},
 	{
 		"audio" : "1543.noodle.japan.mp3",
+		"audioEnglish" : "1543.noodle.english.mp3",
 		"english" : "noodle",
 		"foreign" : "麺",
 		"id" : "1543",
@@ -811,6 +892,7 @@
 	},
 	{
 		"audio" : "1999.not_spicy.japan.mp3",
+		"audioEnglish" : "1999.not_spicy.english.mp3",
 		"english" : "not spicy",
 		"foreign" : "辛くない",
 		"id" : "1999",
@@ -821,6 +903,7 @@
 	},
 	{
 		"audio" : "J051.octopus.japan.mp3",
+		"audioEnglish" : "J051.octopus.english.mp3",
 		"english" : "octopus",
 		"foreign" : "蛸",
 		"id" : "J051",
@@ -831,6 +914,7 @@
 	},
 	{
 		"audio" : "1756.offal.japan.mp3",
+		"audioEnglish" : "1756.offal.english.mp3",
 		"english" : "offal",
 		"foreign" : "ホルモン",
 		"id" : "1756",
@@ -841,6 +925,7 @@
 	},
 	{
 		"audio" : "1983.oil.japan.mp3",
+		"audioEnglish" : "1983.oil.english.mp3",
 		"english" : "oil",
 		"foreign" : "油",
 		"id" : "1983",
@@ -851,6 +936,7 @@
 	},
 	{
 		"audio" : "J057.okinawa.japan.mp3",
+		"audioEnglish" : "J057.okinawa.english.mp3",
 		"english" : "Okinawa",
 		"foreign" : "沖縄",
 		"id" : "J057",
@@ -861,6 +947,7 @@
 	},
 	{
 		"audio" : "0012.one.japan.mp3",
+		"audioEnglish" : "0012.one.english.mp3",
 		"english" : "one",
 		"foreign" : "一",
 		"id" : "0012",
@@ -871,6 +958,7 @@
 	},
 	{
 		"audio" : "1918.one_hundred.japan.mp3",
+		"audioEnglish" : "1918.one_hundred.english.mp3",
 		"english" : "one hundred",
 		"foreign" : "百",
 		"id" : "1918",
@@ -881,6 +969,7 @@
 	},
 	{
 		"audio" : "1920.one_thousand.japan.mp3",
+		"audioEnglish" : "1920.one_thousand.english.mp3",
 		"english" : "one thousand",
 		"foreign" : "千",
 		"id" : "1920",
@@ -891,6 +980,7 @@
 	},
 	{
 		"audio" : "1502.onion.japan.mp3",
+		"audioEnglish" : "1502.onion.english.mp3",
 		"english" : "onion",
 		"foreign" : "玉ねぎ",
 		"id" : "1502",
@@ -901,6 +991,7 @@
 	},
 	{
 		"audio" : "0081.orange.japan.mp3",
+		"audioEnglish" : "0081.orange.english.mp3",
 		"english" : "orange",
 		"foreign" : "オレンジ",
 		"id" : "0081",
@@ -911,6 +1002,7 @@
 	},
 	{
 		"audio" : "J016.osaka.japan.mp3",
+		"audioEnglish" : "J016.osaka.english.mp3",
 		"english" : "Osaka",
 		"foreign" : "大阪",
 		"id" : "J016",
@@ -921,6 +1013,7 @@
 	},
 	{
 		"audio" : "1619.pepper.japan.mp3",
+		"audioEnglish" : "1619.pepper.english.mp3",
 		"english" : "pepper",
 		"foreign" : "胡椒",
 		"id" : "1619",
@@ -931,6 +1024,7 @@
 	},
 	{
 		"audio" : "J043.pickled_ginger.japan.mp3",
+		"audioEnglish" : "J043.pickled_ginger.english.mp3",
 		"english" : "pickled ginger",
 		"foreign" : "ガリ",
 		"id" : "J043",
@@ -941,6 +1035,7 @@
 	},
 	{
 		"audio" : "0237.please.japan.mp3",
+		"audioEnglish" : "0237.please.english.mp3",
 		"english" : "please",
 		"foreign" : "ワイン",
 		"id" : "0237",
@@ -951,6 +1046,7 @@
 	},
 	{
 		"audio" : "0210.pork.japan.mp3",
+		"audioEnglish" : "0210.pork.english.mp3",
 		"english" : "pork",
 		"foreign" : "豚肉",
 		"id" : "0210",
@@ -961,6 +1057,7 @@
 	},
 	{
 		"audio" : "J010.pork_cutlet.japan.mp3",
+		"audioEnglish" : "J010.pork_cutlet.english.mp3",
 		"english" : "pork cutlet",
 		"foreign" : "豚カツ",
 		"id" : "J010",
@@ -971,6 +1068,7 @@
 	},
 	{
 		"audio" : "0226.potato.japan.mp3",
+		"audioEnglish" : "0226.potato.english.mp3",
 		"english" : "potato",
 		"foreign" : "じゃがいも",
 		"id" : "0226",
@@ -981,6 +1079,7 @@
 	},
 	{
 		"audio" : "0158.prawn.japan.mp3",
+		"audioEnglish" : "0158.prawn.english.mp3",
 		"english" : "prawn",
 		"foreign" : "海老",
 		"id" : "0158",
@@ -991,6 +1090,7 @@
 	},
 	{
 		"audio" : "J004.ramen.japan.mp3",
+		"audioEnglish" : "J004.ramen.english.mp3",
 		"english" : "ramen",
 		"foreign" : "ラーメン",
 		"id" : "J004",
@@ -1001,6 +1101,7 @@
 	},
 	{
 		"audio" : "0423.rice.japan.mp3",
+		"audioEnglish" : "0423.rice.english.mp3",
 		"english" : "rice",
 		"foreign" : "ご飯",
 		"id" : "0423",
@@ -1011,6 +1112,7 @@
 	},
 	{
 		"audio" : "J013.rice_ball.japan.mp3",
+		"audioEnglish" : "J013.rice_ball.english.mp3",
 		"english" : "rice ball",
 		"foreign" : "おにぎり",
 		"id" : "J013",
@@ -1021,6 +1123,7 @@
 	},
 	{
 		"audio" : "J006.rice_bowl.japan.mp3",
+		"audioEnglish" : "J006.rice_bowl.english.mp3",
 		"english" : "rice bowl",
 		"foreign" : "丼",
 		"id" : "J006",
@@ -1031,6 +1134,7 @@
 	},
 	{
 		"audio" : "1105.right.japan.mp3",
+		"audioEnglish" : "1105.right.english.mp3",
 		"english" : "right",
 		"foreign" : "右",
 		"id" : "1105",
@@ -1041,6 +1145,7 @@
 	},
 	{
 		"audio" : "1641.salmon.japan.mp3",
+		"audioEnglish" : "1641.salmon.english.mp3",
 		"english" : "salmon",
 		"foreign" : "鮭",
 		"id" : "1641",
@@ -1051,6 +1156,7 @@
 	},
 	{
 		"audio" : "0435.salt.japan.mp3",
+		"audioEnglish" : "0435.salt.english.mp3",
 		"english" : "salt",
 		"foreign" : "塩",
 		"id" : "0435",
@@ -1061,6 +1167,7 @@
 	},
 	{
 		"audio" : "J047.sashimi.japan.mp3",
+		"audioEnglish" : "J047.sashimi.english.mp3",
 		"english" : "sashimi",
 		"foreign" : "刺身",
 		"id" : "J047",
@@ -1071,6 +1178,7 @@
 	},
 	{
 		"audio" : "1722.sausage.japan.mp3",
+		"audioEnglish" : "1722.sausage.english.mp3",
 		"english" : "sausage",
 		"foreign" : "ソーセージ",
 		"id" : "1722",
@@ -1081,6 +1189,7 @@
 	},
 	{
 		"audio" : "J011.savory_pancake.japan.mp3",
+		"audioEnglish" : "J011.savory_pancake.english.mp3",
 		"english" : "savory pancake",
 		"foreign" : "お好み焼き",
 		"id" : "J011",
@@ -1091,6 +1200,7 @@
 	},
 	{
 		"audio" : "1406.scotland.japan.mp3",
+		"audioEnglish" : "1406.scotland.english.mp3",
 		"english" : "Scotland",
 		"foreign" : "スコットランド",
 		"id" : "1406",
@@ -1101,6 +1211,7 @@
 	},
 	{
 		"audio" : "0032.seven.japan.mp3",
+		"audioEnglish" : "0032.seven.english.mp3",
 		"english" : "seven",
 		"foreign" : "七",
 		"id" : "0032",
@@ -1111,6 +1222,7 @@
 	},
 	{
 		"audio" : "J056.shikoku.japan.mp3",
+		"audioEnglish" : "J056.shikoku.english.mp3",
 		"english" : "Shikoku",
 		"foreign" : "四国",
 		"id" : "J056",
@@ -1121,6 +1233,7 @@
 	},
 	{
 		"audio" : "0031.six.japan.mp3",
+		"audioEnglish" : "0031.six.english.mp3",
 		"english" : "six",
 		"foreign" : "六",
 		"id" : "0031",
@@ -1131,6 +1244,7 @@
 	},
 	{
 		"audio" : "1438.sorry.japan.mp3",
+		"audioEnglish" : "1438.sorry.english.mp3",
 		"english" : "sorry",
 		"foreign" : "ごめんなさい",
 		"id" : "1438",
@@ -1141,6 +1255,7 @@
 	},
 	{
 		"audio" : "J042.soup_stock.japan.mp3",
+		"audioEnglish" : "J042.soup_stock.english.mp3",
 		"english" : "soup stock",
 		"foreign" : "出汁",
 		"id" : "J042",
@@ -1151,6 +1266,7 @@
 	},
 	{
 		"audio" : "1598.soya_sauce.japan.mp3",
+		"audioEnglish" : "1598.soya_sauce.english.mp3",
 		"english" : "soya sauce",
 		"foreign" : "醤油",
 		"id" : "1598",
@@ -1161,6 +1277,7 @@
 	},
 	{
 		"audio" : "1998.spicy.japan.mp3",
+		"audioEnglish" : "1998.spicy.english.mp3",
 		"english" : "spicy",
 		"foreign" : "辛い",
 		"id" : "1998",
@@ -1171,6 +1288,7 @@
 	},
 	{
 		"audio" : "0178.squid.japan.mp3",
+		"audioEnglish" : "0178.squid.english.mp3",
 		"english" : "squid",
 		"foreign" : "いか",
 		"id" : "0178",
@@ -1181,6 +1299,7 @@
 	},
 	{
 		"audio" : "0434.sugar.japan.mp3",
+		"audioEnglish" : "0434.sugar.english.mp3",
 		"english" : "sugar",
 		"foreign" : "砂糖",
 		"id" : "0434",
@@ -1191,6 +1310,7 @@
 	},
 	{
 		"audio" : "J005.sushi.japan.mp3",
+		"audioEnglish" : "J005.sushi.english.mp3",
 		"english" : "sushi",
 		"foreign" : "寿司",
 		"id" : "J005",
@@ -1201,6 +1321,7 @@
 	},
 	{
 		"audio" : "J049.sushi_roll.japan.mp3",
+		"audioEnglish" : "J049.sushi_roll.english.mp3",
 		"english" : "sushi roll",
 		"foreign" : "巻き",
 		"id" : "J049",
@@ -1211,6 +1332,7 @@
 	},
 	{
 		"audio" : "1396.taxi.japan.mp3",
+		"audioEnglish" : "1396.taxi.english.mp3",
 		"english" : "taxi",
 		"foreign" : "タクシー",
 		"id" : "1396",
@@ -1221,6 +1343,7 @@
 	},
 	{
 		"audio" : "0438.tea.japan.mp3",
+		"audioEnglish" : "0438.tea.english.mp3",
 		"english" : "tea",
 		"foreign" : "お茶",
 		"id" : "0438",
@@ -1231,6 +1354,7 @@
 	},
 	{
 		"audio" : "J007.tempura.japan.mp3",
+		"audioEnglish" : "J007.tempura.english.mp3",
 		"english" : "tempura",
 		"foreign" : "天ぷら",
 		"id" : "J007",
@@ -1241,6 +1365,7 @@
 	},
 	{
 		"audio" : "0152.ten.japan.mp3",
+		"audioEnglish" : "0152.ten.english.mp3",
 		"english" : "ten",
 		"foreign" : "十",
 		"id" : "0152",
@@ -1251,6 +1376,7 @@
 	},
 	{
 		"audio" : "0101.thank_you.japan.mp3",
+		"audioEnglish" : "0101.thank_you.english.mp3",
 		"english" : "thank you",
 		"foreign" : "ありがとう",
 		"id" : "0101",
@@ -1261,6 +1387,7 @@
 	},
 	{
 		"audio" : "1426.the_bill_please.japan.mp3",
+		"audioEnglish" : "1426.the_bill_please.english.mp3",
 		"english" : "the bill please",
 		"foreign" : "お会計お願いします",
 		"id" : "1426",
@@ -1271,6 +1398,7 @@
 	},
 	{
 		"audio" : "J009.thick_wheat_noodles.japan.mp3",
+		"audioEnglish" : "J009.thick_wheat_noodles.english.mp3",
 		"english" : "thick wheat noodles",
 		"foreign" : "うどん",
 		"id" : "J009",
@@ -1281,6 +1409,7 @@
 	},
 	{
 		"audio" : "0015.three.japan.mp3",
+		"audioEnglish" : "0015.three.english.mp3",
 		"english" : "three",
 		"foreign" : "三",
 		"id" : "0015",
@@ -1291,6 +1420,7 @@
 	},
 	{
 		"audio" : "1398.toilet.japan.mp3",
+		"audioEnglish" : "1398.toilet.english.mp3",
 		"english" : "toilet",
 		"foreign" : "トイレ",
 		"id" : "1398",
@@ -1301,6 +1431,7 @@
 	},
 	{
 		"audio" : "J015.tokyo.japan.mp3",
+		"audioEnglish" : "J015.tokyo.english.mp3",
 		"english" : "Tokyo",
 		"foreign" : "東京",
 		"id" : "J015",
@@ -1311,6 +1442,7 @@
 	},
 	{
 		"audio" : "1501.tomato.japan.mp3",
+		"audioEnglish" : "1501.tomato.english.mp3",
 		"english" : "tomato",
 		"foreign" : "トマト",
 		"id" : "1501",
@@ -1321,6 +1453,7 @@
 	},
 	{
 		"audio" : "1642.tuna.japan.mp3",
+		"audioEnglish" : "1642.tuna.english.mp3",
 		"english" : "tuna",
 		"foreign" : "ツナ",
 		"id" : "1642",
@@ -1331,6 +1464,7 @@
 	},
 	{
 		"audio" : "0153.two.japan.mp3",
+		"audioEnglish" : "0153.two.english.mp3",
 		"english" : "two",
 		"foreign" : "二",
 		"id" : "0153",
@@ -1341,6 +1475,7 @@
 	},
 	{
 		"audio" : "0405.up.japan.mp3",
+		"audioEnglish" : "0405.up.english.mp3",
 		"english" : "up",
 		"foreign" : "上",
 		"id" : "0405",
@@ -1351,6 +1486,7 @@
 	},
 	{
 		"audio" : "1013.vegetables.japan.mp3",
+		"audioEnglish" : "1013.vegetables.english.mp3",
 		"english" : "vegetables",
 		"foreign" : "野菜",
 		"id" : "1013",
@@ -1361,6 +1497,7 @@
 	},
 	{
 		"audio" : "1595.vinegar.japan.mp3",
+		"audioEnglish" : "1595.vinegar.english.mp3",
 		"english" : "vinegar",
 		"foreign" : "酢",
 		"id" : "1595",
@@ -1371,6 +1508,7 @@
 	},
 	{
 		"audio" : "J044.wasabi_paste.japan.mp3",
+		"audioEnglish" : "J044.wasabi_paste.english.mp3",
 		"english" : "wasabi paste",
 		"foreign" : "わさび",
 		"id" : "J044",
@@ -1381,6 +1519,7 @@
 	},
 	{
 		"audio" : "0145.water.japan.mp3",
+		"audioEnglish" : "0145.water.english.mp3",
 		"english" : "water",
 		"foreign" : "水",
 		"id" : "0145",
@@ -1391,6 +1530,7 @@
 	},
 	{
 		"audio" : "0439.wine.japan.mp3",
+		"audioEnglish" : "0439.wine.english.mp3",
 		"english" : "wine",
 		"foreign" : "ワイン",
 		"id" : "0439",
@@ -1401,6 +1541,7 @@
 	},
 	{
 		"audio" : "2009.women.japan.mp3",
+		"audioEnglish" : "2009.women.english.mp3",
 		"english" : "women",
 		"foreign" : "女性",
 		"id" : "2009",
@@ -1411,6 +1552,7 @@
 	},
 	{
 		"audio" : "0078.yes.japan.mp3",
+		"audioEnglish" : "0078.yes.english.mp3",
 		"english" : "yes",
 		"foreign" : "はい",
 		"id" : "0078",
@@ -1421,6 +1563,7 @@
 	},
 	{
 		"audio" : "0001.zero.japan.mp3",
+		"audioEnglish" : "0001.zero.english.mp3",
 		"english" : "zero",
 		"foreign" : "ゼロ",
 		"id" : "0001",

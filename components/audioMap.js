@@ -57,6 +57,7 @@ export const audioMap = {
   "J031.honshu.japan.mp3": require('../assets/audio/japan/J031.honshu.japan.mp3'),
   "0607.hot.japan.mp3": require('../assets/audio/japan/0607.hot.japan.mp3'),
   "0935.how_much.japan.mp3": require('../assets/audio/japan/0935.how_much.japan.mp3'),
+  "0114.i_do_not_understand.japan.mp3": require('../assets/audio/japan/0114.i_do_not_understand.japan.mp3'),
   "0126.ice.japan.mp3": require('../assets/audio/japan/0126.ice.japan.mp3'),
   "0217.ice_cream.japan.mp3": require('../assets/audio/japan/0217.ice_cream.japan.mp3'),
   "1829.iced_coffee.japan.mp3": require('../assets/audio/japan/1829.iced_coffee.japan.mp3'),

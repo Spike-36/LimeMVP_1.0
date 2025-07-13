@@ -57,6 +57,7 @@ export const imageMap = {
   "J031.honshu.jpg": require('../assets/image/J031.honshu.jpg'),
   "0607.hot.jpg": require('../assets/image/0607.hot.jpg'),
   "0935.how_much.jpg": require('../assets/image/0935.how_much.jpg'),
+  "0114.i_do_not_understand.jpg": require('../assets/image/0114.i_do_not_understand.jpg'),
   "0126.ice.jpg": require('../assets/image/0126.ice.jpg'),
   "0217.ice_cream.jpg": require('../assets/image/0217.ice_cream.jpg'),
   "1829.iced_coffee.jpg": require('../assets/image/1829.iced_coffee.jpg'),
