@@ -1,7 +1,7 @@
+// PracticeListenScreen.js — autoplay now waits for 2x Japanese before English
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
-import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -10,7 +10,7 @@ import { imageMap } from '../components/imageMap';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
-import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
+import { getStage, loadProgress } from '../utils/progressStorage';
 
 function shuffleArray(array) {
   return array
@@ -37,6 +37,8 @@ export default function PracticeListenScreen() {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const REPLAY_DELAY = 2000;
+  const ENGLISH_DELAY = 500;
+  const NEXT_DELAY = 2000;
 
   useFocusEffect(
     useCallback(() => {
@@ -60,8 +62,9 @@ export default function PracticeListenScreen() {
   useEffect(() => {
     if (!current?.audio || !audioMap[current.audio]) return;
     let isMounted = true;
+    let playbackCount = 0;
 
-    const loadAndPlayTwice = async () => {
+    const loadAndPlay = async () => {
       try {
         if (soundRef.current) {
           await soundRef.current.unloadAsync();
@@ -71,27 +74,40 @@ export default function PracticeListenScreen() {
 
         const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
         soundRef.current = sound;
-
         await sound.playAsync();
 
-        sound.setOnPlaybackStatusUpdate(status => {
-          if (status.didJustFinish && isMounted) {
+        sound.setOnPlaybackStatusUpdate(async (status) => {
+          if (!status.didJustFinish || !isMounted) return;
+
+          playbackCount++;
+
+          if (playbackCount === 1) {
             setTimeout(() => {
-              if (isMounted) {
-                sound.replayAsync().catch(err =>
-                  console.warn('❌ Error during delayed replay:', err.message)
-                );
-              }
+              if (isMounted) sound.replayAsync().catch(() => {});
             }, REPLAY_DELAY);
+          } else if (playbackCount === 2) {
             sound.setOnPlaybackStatusUpdate(null);
+            // Now trigger English
+            if (current.audioEnglish && audioMap[current.audioEnglish]) {
+              setTimeout(async () => {
+                try {
+                  const { sound: engSound } = await Audio.Sound.createAsync(audioMap[current.audioEnglish]);
+                  await engSound.playAsync();
+                } catch (err) {
+                  console.warn('❌ English audio error:', err.message);
+                }
+              }, ENGLISH_DELAY);
+            } else {
+              console.log('⚠️ No English audio found for:', current.audioEnglish);
+            }
           }
         });
       } catch (err) {
-        console.warn('❌ Audio error in PracticeListen:', err.message);
+        console.warn('❌ Audio error:', err.message);
       }
     };
 
-    loadAndPlayTwice();
+    loadAndPlay();
 
     return () => {
       isMounted = false;
@@ -105,67 +121,20 @@ export default function PracticeListenScreen() {
   useEffect(() => {
     if (!autoplay || !current) return;
 
-    const delayReveal = 2000;
-    const delayNext = 4000;
+    const totalDelay = REPLAY_DELAY + ENGLISH_DELAY + NEXT_DELAY + 2500; // wait full sequence
 
     setShowAnswer(false);
 
     autoplayTimer.current = setTimeout(() => {
       setShowAnswer(true);
+    }, REPLAY_DELAY);
 
-      autoplayTimer.current = setTimeout(() => {
-        handleNext();
-      }, delayNext);
-    }, delayReveal);
+    autoplayTimer.current = setTimeout(() => {
+      handleNext();
+    }, totalDelay);
 
     return () => clearTimeout(autoplayTimer.current);
   }, [currentIndex, autoplay]);
-
-  const playAudio = async () => {
-    if (!soundRef.current) return;
-    try {
-      await soundRef.current.replayAsync();
-      setTimeout(() => {
-        soundRef.current?.replayAsync().catch(err =>
-          console.warn('❌ Manual double replay error:', err.message)
-        );
-      }, REPLAY_DELAY);
-    } catch (err) {
-      console.warn('❌ Manual replay error:', err.message);
-    }
-  };
-
-  const triggerTickAnimation = () => {
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 1.3,
-        duration: 120,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 3,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  const handleAdvanceToStage3 = async () => {
-    if (!current?.id || currentStage >= 3) return;
-
-    triggerTickAnimation();
-
-    try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    } catch (err) {
-      console.warn('Haptics error:', err.message);
-    }
-
-    await updateWordStage(current.id, 3);
-    const updatedProgress = await loadProgress();
-    setProgress(updatedProgress);
-    setPendingRemovalId(current.id);
-  };
 
   const handleNext = () => {
     let nextList = [...shuffledBlocks];
@@ -178,21 +147,7 @@ export default function PracticeListenScreen() {
     setCurrentIndex(nextIndex >= nextList.length ? 0 : nextIndex);
   };
 
-  const handleStageSelect = async (stage) => {
-    await updateWordStage(current.id, stage);
-    const updated = await loadProgress();
-    const eligible = blocks.filter(b => getStage(updated, b.id) === 2);
-    setShowAnswer(false);
-    setShowEnglish(false);
-    setProgress(updated);
-    setShuffledBlocks(shuffleArray(eligible));
-    setCurrentIndex(0);
-    setRefreshKey(prev => prev + 1);
-  };
-
-  const toggleAutoplay = () => {
-    setAutoplay(prev => !prev);
-  };
+  const toggleAutoplay = () => setAutoplay(prev => !prev);
 
   if (!current) {
     return (
@@ -215,9 +170,7 @@ export default function PracticeListenScreen() {
           showInfoIcon={showAnswer}
           showEnglish={showEnglish}
           hideAudioButton={true}
-          onPlayAudio={playAudio}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
-          onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         />
 
         <TouchableOpacity onPress={toggleAutoplay} style={styles.autoPlayIconWrapper}>
@@ -227,31 +180,18 @@ export default function PracticeListenScreen() {
             color={autoplay ? 'limegreen' : '#aaa'}
           />
         </TouchableOpacity>
-
-        {showAnswer && currentStage >= 2 && (
-          <Animated.View style={[styles.tickIconWrapper, { transform: [{ scale: scaleAnim }] }]}>
-            <TouchableOpacity onPress={handleAdvanceToStage3} style={styles.tickIconCircle}>
-              <MaterialCommunityIcons
-                name={currentStage >= 3 ? 'check-circle' : 'check-circle-outline'}
-                size={32}
-                color={currentStage >= 3 ? 'limegreen' : 'gray'}
-              />
-            </TouchableOpacity>
-          </Animated.View>
-        )}
       </View>
 
       <View style={styles.bottomHalf}>
         <WordInteractionBlock
           block={current}
           stage={currentStage}
-          onStageChange={handleStageSelect}
-          onPlayAudio={playAudio}
+          onStageChange={() => {}}
+          onPlayAudio={() => {}}
           showStars={false}
           showInstruction={!showAnswer}
           showPhonetic={showAnswer}
         />
-
         {!autoplay && (
           <TouchableOpacity
             style={styles.nextButton}
@@ -282,17 +222,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonText: { color: 'white', fontSize: 18 },
-  tickIconWrapper: {
-    position: 'absolute',
-    bottom: 36,
-    right: 20,
-    zIndex: 5,
-  },
-  tickIconCircle: {
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 24,
-    padding: 6,
-  },
   autoPlayIconWrapper: {
     position: 'absolute',
     top: 75,

@@ -1,4 +1,4 @@
-// generateAudioImageMaps.js
+// generateAssetMap.js
 const fs = require('fs');
 const path = require('path');
 
@@ -9,9 +9,10 @@ const green = (text) => `\x1b[32m${text}\x1b[0m`;
 // Paths
 const blocksPath = './data/blocks.json';
 const imageDir = './assets/image';
-const audioDir = './assets/audio/japan';
-const imageMapOutput = './components/ImageMap.js';
-const audioMapOutput = './components/AudioMap.js';
+const audioJapanDir = './assets/audio/japan';
+const audioEnglishDir = './assets/audio/english';
+const imageMapOutput = './components/imageMap.js';
+const audioMapOutput = './components/audioMap.js';
 const skippedFile = './skippedAssets.txt';
 
 // Load block records
@@ -25,9 +26,12 @@ try {
 
 // Read available asset files
 const imageFiles = fs.readdirSync(imageDir);
-const audioFiles = fs.readdirSync(audioDir);
+const audioJapanFiles = fs.readdirSync(audioJapanDir);
+const audioEnglishFiles = fs.readdirSync(audioEnglishDir);
+
 const availableImages = new Set(imageFiles);
-const availableAudios = new Set(audioFiles);
+const availableJapanese = new Set(audioJapanFiles);
+const availableEnglish = new Set(audioEnglishFiles);
 
 // Init maps
 let imageMap = 'export const imageMap = {\n';
@@ -38,9 +42,9 @@ let validAudioCount = 0;
 fs.writeFileSync(skippedFile, ''); // Reset skipped log
 
 blocks.forEach((block) => {
-  const { id, image, audio } = block;
+  const { id, image, audio, audioEnglish } = block;
 
-  // Validate image
+  // Handle image
   if (image && availableImages.has(image)) {
     imageMap += `  "${image}": require('../assets/image/${image}'),\n`;
     validImageCount++;
@@ -50,12 +54,22 @@ blocks.forEach((block) => {
     fs.appendFileSync(skippedFile, msg + '\n');
   }
 
-  // Validate audio
-  if (audio && availableAudios.has(audio)) {
+  // Handle Japanese audio
+  if (audio && availableJapanese.has(audio)) {
     audioMap += `  "${audio}": require('../assets/audio/japan/${audio}'),\n`;
     validAudioCount++;
   } else {
-    const msg = `⚠️ Skipped audio for ID ${id}: missing or invalid (${audio})`;
+    const msg = `⚠️ Skipped Japanese audio for ID ${id}: missing or invalid (${audio})`;
+    console.warn(yellow(msg));
+    fs.appendFileSync(skippedFile, msg + '\n');
+  }
+
+  // Handle English audio
+  if (audioEnglish && availableEnglish.has(audioEnglish)) {
+    audioMap += `  "${audioEnglish}": require('../assets/audio/english/${audioEnglish}'),\n`;
+    validAudioCount++;
+  } else if (audioEnglish) {
+    const msg = `⚠️ Skipped English audio for ID ${id}: missing or invalid (${audioEnglish})`;
     console.warn(yellow(msg));
     fs.appendFileSync(skippedFile, msg + '\n');
   }
@@ -69,6 +83,6 @@ fs.writeFileSync(imageMapOutput, imageMap);
 fs.writeFileSync(audioMapOutput, audioMap);
 
 // Summary
-console.log(green(`\n✅ AudioMap.js generated with ${validAudioCount} entries`));
-console.log(green(`✅ ImageMap.js generated with ${validImageCount} entries`));
+console.log(green(`\n✅ audioMap.js generated with ${validAudioCount} entries`));
+console.log(green(`✅ imageMap.js generated with ${validImageCount} entries`));
 console.log(green(`⏺ Skipped log written to ${skippedFile}`));
