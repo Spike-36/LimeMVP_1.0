@@ -1,7 +1,7 @@
-// PracticeListenScreen.js — autoplay now waits for 2x Japanese before English
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
+import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -10,7 +10,7 @@ import { imageMap } from '../components/imageMap';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
-import { getStage, loadProgress } from '../utils/progressStorage';
+import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 function shuffleArray(array) {
   return array
@@ -30,11 +30,11 @@ export default function PracticeListenScreen() {
   const [pendingRemovalId, setPendingRemovalId] = useState(null);
   const [autoplay, setAutoplay] = useState(false);
 
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   const current = shuffledBlocks[currentIndex];
   const currentStage = getStage(progress, current?.id);
   const soundRef = useRef(null);
   const autoplayTimer = useRef(null);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const REPLAY_DELAY = 2000;
   const ENGLISH_DELAY = 500;
@@ -78,7 +78,6 @@ export default function PracticeListenScreen() {
 
         sound.setOnPlaybackStatusUpdate(async (status) => {
           if (!status.didJustFinish || !isMounted) return;
-
           playbackCount++;
 
           if (playbackCount === 1) {
@@ -87,7 +86,6 @@ export default function PracticeListenScreen() {
             }, REPLAY_DELAY);
           } else if (playbackCount === 2) {
             sound.setOnPlaybackStatusUpdate(null);
-            // Now trigger English
             if (current.audioEnglish && audioMap[current.audioEnglish]) {
               setTimeout(async () => {
                 try {
@@ -97,8 +95,6 @@ export default function PracticeListenScreen() {
                   console.warn('❌ English audio error:', err.message);
                 }
               }, ENGLISH_DELAY);
-            } else {
-              console.log('⚠️ No English audio found for:', current.audioEnglish);
             }
           }
         });
@@ -121,8 +117,7 @@ export default function PracticeListenScreen() {
   useEffect(() => {
     if (!autoplay || !current) return;
 
-    const totalDelay = REPLAY_DELAY + ENGLISH_DELAY + NEXT_DELAY + 2500; // wait full sequence
-
+    const totalDelay = REPLAY_DELAY + ENGLISH_DELAY + NEXT_DELAY + 2500;
     setShowAnswer(false);
 
     autoplayTimer.current = setTimeout(() => {
@@ -135,6 +130,34 @@ export default function PracticeListenScreen() {
 
     return () => clearTimeout(autoplayTimer.current);
   }, [currentIndex, autoplay]);
+
+  const handleAdvanceToStage3 = async () => {
+    if (!current?.id || currentStage >= 3) return;
+
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 1.3,
+        duration: 120,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    } catch (err) {
+      console.warn('Haptics error:', err.message);
+    }
+
+    await updateWordStage(current.id, 3);
+    const updated = await loadProgress();
+    setProgress(updated);
+    setPendingRemovalId(current.id); // Delay removal until Next
+  };
 
   const handleNext = () => {
     let nextList = [...shuffledBlocks];
@@ -180,18 +203,31 @@ export default function PracticeListenScreen() {
             color={autoplay ? 'limegreen' : '#aaa'}
           />
         </TouchableOpacity>
+
+        {!autoplay && showAnswer && currentStage >= 2 && (
+          <Animated.View style={[styles.tickIconWrapper, { transform: [{ scale: scaleAnim }] }]}>
+            <TouchableOpacity onPress={handleAdvanceToStage3} style={styles.tickIconCircle}>
+              <MaterialCommunityIcons
+                name={currentStage >= 3 ? 'check-circle' : 'check-circle-outline'}
+                size={32}
+                color={currentStage >= 3 ? 'limegreen' : 'gray'}
+              />
+            </TouchableOpacity>
+          </Animated.View>
+        )}
       </View>
 
       <View style={styles.bottomHalf}>
         <WordInteractionBlock
           block={current}
           stage={currentStage}
-          onStageChange={() => {}}
+          onStageChange={() => setRefreshKey(k => k + 1)}
           onPlayAudio={() => {}}
           showStars={false}
           showInstruction={!showAnswer}
           showPhonetic={showAnswer}
         />
+
         {!autoplay && (
           <TouchableOpacity
             style={styles.nextButton}
@@ -213,6 +249,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 30,
+  },
+  tickIconWrapper: {
+    position: 'absolute',
+    bottom: 36,
+    right: 20,
+    zIndex: 5,
+  },
+  tickIconCircle: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 24,
+    padding: 6,
   },
   nextButton: {
     backgroundColor: '#444',

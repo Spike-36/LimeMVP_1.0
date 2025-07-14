@@ -23,13 +23,22 @@ export default function PracticeSpeakScreen() {
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [showEnglish, setShowEnglish] = useState(false);
   const [progress, setProgress] = useState({});
+  const [pendingRemovalId, setPendingRemovalId] = useState(null);
+  const [autoplay, setAutoplay] = useState(false);
+
   const soundRef = useRef(null);
+  const autoplayTimer = useRef(null);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const current = shuffledBlocks[currentIndex];
   const currentStage = current?.id ? getStage(progress, current.id) : 0;
+
+  const REVEAL_DELAY = 1500;
+  const ENGLISH_DELAY = 1200;
+  const THINK_DELAY = 2000;
+  const JAPANESE_DELAY = 1000;
+  const NEXT_DELAY = 1500;
 
   useFocusEffect(
     useCallback(() => {
@@ -39,13 +48,47 @@ export default function PracticeSpeakScreen() {
         setProgress(progressMap);
         setShuffledBlocks(shuffleArray(eligible));
         setCurrentIndex(0);
+        setPendingRemovalId(null);
       }
       loadEligibleWords();
     }, [])
   );
 
   useEffect(() => {
-    if (!current?.audio || !showAnswer) return;
+    if (!autoplay || !current) return;
+
+    const runSequence = async () => {
+      try {
+        await new Promise(res => setTimeout(res, REVEAL_DELAY));
+
+        if (current.audioEnglish && audioMap[current.audioEnglish]) {
+          const { sound } = await Audio.Sound.createAsync(audioMap[current.audioEnglish]);
+          await sound.playAsync();
+        }
+
+        await new Promise(res => setTimeout(res, THINK_DELAY));
+        setShowAnswer(true);
+
+        await new Promise(res => setTimeout(res, JAPANESE_DELAY));
+
+        if (current.audio && audioMap[current.audio]) {
+          const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
+          await sound.playAsync();
+        }
+
+        await new Promise(res => setTimeout(res, NEXT_DELAY));
+        handleNext();
+      } catch (err) {
+        console.warn('❌ Autoplay error:', err.message);
+      }
+    };
+
+    autoplayTimer.current = setTimeout(runSequence, 100);
+    return () => clearTimeout(autoplayTimer.current);
+  }, [currentIndex, autoplay]);
+
+  useEffect(() => {
+    if (!current?.audio || !showAnswer || autoplay) return;
 
     let isMounted = true;
 
@@ -108,28 +151,33 @@ export default function PracticeSpeakScreen() {
 
     triggerTickAnimation();
 
-    if (currentStage === 3) {
-      try {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      } catch (err) {
-        console.warn('Haptics error:', err.message);
-      }
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    } catch (err) {
+      console.warn('Haptics error:', err.message);
     }
 
     await updateWordStage(current.id, 4);
     const updated = await loadProgress();
     setProgress(updated);
+    setPendingRemovalId(current.id);
   };
 
   const handleNext = () => {
     setShowAnswer(false);
-    setShowEnglish(false);
 
-    const nextBlocks = shuffledBlocks.filter(b => getStage(progress, b.id) === 3);
-    const nextIndex = nextBlocks.length > 0 ? 0 : 0;
-    setShuffledBlocks(shuffleArray(nextBlocks));
+    let updatedList = [...shuffledBlocks];
+    if (pendingRemovalId) {
+      updatedList = updatedList.filter(b => b.id !== pendingRemovalId);
+      setPendingRemovalId(null);
+    }
+
+    const nextIndex = currentIndex >= updatedList.length - 1 ? 0 : currentIndex + 1;
+    setShuffledBlocks(updatedList);
     setCurrentIndex(nextIndex);
   };
+
+  const toggleAutoplay = () => setAutoplay(prev => !prev);
 
   if (!current) {
     return (
@@ -150,16 +198,24 @@ export default function PracticeSpeakScreen() {
           showImage
           showTipIcon={showAnswer}
           showInfoIcon
-          showEnglish={showEnglish}
+          showEnglish={false}
           hideThaiText
           hidePhonetic
           hideAudioButton
-          onToggleEnglish={() => setShowEnglish(prev => !prev)}
+          onToggleEnglish={() => {}}
           onShowTip={() => {}}
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         />
 
-        {showAnswer && currentStage >= 3 && (
+        <TouchableOpacity onPress={toggleAutoplay} style={styles.autoPlayIconWrapper}>
+          <MaterialCommunityIcons
+            name="autorenew"
+            size={28}
+            color={autoplay ? 'limegreen' : '#aaa'}
+          />
+        </TouchableOpacity>
+
+        {!autoplay && showAnswer && currentStage >= 3 && (
           <Animated.View style={[styles.tickIconWrapper, { transform: [{ scale: scaleAnim }] }]}>
             <TouchableOpacity onPress={handleAdvanceToStage4} style={styles.tickIconCircle}>
               <MaterialCommunityIcons
@@ -185,14 +241,16 @@ export default function PracticeSpeakScreen() {
         )}
       </View>
 
-      <View style={styles.buttonArea}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={showAnswer ? handleNext : () => setShowAnswer(true)}
-        >
-          <Text style={styles.buttonText}>{showAnswer ? 'Next' : 'Show Answer'}</Text>
-        </TouchableOpacity>
-      </View>
+      {!autoplay && (
+        <View style={styles.buttonArea}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={showAnswer ? handleNext : () => setShowAnswer(true)}
+          >
+            <Text style={styles.buttonText}>{showAnswer ? 'Next' : 'Show Answer'}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -244,6 +302,15 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 18,
+  },
+  autoPlayIconWrapper: {
+    position: 'absolute',
+    top: 75,
+    left: 20,
+    zIndex: 5,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    padding: 8,
+    borderRadius: 20,
   },
   centeredContainer: {
     flex: 1,
