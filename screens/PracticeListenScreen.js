@@ -10,6 +10,7 @@ import { imageMap } from '../components/imageMap';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
+import useDynamicAutoplay from '../hooks/useDynamicAutoplay';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 function shuffleArray(array) {
@@ -30,17 +31,10 @@ export default function PracticeListenScreen() {
   const [pendingRemovalId, setPendingRemovalId] = useState(null);
   const [autoplay, setAutoplay] = useState(false);
 
-  const scaleAnim = useRef(new Animated.Value(1)).current;
   const current = shuffledBlocks[currentIndex];
   const currentStage = getStage(progress, current?.id);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   const soundRef = useRef(null);
-  const autoplayTimer = useRef(null);
-
-  const JAPANESE_REPEAT_DELAY = 2000;
-  const FRENCH_DELAY = 500;
-  const FRENCH_TO_ENGLISH_DELAY = 2500;
-  const NEXT_DELAY = 2000;
-  const EXTRA_PADDING = 1500;
 
   useFocusEffect(
     useCallback(() => {
@@ -61,95 +55,73 @@ export default function PracticeListenScreen() {
     setShowEnglish(false);
   }, [currentIndex]);
 
-  useEffect(() => {
-    if (!current?.audio || !audioMap[current.audio]) return;
-    let isMounted = true;
-    let playbackCount = 0;
+  const handleNext = () => {
+    let nextList = [...shuffledBlocks];
+    if (pendingRemovalId) {
+      nextList = nextList.filter(b => b.id !== pendingRemovalId);
+      setPendingRemovalId(null);
+    }
+    const nextIndex = (currentIndex + 1) % nextList.length;
+    setShuffledBlocks(nextList);
+    setCurrentIndex(nextIndex >= nextList.length ? 0 : nextIndex);
+    setShowAnswer(false);
+    setShowEnglish(false);
+  };
 
-    const loadAndPlay = async () => {
-      try {
-        if (soundRef.current) {
-          await soundRef.current.unloadAsync();
-          soundRef.current.setOnPlaybackStatusUpdate(null);
+  useDynamicAutoplay({
+    active: autoplay,
+    block: current,
+    onReveal: () => setShowAnswer(true),
+    onAdvance: handleNext,
+  });
+
+  const playJapaneseAudio = async () => {
+    if (!current?.audio || !audioMap[current.audio]) return;
+
+    try {
+      if (soundRef.current) {
+        await soundRef.current.unloadAsync();
+        soundRef.current.setOnPlaybackStatusUpdate(null);
+        soundRef.current = null;
+      }
+
+      const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
+      soundRef.current = sound;
+      await sound.playAsync();
+
+      sound.setOnPlaybackStatusUpdate(status => {
+        if (status.didJustFinish) {
+          sound.unloadAsync();
           soundRef.current = null;
         }
+      });
+    } catch (err) {
+      console.warn('Japanese audio error:', err.message);
+    }
+  };
 
-        const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
-        soundRef.current = sound;
-        await sound.playAsync();
+  // ✅ Play Japanese audio when current block changes (pre-reveal)
+  useEffect(() => {
+    if (!autoplay && current) {
+      playJapaneseAudio();
+    }
+  }, [current?.id]);
 
-        sound.setOnPlaybackStatusUpdate(async (status) => {
-          if (!status.didJustFinish || !isMounted) return;
-          playbackCount++;
+  // ✅ Play Japanese again when answer is revealed
+  useEffect(() => {
+    if (!autoplay && showAnswer) {
+      playJapaneseAudio();
+    }
+  }, [showAnswer]);
 
-          if (playbackCount === 1) {
-            setTimeout(() => {
-              if (isMounted) sound.replayAsync().catch(() => {});
-            }, JAPANESE_REPEAT_DELAY);
-          } else if (playbackCount === 2) {
-            sound.setOnPlaybackStatusUpdate(null);
-
-            // ▶️ Play French
-            if (current.audioFrench && audioMap[current.audioFrench]) {
-              setTimeout(async () => {
-                try {
-                  const { sound: frSound } = await Audio.Sound.createAsync(audioMap[current.audioFrench]);
-                  await frSound.playAsync();
-                } catch (err) {
-                  console.warn('❌ French audio error:', err.message);
-                }
-              }, FRENCH_DELAY);
-            }
-
-            // ▶️ Play English after French
-            if (current.audioEnglish && audioMap[current.audioEnglish]) {
-              setTimeout(async () => {
-                try {
-                  const { sound: engSound } = await Audio.Sound.createAsync(audioMap[current.audioEnglish]);
-                  await engSound.playAsync();
-                } catch (err) {
-                  console.warn('❌ English audio error:', err.message);
-                }
-              }, FRENCH_DELAY + FRENCH_TO_ENGLISH_DELAY);
-            }
-          }
-        });
-      } catch (err) {
-        console.warn('❌ Audio error:', err.message);
-      }
-    };
-
-    loadAndPlay();
-
+  useEffect(() => {
     return () => {
-      isMounted = false;
       if (soundRef.current) {
         soundRef.current.unloadAsync();
         soundRef.current = null;
       }
     };
-  }, [current?.audio]);
-
-  useEffect(() => {
-    if (!autoplay || !current) return;
-
-    const totalDelay =
-      JAPANESE_REPEAT_DELAY +
-      FRENCH_DELAY +
-      FRENCH_TO_ENGLISH_DELAY +
-      NEXT_DELAY +
-      EXTRA_PADDING;
-
-    autoplayTimer.current = setTimeout(() => {
-      setShowAnswer(true);
-    }, JAPANESE_REPEAT_DELAY);
-
-    autoplayTimer.current = setTimeout(() => {
-      handleNext();
-    }, totalDelay);
-
-    return () => clearTimeout(autoplayTimer.current);
-  }, [currentIndex, autoplay]);
+  }, []);
 
   const handleAdvanceToStage3 = async () => {
     if (!current?.id || currentStage >= 3) return;
@@ -177,17 +149,6 @@ export default function PracticeListenScreen() {
     const updated = await loadProgress();
     setProgress(updated);
     setPendingRemovalId(current.id);
-  };
-
-  const handleNext = () => {
-    let nextList = [...shuffledBlocks];
-    if (pendingRemovalId) {
-      nextList = nextList.filter(b => b.id !== pendingRemovalId);
-      setPendingRemovalId(null);
-    }
-    const nextIndex = (currentIndex + 1) % nextList.length;
-    setShuffledBlocks(nextList);
-    setCurrentIndex(nextIndex >= nextList.length ? 0 : nextIndex);
   };
 
   const toggleAutoplay = () => setAutoplay(prev => !prev);
@@ -242,7 +203,7 @@ export default function PracticeListenScreen() {
           block={current}
           stage={currentStage}
           onStageChange={() => setRefreshKey(k => k + 1)}
-          onPlayAudio={() => {}}
+          onPlayAudio={autoplay ? () => {} : playJapaneseAudio}
           showStars={false}
           showInstruction={!showAnswer}
           showPhonetic={showAnswer}
