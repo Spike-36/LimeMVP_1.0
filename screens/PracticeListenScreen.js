@@ -36,9 +36,11 @@ export default function PracticeListenScreen() {
   const soundRef = useRef(null);
   const autoplayTimer = useRef(null);
 
-  const REPLAY_DELAY = 2000;
-  const ENGLISH_DELAY = 500;
+  const JAPANESE_REPEAT_DELAY = 2000;
+  const FRENCH_DELAY = 500;
+  const FRENCH_TO_ENGLISH_DELAY = 2500;
   const NEXT_DELAY = 2000;
+  const EXTRA_PADDING = 1500;
 
   useFocusEffect(
     useCallback(() => {
@@ -83,9 +85,23 @@ export default function PracticeListenScreen() {
           if (playbackCount === 1) {
             setTimeout(() => {
               if (isMounted) sound.replayAsync().catch(() => {});
-            }, REPLAY_DELAY);
+            }, JAPANESE_REPEAT_DELAY);
           } else if (playbackCount === 2) {
             sound.setOnPlaybackStatusUpdate(null);
+
+            // ▶️ Play French
+            if (current.audioFrench && audioMap[current.audioFrench]) {
+              setTimeout(async () => {
+                try {
+                  const { sound: frSound } = await Audio.Sound.createAsync(audioMap[current.audioFrench]);
+                  await frSound.playAsync();
+                } catch (err) {
+                  console.warn('❌ French audio error:', err.message);
+                }
+              }, FRENCH_DELAY);
+            }
+
+            // ▶️ Play English after French
             if (current.audioEnglish && audioMap[current.audioEnglish]) {
               setTimeout(async () => {
                 try {
@@ -94,7 +110,7 @@ export default function PracticeListenScreen() {
                 } catch (err) {
                   console.warn('❌ English audio error:', err.message);
                 }
-              }, ENGLISH_DELAY);
+              }, FRENCH_DELAY + FRENCH_TO_ENGLISH_DELAY);
             }
           }
         });
@@ -117,12 +133,16 @@ export default function PracticeListenScreen() {
   useEffect(() => {
     if (!autoplay || !current) return;
 
-    const totalDelay = REPLAY_DELAY + ENGLISH_DELAY + NEXT_DELAY + 2500;
-    setShowAnswer(false);
+    const totalDelay =
+      JAPANESE_REPEAT_DELAY +
+      FRENCH_DELAY +
+      FRENCH_TO_ENGLISH_DELAY +
+      NEXT_DELAY +
+      EXTRA_PADDING;
 
     autoplayTimer.current = setTimeout(() => {
       setShowAnswer(true);
-    }, REPLAY_DELAY);
+    }, JAPANESE_REPEAT_DELAY);
 
     autoplayTimer.current = setTimeout(() => {
       handleNext();
@@ -156,7 +176,7 @@ export default function PracticeListenScreen() {
     await updateWordStage(current.id, 3);
     const updated = await loadProgress();
     setProgress(updated);
-    setPendingRemovalId(current.id); // Delay removal until Next
+    setPendingRemovalId(current.id);
   };
 
   const handleNext = () => {
