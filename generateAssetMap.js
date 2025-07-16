@@ -11,6 +11,7 @@ const blocksPath = './data/blocks.json';
 const imageDir = './assets/image';
 const audioJapanDir = './assets/audio/japan';
 const audioEnglishDir = './assets/audio/english';
+const audioFrenchDir = './assets/audio/french';
 const imageMapOutput = './components/imageMap.js';
 const audioMapOutput = './components/audioMap.js';
 const skippedFile = './skippedAssets.txt';
@@ -28,10 +29,12 @@ try {
 const imageFiles = fs.readdirSync(imageDir);
 const audioJapanFiles = fs.readdirSync(audioJapanDir);
 const audioEnglishFiles = fs.readdirSync(audioEnglishDir);
+const audioFrenchFiles = fs.readdirSync(audioFrenchDir);
 
 const availableImages = new Set(imageFiles);
 const availableJapanese = new Set(audioJapanFiles);
 const availableEnglish = new Set(audioEnglishFiles);
+const availableFrench = new Set(audioFrenchFiles);
 
 // Init maps
 let imageMap = 'export const imageMap = {\n';
@@ -42,7 +45,7 @@ let validAudioCount = 0;
 fs.writeFileSync(skippedFile, ''); // Reset skipped log
 
 blocks.forEach((block) => {
-  const { id, image, audio, audioEnglish } = block;
+  const { id, image, audio, audioEnglish, audioFrench } = block;
 
   // Handle image
   if (image && availableImages.has(image)) {
@@ -70,6 +73,16 @@ blocks.forEach((block) => {
     validAudioCount++;
   } else if (audioEnglish) {
     const msg = `⚠️ Skipped English audio for ID ${id}: missing or invalid (${audioEnglish})`;
+    console.warn(yellow(msg));
+    fs.appendFileSync(skippedFile, msg + '\n');
+  }
+
+  // Handle French audio
+  if (audioFrench && availableFrench.has(audioFrench)) {
+    audioMap += `  "${audioFrench}": require('../assets/audio/french/${audioFrench}'),\n`;
+    validAudioCount++;
+  } else if (audioFrench) {
+    const msg = `⚠️ Skipped French audio for ID ${id}: missing or invalid (${audioFrench})`;
     console.warn(yellow(msg));
     fs.appendFileSync(skippedFile, msg + '\n');
   }
