@@ -1,56 +1,65 @@
-// hooks/useDynamicAutoplay.js
 import { Audio } from 'expo-av';
 import { useEffect, useRef } from 'react';
 import { audioMap } from '../components/audioMap';
 
 export default function useDynamicAutoplay({ active, block, onReveal, onAdvance }) {
-  const timeouts = useRef([]);
-  const soundRefs = useRef([]);
+  const isCancelled = useRef(false);
   const prevId = useRef(null);
 
   useEffect(() => {
-    if (!active || !block || !block.id) return;
+    if (!active || !block?.id) return;
 
-    // Prevent duplicate runs on same block
     if (prevId.current === block.id) return;
     prevId.current = block.id;
+    isCancelled.current = false;
 
     const playAudio = async (key) => {
       if (!block[key] || !audioMap[block[key]]) return;
       try {
         const { sound } = await Audio.Sound.createAsync(audioMap[block[key]]);
-        soundRefs.current.push(sound);
         await sound.playAsync();
+        await new Promise((resolve) => {
+          sound.setOnPlaybackStatusUpdate((status) => {
+            if (status.didJustFinish) {
+              sound.unloadAsync().catch(() => {});
+              resolve();
+            }
+          });
+        });
       } catch (err) {
         console.warn(`🔇 Failed to play ${key}:`, err.message);
       }
     };
 
-    // Sequence: JP → JP → FR → Reveal + EN → Advance
-    const schedule = () => {
-      timeouts.current.push(setTimeout(() => playAudio('audio'), 0));
-      timeouts.current.push(setTimeout(() => playAudio('audio'), 2000));
-      timeouts.current.push(setTimeout(() => playAudio('audioFrench'), 4000));
-      timeouts.current.push(setTimeout(() => {
-        playAudio('audioEnglish');
+    const runSequence = async () => {
+      try {
+        await playAudio('audio');         // Japanese 1
+        if (isCancelled.current) return;
+
+        await new Promise(r => setTimeout(r, 1000));
+        await playAudio('audio');         // Japanese 2
+        if (isCancelled.current) return;
+
+        await new Promise(r => setTimeout(r, 1000));
+        await playAudio('audioFrench');   // French
+        if (isCancelled.current) return;
+
+        await new Promise(r => setTimeout(r, 1000));
         onReveal?.();
-      }, 7000));
-      timeouts.current.push(setTimeout(() => {
-        onAdvance?.();
-      }, 10000));
+        await playAudio('audioEnglish');  // English
+        if (isCancelled.current) return;
+
+        await new Promise(r => setTimeout(r, 2000));
+        onAdvance?.();                    // Auto-advance
+      } catch (err) {
+        console.warn('❌ Autoplay sequence error:', err.message);
+      }
     };
 
-    schedule();
+    runSequence();
 
     return () => {
-      timeouts.current.forEach(clearTimeout);
-      timeouts.current = [];
-      soundRefs.current.forEach(async s => {
-        try {
-          await s.unloadAsync();
-        } catch {}
-      });
-      soundRefs.current = [];
+      isCancelled.current = true;
     };
-  }, [active, block?.id]); // only triggers when block changes
+  }, [active, block?.id]);
 }

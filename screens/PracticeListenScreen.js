@@ -31,10 +31,28 @@ export default function PracticeListenScreen() {
   const [pendingRemovalId, setPendingRemovalId] = useState(null);
   const [autoplay, setAutoplay] = useState(false);
 
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   const current = shuffledBlocks[currentIndex];
   const currentStage = getStage(progress, current?.id);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const soundRef = useRef(null);
+  const soundRef = useRef(null); // manual playback
+
+  const handleNext = () => {
+    let nextList = [...shuffledBlocks];
+    if (pendingRemovalId) {
+      nextList = nextList.filter(b => b.id !== pendingRemovalId);
+      setPendingRemovalId(null);
+    }
+    const nextIndex = (currentIndex + 1) % nextList.length;
+    setShuffledBlocks(nextList);
+    setCurrentIndex(nextIndex >= nextList.length ? 0 : nextIndex);
+  };
+
+  useDynamicAutoplay({
+    active: autoplay,
+    block: current,
+    onReveal: () => setShowAnswer(true),
+    onAdvance: handleNext,
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -55,73 +73,81 @@ export default function PracticeListenScreen() {
     setShowEnglish(false);
   }, [currentIndex]);
 
-  const handleNext = () => {
-    let nextList = [...shuffledBlocks];
-    if (pendingRemovalId) {
-      nextList = nextList.filter(b => b.id !== pendingRemovalId);
-      setPendingRemovalId(null);
-    }
-    const nextIndex = (currentIndex + 1) % nextList.length;
-    setShuffledBlocks(nextList);
-    setCurrentIndex(nextIndex >= nextList.length ? 0 : nextIndex);
-    setShowAnswer(false);
-    setShowEnglish(false);
-  };
-
-  useDynamicAutoplay({
-    active: autoplay,
-    block: current,
-    onReveal: () => setShowAnswer(true),
-    onAdvance: handleNext,
-  });
-
-  const playJapaneseAudio = async () => {
-    if (!current?.audio || !audioMap[current.audio]) return;
-
-    try {
-      if (soundRef.current) {
-        await soundRef.current.unloadAsync();
-        soundRef.current.setOnPlaybackStatusUpdate(null);
-        soundRef.current = null;
-      }
-
-      const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
-      soundRef.current = sound;
-      await sound.playAsync();
-
-      sound.setOnPlaybackStatusUpdate(status => {
-        if (status.didJustFinish) {
-          sound.unloadAsync();
-          soundRef.current = null;
-        }
-      });
-    } catch (err) {
-      console.warn('Japanese audio error:', err.message);
-    }
-  };
-
-  // ✅ Play Japanese audio when current block changes (pre-reveal)
+  // 🔊 Pre-reveal Japanese auto-play (manual only)
   useEffect(() => {
-    if (!autoplay && current) {
-      playJapaneseAudio();
-    }
-  }, [current?.id]);
+    if (!current || autoplay || showAnswer) return;
 
-  // ✅ Play Japanese again when answer is revealed
-  useEffect(() => {
-    if (!autoplay && showAnswer) {
-      playJapaneseAudio();
-    }
-  }, [showAnswer]);
+    let isMounted = true;
+    let firstDone = false;
+    let localSound;
 
-  useEffect(() => {
-    return () => {
-      if (soundRef.current) {
-        soundRef.current.unloadAsync();
-        soundRef.current = null;
+    const playJapaneseTwice = async () => {
+      try {
+        const uri = audioMap[current.audio];
+        if (!uri) return;
+
+        const { sound } = await Audio.Sound.createAsync(uri);
+        localSound = sound;
+        await sound.playAsync();
+
+        sound.setOnPlaybackStatusUpdate(async (status) => {
+          if (!isMounted || !status.didJustFinish) return;
+
+          if (!firstDone) {
+            firstDone = true;
+            setTimeout(() => {
+              if (isMounted) sound.replayAsync().catch(() => {});
+            }, 2000);
+          } else {
+            await sound.unloadAsync().catch(() => {});
+          }
+        });
+      } catch (err) {
+        console.warn('🔇 Failed Japanese repeat playback:', err.message);
       }
     };
-  }, []);
+
+    playJapaneseTwice();
+
+    return () => {
+      isMounted = false;
+      if (localSound) localSound.unloadAsync().catch(() => {});
+    };
+  }, [current?.id, autoplay, showAnswer]);
+
+  // ✅ Delay French playback to avoid overlap (manual only)
+  useEffect(() => {
+    if (!current || autoplay || !showAnswer) return;
+
+    let localSound;
+    let timeout;
+
+    const playFrench = async () => {
+      try {
+        const uri = audioMap[current.audioFrench];
+        if (!uri) return;
+
+        const { sound } = await Audio.Sound.createAsync(uri);
+        localSound = sound;
+        await sound.playAsync();
+
+        sound.setOnPlaybackStatusUpdate((status) => {
+          if (status.didJustFinish) {
+            sound.unloadAsync().catch(() => {});
+          }
+        });
+      } catch (err) {
+        console.warn('🔇 Failed French reveal playback:', err.message);
+      }
+    };
+
+    timeout = setTimeout(playFrench, 500);
+
+    return () => {
+      if (timeout) clearTimeout(timeout);
+      if (localSound) localSound.unloadAsync().catch(() => {});
+    };
+  }, [current?.id, autoplay, showAnswer]);
 
   const handleAdvanceToStage3 = async () => {
     if (!current?.id || currentStage >= 3) return;
@@ -203,7 +229,22 @@ export default function PracticeListenScreen() {
           block={current}
           stage={currentStage}
           onStageChange={() => setRefreshKey(k => k + 1)}
-          onPlayAudio={autoplay ? () => {} : playJapaneseAudio}
+          onPlayAudio={async () => {
+            try {
+              if (!current?.audio || !audioMap[current.audio]) return;
+
+              if (soundRef.current) {
+                await soundRef.current.unloadAsync();
+                soundRef.current = null;
+              }
+
+              const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
+              soundRef.current = sound;
+              await sound.playAsync();
+            } catch (err) {
+              console.warn('❌ Manual Japanese playback error:', err.message);
+            }
+          }}
           showStars={false}
           showInstruction={!showAnswer}
           showPhonetic={showAnswer}
