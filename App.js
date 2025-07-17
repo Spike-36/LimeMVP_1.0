@@ -21,8 +21,8 @@ export default function App() {
           allowsRecordingIOS: false,
           staysActiveInBackground: true,
           playsInSilentModeIOS: true,
-          interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
-          interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+          interruptionModeIOS: 'doNotMix', // ✅ FIXED: use valid string enum
+          interruptionModeAndroid: 'doNotMix', // ✅ FIXED: same here
           shouldDuckAndroid: true,
           playThroughEarpieceAndroid: false,
         });
@@ -78,7 +78,7 @@ export default function App() {
         />
         <Tab.Screen
           name="Review"
-          component={ReviewStack} // ✅ Replace ReviewScreen with ReviewStack
+          component={ReviewStack}
           options={{
             tabBarLabel: 'Level 4',
             tabBarIcon: ({ color, size }) => (
