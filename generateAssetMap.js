@@ -1,4 +1,3 @@
-// generateAssetMap.js
 const fs = require('fs');
 const path = require('path');
 
@@ -12,6 +11,7 @@ const imageDir = './assets/image';
 const audioJapanDir = './assets/audio/japan';
 const audioEnglishDir = './assets/audio/english';
 const audioFrenchDir = './assets/audio/french';
+const audioSpanishDir = './assets/audio/spanish';
 const imageMapOutput = './components/imageMap.js';
 const audioMapOutput = './components/audioMap.js';
 const skippedFile = './skippedAssets.txt';
@@ -30,11 +30,13 @@ const imageFiles = fs.readdirSync(imageDir);
 const audioJapanFiles = fs.readdirSync(audioJapanDir);
 const audioEnglishFiles = fs.readdirSync(audioEnglishDir);
 const audioFrenchFiles = fs.readdirSync(audioFrenchDir);
+const audioSpanishFiles = fs.readdirSync(audioSpanishDir);
 
 const availableImages = new Set(imageFiles);
 const availableJapanese = new Set(audioJapanFiles);
 const availableEnglish = new Set(audioEnglishFiles);
 const availableFrench = new Set(audioFrenchFiles);
+const availableSpanish = new Set(audioSpanishFiles);
 
 // Init maps
 let imageMap = 'export const imageMap = {\n';
@@ -45,7 +47,7 @@ let validAudioCount = 0;
 fs.writeFileSync(skippedFile, ''); // Reset skipped log
 
 blocks.forEach((block) => {
-  const { id, image, audio, audioEnglish, audioFrench } = block;
+  const { id, image, audio, audioEnglish, audioFrench, audioSpanish } = block;
 
   // Handle image
   if (image && availableImages.has(image)) {
@@ -83,6 +85,16 @@ blocks.forEach((block) => {
     validAudioCount++;
   } else if (audioFrench) {
     const msg = `⚠️ Skipped French audio for ID ${id}: missing or invalid (${audioFrench})`;
+    console.warn(yellow(msg));
+    fs.appendFileSync(skippedFile, msg + '\n');
+  }
+
+  // Handle Spanish audio
+  if (audioSpanish && availableSpanish.has(audioSpanish)) {
+    audioMap += `  "${audioSpanish}": require('../assets/audio/spanish/${audioSpanish}'),\n`;
+    validAudioCount++;
+  } else if (audioSpanish) {
+    const msg = `⚠️ Skipped Spanish audio for ID ${id}: missing or invalid (${audioSpanish})`;
     console.warn(yellow(msg));
     fs.appendFileSync(skippedFile, msg + '\n');
   }

@@ -34,7 +34,7 @@ export default function PracticeListenScreen() {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const current = shuffledBlocks[currentIndex];
   const currentStage = getStage(progress, current?.id);
-  const soundRef = useRef(null); // manual playback
+  const soundRef = useRef(null);
 
   const handleNext = () => {
     let nextList = [...shuffledBlocks];
@@ -49,7 +49,10 @@ export default function PracticeListenScreen() {
 
   useDynamicAutoplay({
     active: autoplay,
-    block: current,
+    block: {
+      ...current,
+      audioFrench: current?.audioSpanish, // 🔄 Use Spanish audio in autoplay
+    },
     onReveal: () => setShowAnswer(true),
     onAdvance: handleNext,
   });
@@ -73,10 +76,8 @@ export default function PracticeListenScreen() {
     setShowEnglish(false);
   }, [currentIndex]);
 
-  // 🔊 Pre-reveal Japanese auto-play (manual only)
   useEffect(() => {
     if (!current || autoplay || showAnswer) return;
-
     let isMounted = true;
     let firstDone = false;
     let localSound;
@@ -92,12 +93,11 @@ export default function PracticeListenScreen() {
 
         sound.setOnPlaybackStatusUpdate(async (status) => {
           if (!isMounted || !status.didJustFinish) return;
-
           if (!firstDone) {
             firstDone = true;
             setTimeout(() => {
               if (isMounted) sound.replayAsync().catch(() => {});
-            }, 2000);
+            }, 1000);
           } else {
             await sound.unloadAsync().catch(() => {});
           }
@@ -108,23 +108,21 @@ export default function PracticeListenScreen() {
     };
 
     playJapaneseTwice();
-
     return () => {
       isMounted = false;
       if (localSound) localSound.unloadAsync().catch(() => {});
     };
   }, [current?.id, autoplay, showAnswer]);
 
-  // ✅ Delay French playback to avoid overlap (manual only)
   useEffect(() => {
     if (!current || autoplay || !showAnswer) return;
 
     let localSound;
     let timeout;
 
-    const playFrench = async () => {
+    const playSpanish = async () => {
       try {
-        const uri = audioMap[current.audioFrench];
+        const uri = audioMap[current.audioSpanish];
         if (!uri) return;
 
         const { sound } = await Audio.Sound.createAsync(uri);
@@ -137,12 +135,11 @@ export default function PracticeListenScreen() {
           }
         });
       } catch (err) {
-        console.warn('🔇 Failed French reveal playback:', err.message);
+        console.warn('🔇 Failed Spanish reveal playback:', err.message);
       }
     };
 
-    timeout = setTimeout(playFrench, 500);
-
+    timeout = setTimeout(playSpanish, 500);
     return () => {
       if (timeout) clearTimeout(timeout);
       if (localSound) localSound.unloadAsync().catch(() => {});
@@ -232,12 +229,10 @@ export default function PracticeListenScreen() {
           onPlayAudio={async () => {
             try {
               if (!current?.audio || !audioMap[current.audio]) return;
-
               if (soundRef.current) {
                 await soundRef.current.unloadAsync();
                 soundRef.current = null;
               }
-
               const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
               soundRef.current = sound;
               await sound.playAsync();
