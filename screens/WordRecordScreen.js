@@ -11,7 +11,7 @@ import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
-export default function WordRecordScreenMVP() {
+export default function WordRecordScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { words, index = 0, mode = 'explore' } = route.params || {};
