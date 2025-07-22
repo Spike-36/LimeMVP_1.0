@@ -40,7 +40,7 @@ export default function useDynamicAutoplay({ active, block, onReveal, onAdvance 
         await playAudio('audio');         // Japanese 2
         if (isCancelled.current) return;
 
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 2000));
         await playAudio('audioFrench');   // French
         if (isCancelled.current) return;
 
@@ -59,7 +59,6 @@ export default function useDynamicAutoplay({ active, block, onReveal, onAdvance 
     runSequence();
 
     return () => {
-      isCancelled.current = true;
     };
   }, [active, block?.id]);
 }
