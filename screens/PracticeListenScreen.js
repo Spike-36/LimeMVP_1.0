@@ -51,7 +51,7 @@ export default function PracticeListenScreen() {
     active: autoplay,
     block: {
       ...current,
-      audioFrench: current?.audioSpanish, // 🔄 Use Spanish audio in autoplay
+      audioFrench: current?.audioSpanish,
     },
     onReveal: () => setShowAnswer(true),
     onAdvance: handleNext,
@@ -176,6 +176,22 @@ export default function PracticeListenScreen() {
 
   const toggleAutoplay = () => setAutoplay(prev => !prev);
 
+  const handlePlaySpanish = async () => {
+    try {
+      const uri = audioMap[current.audioSpanish];
+      if (!uri) return;
+      const { sound } = await Audio.Sound.createAsync(uri);
+      await sound.playAsync();
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          sound.unloadAsync().catch(() => {});
+        }
+      });
+    } catch (err) {
+      console.warn('❌ Manual Spanish playback error:', err.message);
+    }
+  };
+
   if (!current) {
     return (
       <View style={styles.centeredContainer}>
@@ -199,6 +215,14 @@ export default function PracticeListenScreen() {
           hideAudioButton={true}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
         />
+
+        {showAnswer && (
+          <TouchableOpacity style={styles.spanishOverlay} onPress={handlePlaySpanish}>
+            <View style={styles.spanishTextWrapper}>
+              <Text style={styles.spanishText}>{current?.spanish}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity onPress={toggleAutoplay} style={styles.autoPlayIconWrapper}>
           <MaterialCommunityIcons
@@ -306,5 +330,28 @@ const styles = StyleSheet.create({
     color: 'gray',
     textAlign: 'center',
     paddingHorizontal: 24,
+  },
+  spanishOverlay: {
+    position: 'absolute',
+    top: '70%',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  spanishTextWrapper: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  spanishText: {
+    fontSize: 28,
+    color: '#00FF00',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textShadowColor: 'black',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });
