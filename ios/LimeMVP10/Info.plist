@@ -51,6 +51,10 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app may request photo access if needed for media selection.</string>
     <key>NSSpeechRecognitionUsageDescription</key>
     <string>This app uses speech recognition to power voice search.</string>
     <key>UILaunchStoryboardName</key>

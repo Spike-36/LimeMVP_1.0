@@ -33,12 +33,10 @@ export default function WordRecordScreen() {
   const soundRef = useRef(null);
   const stage = getStage(progress, wordId);
 
-  // Load word progress
   useEffect(() => {
     loadProgress().then(setProgress);
   }, []);
 
-  // Autoplay logic
   useEffect(() => {
     let isMounted = true;
 
@@ -90,6 +88,33 @@ export default function WordRecordScreen() {
     }
   };
 
+  const playJapaneseSlowAudio = async () => {
+    console.log('🧪 Phonetic tap worked');
+    const file = word?.audioJapaneseSlow;
+    const source = audioMap[file];
+
+    console.log('Audio filename:', file);
+    console.log('AudioMap entry:', source);
+
+    if (!file || !source) {
+      console.warn('⚠️ No slow Japanese audio found:', file);
+      return;
+    }
+
+    try {
+      const { sound } = await Audio.Sound.createAsync(source);
+      await sound.playAsync();
+
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+    } catch (err) {
+      console.warn('❌ Slow audio playback error:', err.message);
+    }
+  };
+
   const handleSetStage = async (newStage) => {
     if (!wordId) return;
     await updateWordStage(wordId, newStage);
@@ -132,6 +157,7 @@ export default function WordRecordScreen() {
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onShowTip={() => setShowTip(true)}
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
+          onPhoneticPress={playJapaneseSlowAudio}
         />
 
         {mode === 'explore' && (
@@ -147,7 +173,7 @@ export default function WordRecordScreen() {
         )}
       </View>
 
-      <View style={styles.interactionBlock}>
+      <View style={styles.interactionBlock} pointerEvents="box-none">
         <WordInteractionBlock
           block={word}
           stage={stage}

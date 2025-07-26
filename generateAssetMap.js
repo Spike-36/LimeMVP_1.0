@@ -9,6 +9,7 @@ const green = (text) => `\x1b[32m${text}\x1b[0m`;
 const blocksPath = './data/blocks.json';
 const imageDir = './assets/image';
 const audioJapanDir = './assets/audio/japan';
+const audioJapanSlowDir = './assets/audio/japanSlow'; // 🆕 NEW DIR
 const audioEnglishDir = './assets/audio/english';
 const audioFrenchDir = './assets/audio/french';
 const audioSpanishDir = './assets/audio/spanish';
@@ -28,12 +29,14 @@ try {
 // Read available asset files
 const imageFiles = fs.readdirSync(imageDir);
 const audioJapanFiles = fs.readdirSync(audioJapanDir);
+const audioJapanSlowFiles = fs.readdirSync(audioJapanSlowDir); // 🆕
 const audioEnglishFiles = fs.readdirSync(audioEnglishDir);
 const audioFrenchFiles = fs.readdirSync(audioFrenchDir);
 const audioSpanishFiles = fs.readdirSync(audioSpanishDir);
 
 const availableImages = new Set(imageFiles);
 const availableJapanese = new Set(audioJapanFiles);
+const availableJapaneseSlow = new Set(audioJapanSlowFiles); // 🆕
 const availableEnglish = new Set(audioEnglishFiles);
 const availableFrench = new Set(audioFrenchFiles);
 const availableSpanish = new Set(audioSpanishFiles);
@@ -47,7 +50,15 @@ let validAudioCount = 0;
 fs.writeFileSync(skippedFile, ''); // Reset skipped log
 
 blocks.forEach((block) => {
-  const { id, image, audio, audioEnglish, audioFrench, audioSpanish } = block;
+  const {
+    id,
+    image,
+    audio,
+    audioJapaneseSlow, // 🆕
+    audioEnglish,
+    audioFrench,
+    audioSpanish,
+  } = block;
 
   // Handle image
   if (image && availableImages.has(image)) {
@@ -59,12 +70,22 @@ blocks.forEach((block) => {
     fs.appendFileSync(skippedFile, msg + '\n');
   }
 
-  // Handle Japanese audio
+  // Handle Japanese audio (normal)
   if (audio && availableJapanese.has(audio)) {
     audioMap += `  "${audio}": require('../assets/audio/japan/${audio}'),\n`;
     validAudioCount++;
   } else {
     const msg = `⚠️ Skipped Japanese audio for ID ${id}: missing or invalid (${audio})`;
+    console.warn(yellow(msg));
+    fs.appendFileSync(skippedFile, msg + '\n');
+  }
+
+  // 🆕 Handle Japanese audio (slow)
+  if (audioJapaneseSlow && availableJapaneseSlow.has(audioJapaneseSlow)) {
+    audioMap += `  "${audioJapaneseSlow}": require('../assets/audio/japanSlow/${audioJapaneseSlow}'),\n`;
+    validAudioCount++;
+  } else if (audioJapaneseSlow) {
+    const msg = `⚠️ Skipped Japanese slow audio for ID ${id}: missing or invalid (${audioJapaneseSlow})`;
     console.warn(yellow(msg));
     fs.appendFileSync(skippedFile, msg + '\n');
   }

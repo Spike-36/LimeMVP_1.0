@@ -4,7 +4,7 @@ import StageAdvanceButton from './StageAdvanceButton';
 
 const { height: screenHeight } = Dimensions.get('window');
 
-export default function WordRecordLayoutMVP({
+export default function WordRecordLayout({
   block,
   imageAsset,
   showImage = true,
@@ -25,10 +25,13 @@ export default function WordRecordLayoutMVP({
   stage,
   wordId,
   onAdvanceStage = () => {},
+  onPhoneticPress,
 }) {
+  console.log('🧪 Received onPhoneticPress:', typeof onPhoneticPress);
+
   return (
     <View style={styles.container}>
-      <View style={[styles.imageContainer, !showImage && { height: screenHeight * 0.478 }]}>
+      <View style={[styles.imageContainer, !showImage && { height: screenHeight * 0.478 }]}> 
         {showImage && imageAsset && (
           <Image source={imageAsset} style={styles.image} resizeMode="cover" />
         )}
@@ -65,7 +68,26 @@ export default function WordRecordLayoutMVP({
         )}
       </View>
 
-      <View style={styles.textSection}>
+      <View style={styles.textSection} pointerEvents="auto">
+        {block?.foreign && !hideThaiText && (
+          <Text style={styles.foreign}>{block.foreign}</Text>
+        )}
+
+        {block?.phonetic && !hidePhonetic && (
+          <TouchableOpacity
+            onPress={() => {
+              console.log('✅ Touched phonetic block (inside layout)');
+              if (onPhoneticPress) onPhoneticPress();
+              else console.warn('⚠️ onPhoneticPress is missing');
+            }}
+            activeOpacity={0.7}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={styles.phoneticButton}
+          >
+            <Text style={styles.phonetic}>{block.phonetic}</Text>
+          </TouchableOpacity>
+        )}
+
         {topContent}
         {bottomContent}
       </View>
@@ -82,6 +104,7 @@ const styles = StyleSheet.create({
     height: screenHeight * 0.5,
     width: '100%',
     overflow: 'hidden',
+    zIndex: 0,
   },
   image: {
     height: '100%',
@@ -93,6 +116,7 @@ const styles = StyleSheet.create({
     left: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    zIndex: 2,
   },
   findButton: {
     position: 'absolute',
@@ -101,6 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)',
     padding: 8,
     borderRadius: 20,
+    zIndex: 2,
   },
   langBadge: {
     position: 'absolute',
@@ -112,6 +137,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
+    zIndex: 2,
   },
   langBadgeText: {
     color: '#aaa',
@@ -125,6 +151,7 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 2,
   },
   englishBackground: {
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
@@ -145,5 +172,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 24,
     paddingBottom: 24,
+    zIndex: 100,
+    position: 'relative',
+    pointerEvents: 'auto',
+  },
+  foreign: {
+    fontSize: 36,
+    color: '#fff',
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  phoneticButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: 'red',
+    zIndex: 999,
+    pointerEvents: 'auto',
+  },
+  phonetic: {
+    fontSize: 20,
+    color: '#bbb',
+    fontWeight: '400',
+    textDecorationLine: 'underline',
+    marginTop: -8,
   },
 });
