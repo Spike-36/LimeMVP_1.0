@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import StageAdvanceButton from './StageAdvanceButton';
 
@@ -17,7 +17,6 @@ export default function WordRecordLayout({
   showInfoIcon = true,
   showEnglish = false,
   hideThaiText = false,
-  hidePhonetic = false,
   hideAudioButton = false,
   topContent,
   bottomContent,
@@ -25,10 +24,9 @@ export default function WordRecordLayout({
   stage,
   wordId,
   onAdvanceStage = () => {},
-  onPhoneticPress,
+  showSlowAudioIcon = false,
+  onSlowAudioPress,
 }) {
-  console.log('🧪 Received onPhoneticPress:', typeof onPhoneticPress);
-
   return (
     <View style={styles.container}>
       <View style={[styles.imageContainer, !showImage && { height: screenHeight * 0.478 }]}>
@@ -41,6 +39,12 @@ export default function WordRecordLayout({
         {onPressFind && (
           <TouchableOpacity style={styles.findButton} onPress={onPressFind}>
             <Ionicons name="search" size={25} color="#aaa" />
+          </TouchableOpacity>
+        )}
+
+        {showSlowAudioIcon && (
+          <TouchableOpacity style={styles.slowAudioIcon} onPress={onSlowAudioPress}>
+            <FontAwesome name="volume-down" size={24} color="#ccc" />
           </TouchableOpacity>
         )}
 
@@ -71,23 +75,6 @@ export default function WordRecordLayout({
       <View style={styles.textSection} pointerEvents="auto">
         {block?.foreign && !hideThaiText && (
           <Text style={styles.foreign}>{block.foreign}</Text>
-        )}
-
-        {block?.phonetic && !hidePhonetic && (
-          <View style={styles.phoneticWrapper}>
-            <TouchableOpacity
-              onPress={() => {
-                console.log('✅ Touched phonetic block (inside layout)');
-                if (onPhoneticPress) onPhoneticPress();
-                else console.warn('⚠️ onPhoneticPress is missing');
-              }}
-              activeOpacity={0.7}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={styles.phoneticButton}
-            >
-              <Text style={styles.phonetic}>{block.phonetic}</Text>
-            </TouchableOpacity>
-          </View>
         )}
 
         {topContent}
@@ -124,6 +111,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 49,
     right: 16,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    padding: 8,
+    borderRadius: 20,
+    zIndex: 2,
+  },
+  slowAudioIcon: {
+    position: 'absolute',
+    top: 49,
+    left: 16,
     backgroundColor: 'rgba(0,0,0,0.4)',
     padding: 8,
     borderRadius: 20,
@@ -183,26 +179,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
     marginBottom: 12,
-  },
-  phoneticWrapper: {
-    marginTop: 40,           // moved lower down the screen
-    height: 60,              // 50% taller than before
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  phoneticButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: 'red',
-    zIndex: 999,
-    pointerEvents: 'auto',
-  },
-  phonetic: {
-    fontSize: 20,
-    color: '#bbb',
-    fontWeight: '400',
-    textDecorationLine: 'underline',
-    marginTop: -8,
   },
 });

@@ -1,3 +1,4 @@
+
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Audio } from 'expo-av';
@@ -89,7 +90,7 @@ export default function WordRecordScreen() {
   };
 
   const playJapaneseSlowAudio = async () => {
-    console.log('🧪 Phonetic tap worked');
+    console.log('🧪 Slow audio icon tapped');
     const file = word?.audioJapaneseSlow;
     const source = audioMap[file];
 
@@ -157,7 +158,8 @@ export default function WordRecordScreen() {
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onShowTip={() => setShowTip(true)}
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
-          onPhoneticPress={playJapaneseSlowAudio}
+          showSlowAudioIcon
+          onSlowAudioPress={playJapaneseSlowAudio}
         />
 
         {mode === 'explore' && (

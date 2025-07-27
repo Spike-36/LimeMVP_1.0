@@ -117,6 +117,33 @@ export default function ReviewWordScreen() {
     }
   };
 
+  const playJapaneseSlowAudio = async () => {
+    console.log('🧪 Slow audio icon tapped');
+    const file = current?.audioJapaneseSlow;
+    const source = audioMap[file];
+
+    console.log('Audio filename:', file);
+    console.log('AudioMap entry:', source);
+
+    if (!file || !source) {
+      console.warn('⚠️ No slow Japanese audio found:', file);
+      return;
+    }
+
+    try {
+      const { sound } = await Audio.Sound.createAsync(source);
+      await sound.playAsync();
+
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+    } catch (err) {
+      console.warn('❌ Slow audio playback error:', err.message);
+    }
+  };
+
   const handleNext = () => {
     const nextIndex = (currentIndex + 1) % words.length;
     setCurrentIndex(nextIndex);
@@ -145,6 +172,8 @@ export default function ReviewWordScreen() {
           showInfoIcon={showAnswer}
           showEnglish={showEnglish}
           hideAudioButton={true}
+          showSlowAudioIcon
+          onSlowAudioPress={playJapaneseSlowAudio}
           onPlayAudio={playAudio}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
@@ -202,7 +231,7 @@ const styles = StyleSheet.create({
   buttonText: { color: 'white', fontSize: 18 },
   autoPlayIconWrapper: {
     position: 'absolute',
-    top: 75,
+    top: '40%',
     left: 20,
     zIndex: 5,
     backgroundColor: 'rgba(0,0,0,0.4)',

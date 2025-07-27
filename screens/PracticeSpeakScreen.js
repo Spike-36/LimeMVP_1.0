@@ -34,12 +34,6 @@ export default function PracticeSpeakScreen() {
   const current = shuffledBlocks[currentIndex];
   const currentStage = current?.id ? getStage(progress, current.id) : 0;
 
-  const REVEAL_DELAY = 1500;
-  const ENGLISH_DELAY = 1200;
-  const THINK_DELAY = 2000;
-  const JAPANESE_DELAY = 1000;
-  const NEXT_DELAY = 1500;
-
   useFocusEffect(
     useCallback(() => {
       async function loadEligibleWords() {
@@ -59,24 +53,24 @@ export default function PracticeSpeakScreen() {
 
     const runSequence = async () => {
       try {
-        await new Promise(res => setTimeout(res, REVEAL_DELAY));
+        await new Promise(res => setTimeout(res, 1500));
 
         if (current.audioEnglish && audioMap[current.audioEnglish]) {
           const { sound } = await Audio.Sound.createAsync(audioMap[current.audioEnglish]);
           await sound.playAsync();
         }
 
-        await new Promise(res => setTimeout(res, THINK_DELAY));
+        await new Promise(res => setTimeout(res, 2000));
         setShowAnswer(true);
 
-        await new Promise(res => setTimeout(res, JAPANESE_DELAY));
+        await new Promise(res => setTimeout(res, 1000));
 
         if (current.audio && audioMap[current.audio]) {
           const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
           await sound.playAsync();
         }
 
-        await new Promise(res => setTimeout(res, NEXT_DELAY));
+        await new Promise(res => setTimeout(res, 1500));
         handleNext();
       } catch (err) {
         console.warn('❌ Autoplay error:', err.message);
@@ -131,6 +125,24 @@ export default function PracticeSpeakScreen() {
     }
   };
 
+  const handlePlayJapaneseSlow = async () => {
+    const file = current?.audioJapaneseSlow;
+    const source = audioMap[file];
+    if (!file || !source) {
+      console.warn('⚠️ No slow Japanese audio found:', file);
+      return;
+    }
+    try {
+      const { sound } = await Audio.Sound.createAsync(source);
+      await sound.playAsync();
+      sound.setOnPlaybackStatusUpdate(status => {
+        if (status.didJustFinish) sound.unloadAsync();
+      });
+    } catch (err) {
+      console.warn('❌ Slow audio playback error:', err.message);
+    }
+  };
+
   const triggerTickAnimation = () => {
     Animated.sequence([
       Animated.timing(scaleAnim, {
@@ -150,7 +162,6 @@ export default function PracticeSpeakScreen() {
     if (!current?.id || currentStage >= 4) return;
 
     triggerTickAnimation();
-
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     } catch (err) {
@@ -202,6 +213,8 @@ export default function PracticeSpeakScreen() {
           hideThaiText
           hidePhonetic
           hideAudioButton
+          showSlowAudioIcon
+          onSlowAudioPress={handlePlayJapaneseSlow}
           onToggleEnglish={() => {}}
           onShowTip={() => {}}
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
@@ -305,7 +318,7 @@ const styles = StyleSheet.create({
   },
   autoPlayIconWrapper: {
     position: 'absolute',
-    top: 75,
+    top: '45%',
     left: 20,
     zIndex: 5,
     backgroundColor: 'rgba(0,0,0,0.4)',

@@ -1,5 +1,3 @@
-// PracticeListenScreen.js (fixed)
-
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
@@ -78,145 +76,24 @@ export default function PracticeListenScreen() {
     setShowEnglish(false);
   }, [currentIndex]);
 
-  useEffect(() => {
-    if (!current || autoplay || showAnswer) return;
-    let isMounted = true;
-    let firstDone = false;
-    let localSound;
-
-    const playJapaneseTwice = async () => {
-      try {
-        const uri = audioMap[current.audio];
-        if (!uri) return;
-
-        const { sound } = await Audio.Sound.createAsync(uri);
-        localSound = sound;
-        await sound.playAsync();
-
-        sound.setOnPlaybackStatusUpdate(async (status) => {
-          if (!isMounted || !status.didJustFinish) return;
-          if (!firstDone) {
-            firstDone = true;
-            setTimeout(() => {
-              if (isMounted) sound.replayAsync().catch(() => {});
-            }, 1000);
-          } else {
-            await sound.unloadAsync().catch(() => {});
-          }
-        });
-      } catch (err) {
-        console.warn('🔇 Failed Japanese repeat playback:', err.message);
-      }
-    };
-
-    playJapaneseTwice();
-    return () => {
-      isMounted = false;
-      if (localSound) localSound.unloadAsync().catch(() => {});
-    };
-  }, [current?.id, autoplay, showAnswer]);
-
-  useEffect(() => {
-    if (!current || autoplay || !showAnswer) return;
-
-    let localSound;
-    let timeout;
-
-    const playSpanish = async () => {
-      try {
-        const uri = audioMap[current.audioSpanish];
-        if (!uri) return;
-
-        const { sound } = await Audio.Sound.createAsync(uri);
-        localSound = sound;
-        await sound.playAsync();
-
-        sound.setOnPlaybackStatusUpdate((status) => {
-          if (status.didJustFinish) {
-            sound.unloadAsync().catch(() => {});
-          }
-        });
-      } catch (err) {
-        console.warn('🔇 Failed Spanish reveal playback:', err.message);
-      }
-    };
-
-    timeout = setTimeout(playSpanish, 500);
-    return () => {
-      if (timeout) clearTimeout(timeout);
-      if (localSound) localSound.unloadAsync().catch(() => {});
-    };
-  }, [current?.id, autoplay, showAnswer]);
-
-  const handleAdvanceToStage3 = async () => {
-    if (!current?.id || currentStage >= 3) return;
-
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 1.3,
-        duration: 120,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 3,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    } catch (err) {
-      console.warn('Haptics error:', err.message);
-    }
-
-    await updateWordStage(current.id, 3);
-    const updated = await loadProgress();
-    setProgress(updated);
-    setPendingRemovalId(current.id);
-  };
-
-  const toggleAutoplay = () => setAutoplay(prev => !prev);
-
-  const handlePlaySpanish = async () => {
-    try {
-      const uri = audioMap[current.audioSpanish];
-      if (!uri) return;
-      const { sound } = await Audio.Sound.createAsync(uri);
-      await sound.playAsync();
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (status.didJustFinish) {
-          sound.unloadAsync().catch(() => {});
-        }
-      });
-    } catch (err) {
-      console.warn('❌ Manual Spanish playback error:', err.message);
-    }
-  };
-
   const handlePlayJapaneseSlow = async () => {
     try {
-      console.log('🧪 handlePlayJapaneseSlow tapped');
-      if (!current?.audioSlow || !audioMap[current.audioSlow]) {
-        console.warn('❌ No slow audio available');
-        return;
-      }
+      const file = current?.audioJapaneseSlow;
+      const source = audioMap[file];
+      if (!file || !source) return;
 
       if (soundRef.current) {
         await soundRef.current.unloadAsync();
         soundRef.current = null;
-        console.log('🔁 Previous sound unloaded');
       }
 
-      const { sound } = await Audio.Sound.createAsync(audioMap[current.audioSlow]);
+      const { sound } = await Audio.Sound.createAsync(source);
       soundRef.current = sound;
-      const status = await sound.playAsync();
-      console.log('▶️ Slow audio playing', status);
+      await sound.playAsync();
 
       sound.setOnPlaybackStatusUpdate((status) => {
         if (status.didJustFinish) {
           sound.unloadAsync().catch(() => {});
-          console.log('✅ Slow audio finished');
         }
       });
     } catch (err) {
@@ -224,12 +101,29 @@ export default function PracticeListenScreen() {
     }
   };
 
+  const toggleAutoplay = () => setAutoplay(prev => !prev);
+
+  const handleAdvanceToStage3 = async () => {
+    if (!current?.id || currentStage >= 3) return;
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 1.3, duration: 120, useNativeDriver: true }),
+      Animated.spring(scaleAnim, { toValue: 1, friction: 3, useNativeDriver: true }),
+    ]).start();
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    } catch (err) {
+      console.warn('Haptics error:', err.message);
+    }
+    await updateWordStage(current.id, 3);
+    const updated = await loadProgress();
+    setProgress(updated);
+    setPendingRemovalId(current.id);
+  };
+
   if (!current) {
     return (
       <View style={styles.centeredContainer}>
-        <Text style={styles.emptyText}>
-          No eligible words. Go to Learn → progress some → return here.
-        </Text>
+        <Text style={styles.emptyText}>No eligible words. Go to Learn → progress some → return here.</Text>
       </View>
     );
   }
@@ -247,15 +141,9 @@ export default function PracticeListenScreen() {
           hideAudioButton={true}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onPhoneticPress={handlePlayJapaneseSlow}
+          showSlowAudioIcon
+          onSlowAudioPress={handlePlayJapaneseSlow}
         />
-
-        {showAnswer && (
-          <TouchableOpacity style={styles.spanishOverlay} onPress={handlePlaySpanish}>
-            <View style={styles.spanishTextWrapper}>
-              <Text style={styles.spanishText}>{current?.spanish}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
 
         <TouchableOpacity onPress={toggleAutoplay} style={styles.autoPlayIconWrapper}>
           <MaterialCommunityIcons
@@ -346,7 +234,7 @@ const styles = StyleSheet.create({
   buttonText: { color: 'white', fontSize: 18 },
   autoPlayIconWrapper: {
     position: 'absolute',
-    top: 75,
+    top: '40%',
     left: 20,
     zIndex: 5,
     backgroundColor: 'rgba(0,0,0,0.4)',
@@ -364,28 +252,5 @@ const styles = StyleSheet.create({
     color: 'gray',
     textAlign: 'center',
     paddingHorizontal: 24,
-  },
-  spanishOverlay: {
-    position: 'absolute',
-    top: '70%',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    zIndex: 10,
-  },
-  spanishTextWrapper: {
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  spanishText: {
-    fontSize: 28,
-    color: '#00FF00',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    textShadowColor: 'black',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
 });

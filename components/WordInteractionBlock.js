@@ -24,7 +24,6 @@ export default function WordInteractionBlock({
   stage = 0,
   onStageChange = () => {},
   onPlayAudio = () => {},
-  onPhoneticPress = () => {}, // ✅ Hooked in here
   onInstructionPress = () => {},
   instructionText = '',
   showStars = true,
@@ -37,9 +36,7 @@ export default function WordInteractionBlock({
       {showStars && renderStars(stage, onStageChange)}
 
       {showPhonetic && block?.phonetic && (
-        <TouchableOpacity onPress={onPhoneticPress}>
-          <Text style={styles.phonetic}>{block.phonetic}</Text>
-        </TouchableOpacity>
+        <Text style={styles.phonetic}>{block.phonetic}</Text>
       )}
 
       <TouchableOpacity onPress={onPlayAudio}>

@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
@@ -60,6 +60,33 @@ export default function FindWordRecord({ route }) {
     }
   };
 
+  const playSlowAudio = async () => {
+    const key = word?.audioJapaneseSlow || word?.audioSlow;
+    const source = audioMap[key];
+
+    console.log('🐢 Slow audio key:', key);
+    console.log('📦 audioMap entry:', source);
+
+    if (!key || !source) {
+      console.warn('⚠️ No slow audio found:', key);
+      Alert.alert('Audio Missing', 'No slow audio available for this word.');
+      return;
+    }
+
+    try {
+      const { sound } = await Audio.Sound.createAsync(source);
+      await sound.playAsync();
+
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+    } catch (err) {
+      console.warn('❌ Slow audio playback error:', err.message);
+    }
+  };
+
   if (!word) {
     return (
       <View style={styles.container}>
@@ -82,7 +109,9 @@ export default function FindWordRecord({ route }) {
           showTipIcon={true}
           showInfoIcon={true}
           showEnglish={showEnglish}
+          showSlowAudioIcon={true}
           onPlayAudio={playAudio}
+          onSlowAudioPress={playSlowAudio}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onShowTip={() => setShowTip(true)}
           onPressFind={() => navigation.navigate('VoiceSearch')}
