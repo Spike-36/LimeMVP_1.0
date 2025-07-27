@@ -31,7 +31,7 @@ export default function WordRecordLayout({
 
   return (
     <View style={styles.container}>
-      <View style={[styles.imageContainer, !showImage && { height: screenHeight * 0.478 }]}> 
+      <View style={[styles.imageContainer, !showImage && { height: screenHeight * 0.478 }]}>
         {showImage && imageAsset && (
           <Image source={imageAsset} style={styles.image} resizeMode="cover" />
         )}
@@ -74,18 +74,20 @@ export default function WordRecordLayout({
         )}
 
         {block?.phonetic && !hidePhonetic && (
-          <TouchableOpacity
-            onPress={() => {
-              console.log('✅ Touched phonetic block (inside layout)');
-              if (onPhoneticPress) onPhoneticPress();
-              else console.warn('⚠️ onPhoneticPress is missing');
-            }}
-            activeOpacity={0.7}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={styles.phoneticButton}
-          >
-            <Text style={styles.phonetic}>{block.phonetic}</Text>
-          </TouchableOpacity>
+          <View style={styles.phoneticWrapper}>
+            <TouchableOpacity
+              onPress={() => {
+                console.log('✅ Touched phonetic block (inside layout)');
+                if (onPhoneticPress) onPhoneticPress();
+                else console.warn('⚠️ onPhoneticPress is missing');
+              }}
+              activeOpacity={0.7}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={styles.phoneticButton}
+            >
+              <Text style={styles.phonetic}>{block.phonetic}</Text>
+            </TouchableOpacity>
+          </View>
         )}
 
         {topContent}
@@ -181,6 +183,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
     marginBottom: 12,
+  },
+  phoneticWrapper: {
+    marginTop: 40,           // moved lower down the screen
+    height: 60,              // 50% taller than before
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   phoneticButton: {
     paddingVertical: 10,

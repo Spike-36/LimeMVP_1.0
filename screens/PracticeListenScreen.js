@@ -1,3 +1,5 @@
+// PracticeListenScreen.js (fixed)
+
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
@@ -192,6 +194,36 @@ export default function PracticeListenScreen() {
     }
   };
 
+  const handlePlayJapaneseSlow = async () => {
+    try {
+      console.log('🧪 handlePlayJapaneseSlow tapped');
+      if (!current?.audioSlow || !audioMap[current.audioSlow]) {
+        console.warn('❌ No slow audio available');
+        return;
+      }
+
+      if (soundRef.current) {
+        await soundRef.current.unloadAsync();
+        soundRef.current = null;
+        console.log('🔁 Previous sound unloaded');
+      }
+
+      const { sound } = await Audio.Sound.createAsync(audioMap[current.audioSlow]);
+      soundRef.current = sound;
+      const status = await sound.playAsync();
+      console.log('▶️ Slow audio playing', status);
+
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          sound.unloadAsync().catch(() => {});
+          console.log('✅ Slow audio finished');
+        }
+      });
+    } catch (err) {
+      console.warn('❌ Slow Japanese playback error:', err.message);
+    }
+  };
+
   if (!current) {
     return (
       <View style={styles.centeredContainer}>
@@ -214,6 +246,7 @@ export default function PracticeListenScreen() {
           showEnglish={showEnglish}
           hideAudioButton={true}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
+          onPhoneticPress={handlePlayJapaneseSlow}
         />
 
         {showAnswer && (
@@ -264,6 +297,7 @@ export default function PracticeListenScreen() {
               console.warn('❌ Manual Japanese playback error:', err.message);
             }
           }}
+          onPhoneticPress={handlePlayJapaneseSlow}
           showStars={false}
           showInstruction={!showAnswer}
           showPhonetic={showAnswer}
