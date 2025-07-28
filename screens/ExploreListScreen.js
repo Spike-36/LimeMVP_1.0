@@ -47,14 +47,29 @@ export default function ExploreListScreen() {
   }, {});
 
   Object.keys(groupedBlocks).forEach((type) => {
-    if (type.toLowerCase() === 'number') {
+    if (type.toLowerCase() === 'numbers') {
       groupedBlocks[type].sort((a, b) => (a.value ?? 0) - (b.value ?? 0));
     } else {
       groupedBlocks[type].sort((a, b) => a.english.localeCompare(b.english));
     }
   });
 
-  const sectionTitles = Object.keys(groupedBlocks).sort();
+  const priorityOrder = [
+    'numbers',
+    'place',
+    'ingredients',
+    'local ingredients',
+    'things',
+    'local dishes',
+    'drinks',
+    'speech',
+    'concepts',
+  ];
+  const allTypes = Object.keys(groupedBlocks);
+  const prioritized = priorityOrder.filter((t) => allTypes.includes(t));
+  const leftovers = allTypes.filter((t) => !priorityOrder.includes(t)).sort();
+  const sectionTitles = [...prioritized, ...leftovers];
+
   const orderedWords = sectionTitles.flatMap((title) => groupedBlocks[title]);
 
   const handleScroll = (event) => {
@@ -77,16 +92,28 @@ export default function ExploreListScreen() {
     const scrollToType = route.params?.scrollToType;
     if (!scrollToType || hasScrolledToType.current) return;
 
+    let attempts = 0;
+    const maxAttempts = 10;
+    const retryDelay = 200;
+
     const tryScroll = () => {
       const y = yPositions.current[scrollToType];
       if (y != null && scrollRef.current) {
         scrollRef.current.scrollTo({ y: y + 35, animated: true });
         hasScrolledToType.current = true;
+        console.log(`✅ Scrolled to ${scrollToType} at y=${y}`);
+      } else {
+        if (attempts < maxAttempts) {
+          attempts++;
+          console.log(`⏳ Retry ${attempts}: waiting for y of ${scrollToType}`);
+          setTimeout(tryScroll, retryDelay);
+        } else {
+          console.warn(`❌ Failed to scroll to ${scrollToType} after ${maxAttempts} attempts`);
+        }
       }
     };
 
-    const timeout = setTimeout(tryScroll, 500);
-    return () => clearTimeout(timeout);
+    tryScroll();
   }, [route.params, progress]);
 
   const refreshProgress = async () => {
@@ -166,6 +193,7 @@ export default function ExploreListScreen() {
                           scrollRef.current,
                           (x, y) => {
                             yPositions.current[title] = y;
+                            console.log(`Measured ${title}: y=${y}`);
                           },
                           () => {}
                         );

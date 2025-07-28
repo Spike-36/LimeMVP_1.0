@@ -50,8 +50,10 @@ export default function WordListItem({
   };
 
   const handlePlay = async () => {
-    if (!word.audio || !audioMap[word.audio]) {
-      console.warn('⚠️ Audio not found for:', word.audio);
+    const preferredKey = word.audioJapaneseFemale || word.audio;
+
+    if (!preferredKey || !audioMap[preferredKey]) {
+      console.warn('⚠️ Audio not found for:', preferredKey);
       return;
     }
 
@@ -61,7 +63,7 @@ export default function WordListItem({
         setSound(null);
       }
 
-      const { sound: newSound } = await Audio.Sound.createAsync(audioMap[word.audio]);
+      const { sound: newSound } = await Audio.Sound.createAsync(audioMap[preferredKey]);
       setSound(newSound);
       await newSound.replayAsync();
     } catch (err) {
@@ -109,7 +111,7 @@ const styles = StyleSheet.create({
   },
   english: {
     fontSize: 18,
-     color: '#FFFFFF', // white
+    color: '#FFFFFF',
     fontWeight: '600',
   },
   japaneseZone: {

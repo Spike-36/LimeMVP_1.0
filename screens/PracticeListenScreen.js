@@ -76,6 +76,37 @@ export default function PracticeListenScreen() {
     setShowEnglish(false);
   }, [currentIndex]);
 
+  useEffect(() => {
+    if (!autoplay && current && !showAnswer) {
+      const playFemaleJapaneseAudio = async () => {
+        try {
+          const file = current?.audioJapaneseFemale;
+          const source = audioMap[file];
+          if (!file || !source) return;
+
+          if (soundRef.current) {
+            await soundRef.current.unloadAsync();
+            soundRef.current = null;
+          }
+
+          const { sound } = await Audio.Sound.createAsync(source);
+          soundRef.current = sound;
+          await sound.playAsync();
+
+          sound.setOnPlaybackStatusUpdate((status) => {
+            if (status.didJustFinish) {
+              sound.unloadAsync().catch(() => {});
+            }
+          });
+        } catch (err) {
+          console.warn('❌ Female Japanese playback error:', err.message);
+        }
+      };
+
+      playFemaleJapaneseAudio();
+    }
+  }, [current, autoplay, showAnswer]);
+
   const handlePlayJapaneseSlow = async () => {
     try {
       const file = current?.audioJapaneseSlow;

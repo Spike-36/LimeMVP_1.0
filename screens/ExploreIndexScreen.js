@@ -3,8 +3,27 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import blocks from '../data/blocks.json';
 
 const getCategories = () => {
-  const types = blocks.map((b) => b.type).filter(Boolean);
-  return Array.from(new Set(types)).sort();
+  const priorityOrder = [
+    'numbers',
+    'place',
+    'ingredients',
+    'local ingredients',
+    'things',
+    'local dishes',
+    'drinks',
+    'speech',
+    'concepts',
+  ];
+
+  const allTypes = blocks.map((b) => b.type).filter(Boolean);
+  const uniqueTypes = Array.from(new Set(allTypes));
+
+  const prioritized = priorityOrder.filter((type) => uniqueTypes.includes(type));
+  const leftovers = uniqueTypes
+    .filter((type) => !priorityOrder.includes(type))
+    .sort();
+
+  return [...prioritized, ...leftovers];
 };
 
 export default function ExploreIndexScreen() {
