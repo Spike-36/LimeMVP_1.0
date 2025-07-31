@@ -78,32 +78,52 @@ export default function PracticeListenScreen() {
 
   useEffect(() => {
     if (!autoplay && current && !showAnswer) {
-      const playFemaleJapaneseAudio = async () => {
+      const playSequence = async () => {
         try {
-          const file = current?.audioJapaneseFemale;
-          const source = audioMap[file];
-          if (!file || !source) return;
+          const femaleFile = current?.audioJapaneseFemale;
+          const femaleSource = audioMap[femaleFile];
+          const normalFile = current?.audio;
+          const normalSource = audioMap[normalFile];
+
+          if (!femaleFile || !femaleSource || !normalFile || !normalSource) return;
 
           if (soundRef.current) {
             await soundRef.current.unloadAsync();
             soundRef.current = null;
           }
 
-          const { sound } = await Audio.Sound.createAsync(source);
-          soundRef.current = sound;
-          await sound.playAsync();
+          const { sound: femaleSound } = await Audio.Sound.createAsync(femaleSource);
+          soundRef.current = femaleSound;
+          await femaleSound.playAsync();
 
-          sound.setOnPlaybackStatusUpdate((status) => {
+          await new Promise((resolve) => {
+            femaleSound.setOnPlaybackStatusUpdate((status) => {
+              if (status.didJustFinish) {
+                femaleSound.unloadAsync().catch(() => {});
+                resolve();
+              }
+            });
+          });
+
+          // Wait 2 seconds
+          await new Promise((r) => setTimeout(r, 1000));
+
+          const { sound: normalSound } = await Audio.Sound.createAsync(normalSource);
+          soundRef.current = normalSound;
+          await normalSound.playAsync();
+
+          normalSound.setOnPlaybackStatusUpdate((status) => {
             if (status.didJustFinish) {
-              sound.unloadAsync().catch(() => {});
+              normalSound.unloadAsync().catch(() => {});
             }
           });
+
         } catch (err) {
-          console.warn('❌ Female Japanese playback error:', err.message);
+          console.warn('❌ Japanese pre-reveal sequence error:', err.message);
         }
       };
 
-      playFemaleJapaneseAudio();
+      playSequence();
     }
   }, [current, autoplay, showAnswer]);
 

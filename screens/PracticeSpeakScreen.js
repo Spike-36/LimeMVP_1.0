@@ -26,6 +26,7 @@ export default function PracticeSpeakScreen() {
   const [progress, setProgress] = useState({});
   const [pendingRemovalId, setPendingRemovalId] = useState(null);
   const [autoplay, setAutoplay] = useState(false);
+  const [showEnglish, setShowEnglish] = useState(false);
 
   const soundRef = useRef(null);
   const autoplayTimer = useRef(null);
@@ -60,7 +61,7 @@ export default function PracticeSpeakScreen() {
           await sound.playAsync();
         }
 
-        await new Promise(res => setTimeout(res, 2000));
+        await new Promise(res => setTimeout(res, 3500));
         setShowAnswer(true);
 
         await new Promise(res => setTimeout(res, 1000));
@@ -176,6 +177,7 @@ export default function PracticeSpeakScreen() {
 
   const handleNext = () => {
     setShowAnswer(false);
+    setShowEnglish(false);
 
     let updatedList = [...shuffledBlocks];
     if (pendingRemovalId) {
@@ -189,6 +191,7 @@ export default function PracticeSpeakScreen() {
   };
 
   const toggleAutoplay = () => setAutoplay(prev => !prev);
+  const toggleEnglish = () => setShowEnglish(prev => !prev);
 
   if (!current) {
     return (
@@ -209,13 +212,13 @@ export default function PracticeSpeakScreen() {
           showImage
           showTipIcon={showAnswer}
           showInfoIcon
-          showEnglish={false}
+          showEnglish={showEnglish}
           hideThaiText
           hidePhonetic
           hideAudioButton
-          showSlowAudioIcon
+          showSlowAudioIcon={showAnswer} // ✅ Only show after "Show Answer"
           onSlowAudioPress={handlePlayJapaneseSlow}
-          onToggleEnglish={() => {}}
+          onToggleEnglish={toggleEnglish}
           onShowTip={() => {}}
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         />

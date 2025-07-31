@@ -33,7 +33,7 @@ export default function useDynamicAutoplay({ active, block, onReveal, onAdvance 
 
     const runSequence = async () => {
       try {
-        await playAudio('audio');         // Japanese 1
+        await playAudio('audioJapaneseFemale');  // ⬅️ Replaced 'audio' with 'audioJapaneseFemale'
         if (isCancelled.current) return;
 
         await new Promise(r => setTimeout(r, 1000));
@@ -58,7 +58,6 @@ export default function useDynamicAutoplay({ active, block, onReveal, onAdvance 
 
     runSequence();
 
-    return () => {
-    };
+    return () => {};
   }, [active, block?.id]);
 }
