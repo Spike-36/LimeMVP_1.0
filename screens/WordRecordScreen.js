@@ -1,4 +1,3 @@
-
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Audio } from 'expo-av';
@@ -10,12 +9,14 @@ import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
+import { useTargetLang } from '../context/TargetLangContext';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function WordRecordScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { words, index = 0, mode = 'explore' } = route.params || {};
+  const { targetLang } = useTargetLang();
 
   if (!words || !Array.isArray(words) || index < 0 || index >= words.length) {
     return (
@@ -34,6 +35,13 @@ export default function WordRecordScreen() {
   const soundRef = useRef(null);
   const stage = getStage(progress, wordId);
 
+  // 🔑 dynamic keys
+  const capitalizedLang = targetLang.charAt(0).toUpperCase() + targetLang.slice(1);
+  const audioKey = `audio${capitalizedLang}`;
+  const slowAudioKey = `audio${capitalizedLang}Slow`;
+  const foreignText = word?.[targetLang] || word?.foreign || '';
+  const phoneticText = word?.[`${targetLang}Phonetic`] || '';
+
   useEffect(() => {
     loadProgress().then(setProgress);
   }, []);
@@ -42,8 +50,11 @@ export default function WordRecordScreen() {
     let isMounted = true;
 
     const loadAndPlay = async () => {
-      if (!word?.audio || !audioMap[word.audio]) {
-        console.warn('⚠️ No audio found for:', word?.audio);
+      const audioFile = word?.[audioKey] || word?.audio;
+      const source = audioMap[audioFile];
+
+      if (!audioFile || !source) {
+        console.warn('⚠️ No primary audio found:', audioFile);
         return;
       }
 
@@ -54,7 +65,7 @@ export default function WordRecordScreen() {
           soundRef.current = null;
         }
 
-        const { sound } = await Audio.Sound.createAsync(audioMap[word.audio]);
+        const { sound } = await Audio.Sound.createAsync(source);
         soundRef.current = sound;
 
         if (isMounted) {
@@ -74,7 +85,7 @@ export default function WordRecordScreen() {
         soundRef.current = null;
       }
     };
-  }, [word?.audio]);
+  }, [word?.[audioKey]]);
 
   const playAudio = async () => {
     if (!soundRef.current) {
@@ -89,16 +100,12 @@ export default function WordRecordScreen() {
     }
   };
 
-  const playJapaneseSlowAudio = async () => {
-    console.log('🧪 Slow audio icon tapped');
-    const file = word?.audioJapaneseSlow;
+  const playSlowAudio = async () => {
+    const file = word?.[slowAudioKey];
     const source = audioMap[file];
 
-    console.log('Audio filename:', file);
-    console.log('AudioMap entry:', source);
-
     if (!file || !source) {
-      console.warn('⚠️ No slow Japanese audio found:', file);
+      console.warn(`⚠️ No slow ${targetLang} audio found:`, file);
       return;
     }
 
@@ -112,7 +119,7 @@ export default function WordRecordScreen() {
         }
       });
     } catch (err) {
-      console.warn('❌ Slow audio playback error:', err.message);
+      console.warn(`❌ Slow audio playback error:`, err.message);
     }
   };
 
@@ -125,7 +132,7 @@ export default function WordRecordScreen() {
 
   const handleAdvanceToStage1 = async () => {
     if (stage >= 1 || !wordId) return;
-    await updateWordStage(wordId, 2); // Skip Learn, go directly to Listen
+    await updateWordStage(wordId, 2); // Skip Learn
     const updated = await loadProgress();
     setProgress(updated);
   };
@@ -148,7 +155,7 @@ export default function WordRecordScreen() {
 
       <View style={styles.topHalf}>
         <WordRecordLayout
-          block={word}
+          block={{ ...word, foreign: foreignText }}
           imageAsset={imageMap[word.image]}
           showImage
           showTipIcon
@@ -159,7 +166,7 @@ export default function WordRecordScreen() {
           onShowTip={() => setShowTip(true)}
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
           showSlowAudioIcon
-          onSlowAudioPress={playJapaneseSlowAudio}
+          onSlowAudioPress={playSlowAudio}
         />
 
         {mode === 'explore' && (
@@ -177,7 +184,11 @@ export default function WordRecordScreen() {
 
       <View style={styles.interactionBlock} pointerEvents="box-none">
         <WordInteractionBlock
-          block={word}
+          block={{
+            ...word,
+            foreign: foreignText,
+            phonetic: phoneticText, // ✅ This is the fix
+          }}
           stage={stage}
           onStageChange={handleSetStage}
           onPlayAudio={playAudio}

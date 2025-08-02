@@ -1,12 +1,23 @@
-import { useState } from 'react';
-import { StyleSheet, Switch, Text, View } from 'react-native';
+// screens/HomeScreen.js
+
+import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { useTargetLang } from '../context/TargetLangContext'; // ✅ using global context
 
 const HomeScreen = () => {
-  const [isKorean, setIsKorean] = useState(true);
+  const navigation = useNavigation();
+  const { targetLang, setTargetLang } = useTargetLang(); // ✅ shared context
 
   const handleToggle = () => {
-    setIsKorean((prev) => !prev);
-    // 🔧 Replace with setTargetLang('japanese') / 'korean' once context or state is wired
+    setTargetLang(prev => (prev === 'korean' ? 'japanese' : 'korean'));
+  };
+
+  const goToWordScreen = () => {
+    navigation.navigate('WordRecord', {
+      words: [], // 🔧 plug in a real list if needed
+      index: 0,
+      mode: 'explore',
+    });
   };
 
   return (
@@ -15,14 +26,20 @@ const HomeScreen = () => {
       <Text style={styles.subtext}>Choose a tab to get started</Text>
 
       <View style={styles.toggleContainer}>
-        <Text style={styles.toggleLabel}>Target Language: {isKorean ? 'Korean' : 'Japanese'}</Text>
+        <Text style={styles.toggleLabel}>
+          Target Language: {targetLang === 'korean' ? 'Korean' : 'Japanese'}
+        </Text>
         <Switch
-          value={!isKorean}
+          value={targetLang === 'japanese'}
           onValueChange={handleToggle}
           thumbColor="#FFD700"
           trackColor={{ false: '#888', true: '#444' }}
         />
       </View>
+
+      <TouchableOpacity style={styles.testButton} onPress={goToWordScreen}>
+        <Text style={styles.testButtonText}>Test Word Screen →</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -51,6 +68,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
     color: '#333',
+  },
+  testButton: {
+    marginTop: 60,
+    backgroundColor: '#000',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  testButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 
