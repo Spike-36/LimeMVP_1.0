@@ -1,4 +1,3 @@
-// App.js — Tab labels changed to Level 1–4, audio stays active in background
 import { Entypo, Feather, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -7,9 +6,10 @@ import { useEffect } from 'react';
 
 import ExploreStack from './screens/ExploreStack';
 import FindStack from './screens/FindStack';
+import HomeScreen from './screens/HomeScreen';
 import PracticeListenScreen from './screens/PracticeListenScreen';
 import PracticeSpeakScreen from './screens/PracticeSpeakScreen';
-import ReviewStack from './screens/ReviewStack'; // ✅ NEW: stack includes Review + ReviewWord
+import ReviewStack from './screens/ReviewStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -21,8 +21,8 @@ export default function App() {
           allowsRecordingIOS: false,
           staysActiveInBackground: true,
           playsInSilentModeIOS: true,
-          interruptionModeIOS: 'doNotMix', // ✅ FIXED: use valid string enum
-          interruptionModeAndroid: 'doNotMix', // ✅ FIXED: same here
+          interruptionModeIOS: 'doNotMix',
+          interruptionModeAndroid: 'doNotMix',
           shouldDuckAndroid: true,
           playThroughEarpieceAndroid: false,
         });
@@ -37,7 +37,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName="Explore"
+        initialRouteName="Home"
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: '#FFD700',
@@ -46,6 +46,16 @@ export default function App() {
           tabBarLabelStyle: { fontSize: 12 },
         }}
       >
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarLabel: 'Home',
+            tabBarIcon: ({ color, size }) => (
+              <Entypo name="home" size={size} color={color} />
+            ),
+          }}
+        />
         <Tab.Screen
           name="Explore"
           component={ExploreStack}

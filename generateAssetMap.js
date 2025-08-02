@@ -8,12 +8,18 @@ const green = (text) => `\x1b[32m${text}\x1b[0m`;
 // Paths
 const blocksPath = './data/blocks.json';
 const imageDir = './assets/image';
-const audioJapanDir = './assets/audio/japan';
-const audioJapanSlowDir = './assets/audio/japanSlow';
-const audioJapaneseFemaleDir = './assets/audio/japanFemale'; // 🆕
-const audioEnglishDir = './assets/audio/english';
-const audioFrenchDir = './assets/audio/french';
-const audioSpanishDir = './assets/audio/spanish';
+const audioDirs = {
+  japan: './assets/audio/japan',
+  japanSlow: './assets/audio/japanSlow',
+  japanFemale: './assets/audio/japanFemale',
+  korean: './assets/audio/korean',
+  koreanSlow: './assets/audio/koreanSlow',
+  koreanFemale: './assets/audio/koreanFemale',
+  english: './assets/audio/english',
+  french: './assets/audio/french',
+  spanish: './assets/audio/spanish',
+};
+
 const imageMapOutput = './components/imageMap.js';
 const audioMapOutput = './components/audioMap.js';
 const skippedFile = './skippedAssets.txt';
@@ -28,21 +34,11 @@ try {
 }
 
 // Read available asset files
-const imageFiles = fs.readdirSync(imageDir);
-const audioJapanFiles = fs.readdirSync(audioJapanDir);
-const audioJapanSlowFiles = fs.readdirSync(audioJapanSlowDir);
-const audioJapaneseFemaleFiles = fs.readdirSync(audioJapaneseFemaleDir); // 🆕
-const audioEnglishFiles = fs.readdirSync(audioEnglishDir);
-const audioFrenchFiles = fs.readdirSync(audioFrenchDir);
-const audioSpanishFiles = fs.readdirSync(audioSpanishDir);
-
-const availableImages = new Set(imageFiles);
-const availableJapanese = new Set(audioJapanFiles);
-const availableJapaneseSlow = new Set(audioJapanSlowFiles);
-const availableJapaneseFemale = new Set(audioJapaneseFemaleFiles); // 🆕
-const availableEnglish = new Set(audioEnglishFiles);
-const availableFrench = new Set(audioFrenchFiles);
-const availableSpanish = new Set(audioSpanishFiles);
+const available = {};
+for (const [key, dir] of Object.entries(audioDirs)) {
+  available[key] = new Set(fs.readdirSync(dir));
+}
+const availableImages = new Set(fs.readdirSync(imageDir));
 
 // Init maps
 let imageMap = 'export const imageMap = {\n';
@@ -58,13 +54,16 @@ blocks.forEach((block) => {
     image,
     audio,
     audioJapaneseSlow,
-    audioJapaneseFemale, // 🆕
+    audioJapaneseFemale,
+    audioKorean,
+    audioKoreanSlow,
+    audioKoreanFemale,
     audioEnglish,
     audioFrench,
     audioSpanish,
   } = block;
 
-  // Handle image
+  // Image
   if (image && availableImages.has(image)) {
     imageMap += `  "${image}": require('../assets/image/${image}'),\n`;
     validImageCount++;
@@ -74,64 +73,30 @@ blocks.forEach((block) => {
     fs.appendFileSync(skippedFile, msg + '\n');
   }
 
-  // Japanese (normal)
-  if (audio && availableJapanese.has(audio)) {
-    audioMap += `  "${audio}": require('../assets/audio/japan/${audio}'),\n`;
-    validAudioCount++;
-  } else if (audio) {
-    const msg = `⚠️ Skipped Japanese audio for ID ${id}: missing or invalid (${audio})`;
-    console.warn(yellow(msg));
-    fs.appendFileSync(skippedFile, msg + '\n');
-  }
+  // Audio variants
+  const audioVariants = [
+    { key: audio, dir: 'japan' },
+    { key: audioJapaneseSlow, dir: 'japanSlow' },
+    { key: audioJapaneseFemale, dir: 'japanFemale' },
+    { key: audioKorean, dir: 'korean' },
+    { key: audioKoreanSlow, dir: 'koreanSlow' },
+    { key: audioKoreanFemale, dir: 'koreanFemale' },
+    { key: audioEnglish, dir: 'english' },
+    { key: audioFrench, dir: 'french' },
+    { key: audioSpanish, dir: 'spanish' },
+  ];
 
-  // Japanese (slow)
-  if (audioJapaneseSlow && availableJapaneseSlow.has(audioJapaneseSlow)) {
-    audioMap += `  "${audioJapaneseSlow}": require('../assets/audio/japanSlow/${audioJapaneseSlow}'),\n`;
-    validAudioCount++;
-  } else if (audioJapaneseSlow) {
-    const msg = `⚠️ Skipped Japanese slow audio for ID ${id}: missing or invalid (${audioJapaneseSlow})`;
-    console.warn(yellow(msg));
-    fs.appendFileSync(skippedFile, msg + '\n');
-  }
-
-  // 🆕 Japanese (female)
-  if (audioJapaneseFemale && availableJapaneseFemale.has(audioJapaneseFemale)) {
-    audioMap += `  "${audioJapaneseFemale}": require('../assets/audio/japanFemale/${audioJapaneseFemale}'),\n`;
-    validAudioCount++;
-  } else if (audioJapaneseFemale) {
-    const msg = `⚠️ Skipped Japanese female audio for ID ${id}: missing or invalid (${audioJapaneseFemale})`;
-    console.warn(yellow(msg));
-    fs.appendFileSync(skippedFile, msg + '\n');
-  }
-
-  // English
-  if (audioEnglish && availableEnglish.has(audioEnglish)) {
-    audioMap += `  "${audioEnglish}": require('../assets/audio/english/${audioEnglish}'),\n`;
-    validAudioCount++;
-  } else if (audioEnglish) {
-    const msg = `⚠️ Skipped English audio for ID ${id}: missing or invalid (${audioEnglish})`;
-    console.warn(yellow(msg));
-    fs.appendFileSync(skippedFile, msg + '\n');
-  }
-
-  // French
-  if (audioFrench && availableFrench.has(audioFrench)) {
-    audioMap += `  "${audioFrench}": require('../assets/audio/french/${audioFrench}'),\n`;
-    validAudioCount++;
-  } else if (audioFrench) {
-    const msg = `⚠️ Skipped French audio for ID ${id}: missing or invalid (${audioFrench})`;
-    console.warn(yellow(msg));
-    fs.appendFileSync(skippedFile, msg + '\n');
-  }
-
-  // Spanish
-  if (audioSpanish && availableSpanish.has(audioSpanish)) {
-    audioMap += `  "${audioSpanish}": require('../assets/audio/spanish/${audioSpanish}'),\n`;
-    validAudioCount++;
-  } else if (audioSpanish) {
-    const msg = `⚠️ Skipped Spanish audio for ID ${id}: missing or invalid (${audioSpanish})`;
-    console.warn(yellow(msg));
-    fs.appendFileSync(skippedFile, msg + '\n');
+  for (const { key, dir } of audioVariants) {
+    if (key) {
+      if (available[dir]?.has(key)) {
+        audioMap += `  "${key}": require('../assets/audio/${dir}/${key}'),\n`;
+        validAudioCount++;
+      } else {
+        const msg = `⚠️ Skipped ${dir} audio for ID ${id}: missing or invalid (${key})`;
+        console.warn(yellow(msg));
+        fs.appendFileSync(skippedFile, msg + '\n');
+      }
+    }
   }
 });
 

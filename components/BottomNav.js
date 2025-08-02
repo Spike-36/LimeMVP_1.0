@@ -4,6 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 export default function BottomNav({ active }) {
   const navigation = useNavigation();
   const tabs = [
+    { name: 'Home', route: 'Home' }, // 🟢 New first tab
     { name: 'Explore', route: 'Explore' },
     // { name: 'Learn', route: 'Learn' }, // 🟡 Temporarily removed
     { name: 'Listen', route: 'PracticeListen' },
