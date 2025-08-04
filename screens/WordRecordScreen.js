@@ -37,10 +37,10 @@ export default function WordRecordScreen() {
 
   // 🔑 dynamic keys
   const capitalizedLang = targetLang.charAt(0).toUpperCase() + targetLang.slice(1);
-  const audioKey = `audio${capitalizedLang}`;
+  const audioKey = capitalizedLang === 'Japanese' ? 'audio' : `audio${capitalizedLang}`;
   const slowAudioKey = `audio${capitalizedLang}Slow`;
   const foreignText = word?.[targetLang] || word?.foreign || '';
-  const phoneticText = word?.[`${targetLang}Phonetic`] || '';
+  const phoneticText = word?.[`${targetLang}Phonetic`] ?? word?.phonetic ?? '';
 
   useEffect(() => {
     loadProgress().then(setProgress);
@@ -155,7 +155,11 @@ export default function WordRecordScreen() {
 
       <View style={styles.topHalf}>
         <WordRecordLayout
-          block={{ ...word, foreign: foreignText }}
+          block={{
+            ...word,
+            foreign: foreignText,
+            phonetic: phoneticText,
+          }}
           imageAsset={imageMap[word.image]}
           showImage
           showTipIcon
@@ -187,7 +191,7 @@ export default function WordRecordScreen() {
           block={{
             ...word,
             foreign: foreignText,
-            phonetic: phoneticText, // ✅ This is the fix
+            phonetic: phoneticText,
           }}
           stage={stage}
           onStageChange={handleSetStage}

@@ -1,10 +1,12 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+// PracticeSpeakScreen.js (Fixed: Japanese audio fallback chain)
+
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import WordRecordLayout from '../components/WordRecordLayout';
@@ -20,6 +22,11 @@ function shuffleArray(array) {
 
 export default function PracticeSpeakScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const targetLang = route.params?.targetLang || 'japanese';
+
+  const phoneticKey = targetLang === 'japanese' ? 'phonetic' : `${targetLang}Phonetic`;
+
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -32,8 +39,31 @@ export default function PracticeSpeakScreen() {
   const autoplayTimer = useRef(null);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  const capitalLang = targetLang.charAt(0).toUpperCase() + targetLang.slice(1);
   const current = shuffledBlocks[currentIndex];
+
+  const foreignText = current?.[targetLang] || current?.foreign || '';
+  const phoneticText = current?.[phoneticKey] || current?.phonetic || '';
+
+  const englishAudioFile = current?.audioEnglish;
+
+  const audioFile =
+    targetLang === 'japanese'
+      ? current?.audioJapaneseFemale || current?.audio
+      : current?.[`audio${capitalLang}`];
+
+  const slowAudioFile =
+    targetLang === 'japanese'
+      ? current?.audioJapaneseSlow
+      : current?.[`audio${capitalLang}Slow`];
+
   const currentStage = current?.id ? getStage(progress, current.id) : 0;
+
+  useEffect(() => {
+    console.log('🎧 audioFile:', audioFile);
+    console.log('🐢 slowAudioFile:', slowAudioFile);
+    console.log('📢 englishAudioFile:', englishAudioFile);
+  }, [currentIndex]);
 
   useFocusEffect(
     useCallback(() => {
@@ -56,8 +86,8 @@ export default function PracticeSpeakScreen() {
       try {
         await new Promise(res => setTimeout(res, 1500));
 
-        if (current.audioEnglish && audioMap[current.audioEnglish]) {
-          const { sound } = await Audio.Sound.createAsync(audioMap[current.audioEnglish]);
+        if (englishAudioFile && audioMap[englishAudioFile]) {
+          const { sound } = await Audio.Sound.createAsync(audioMap[englishAudioFile]);
           await sound.playAsync();
         }
 
@@ -66,8 +96,8 @@ export default function PracticeSpeakScreen() {
 
         await new Promise(res => setTimeout(res, 1000));
 
-        if (current.audio && audioMap[current.audio]) {
-          const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
+        if (audioFile && audioMap[audioFile]) {
+          const { sound } = await Audio.Sound.createAsync(audioMap[audioFile]);
           await sound.playAsync();
         }
 
@@ -83,7 +113,7 @@ export default function PracticeSpeakScreen() {
   }, [currentIndex, autoplay]);
 
   useEffect(() => {
-    if (!current?.audio || !showAnswer || autoplay) return;
+    if (!current?.id || !showAnswer || autoplay) return;
 
     let isMounted = true;
 
@@ -95,7 +125,9 @@ export default function PracticeSpeakScreen() {
           soundRef.current = null;
         }
 
-        const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
+        if (!audioFile || !audioMap[audioFile]) return;
+
+        const { sound } = await Audio.Sound.createAsync(audioMap[audioFile]);
         soundRef.current = sound;
 
         if (isMounted) {
@@ -126,15 +158,13 @@ export default function PracticeSpeakScreen() {
     }
   };
 
-  const handlePlayJapaneseSlow = async () => {
-    const file = current?.audioJapaneseSlow;
-    const source = audioMap[file];
-    if (!file || !source) {
-      console.warn('⚠️ No slow Japanese audio found:', file);
+  const handlePlaySlowAudio = async () => {
+    if (!slowAudioFile || !audioMap[slowAudioFile]) {
+      console.warn(`⚠️ No slow ${targetLang} audio found:`, slowAudioFile);
       return;
     }
     try {
-      const { sound } = await Audio.Sound.createAsync(source);
+      const { sound } = await Audio.Sound.createAsync(audioMap[slowAudioFile]);
       await sound.playAsync();
       sound.setOnPlaybackStatusUpdate(status => {
         if (status.didJustFinish) sound.unloadAsync();
@@ -207,17 +237,20 @@ export default function PracticeSpeakScreen() {
     <View style={styles.container}>
       <View style={styles.topHalf}>
         <WordRecordLayout
-          block={current}
+          block={{
+            ...current,
+            foreign: foreignText,
+            phonetic: phoneticText,
+          }}
           imageAsset={imageMap[current.image]}
           showImage
           showTipIcon={showAnswer}
           showInfoIcon
           showEnglish={showEnglish}
           hideThaiText
-          hidePhonetic
           hideAudioButton
-          showSlowAudioIcon={showAnswer} // ✅ Only show after "Show Answer"
-          onSlowAudioPress={handlePlayJapaneseSlow}
+          showSlowAudioIcon={showAnswer}
+          onSlowAudioPress={handlePlaySlowAudio}
           onToggleEnglish={toggleEnglish}
           onShowTip={() => {}}
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
@@ -247,13 +280,13 @@ export default function PracticeSpeakScreen() {
       <View style={styles.centeredContent}>
         {showAnswer ? (
           <>
-            <Text style={styles.phoneticText}>{current?.phonetic}</Text>
+            <Text style={styles.phoneticText}>{phoneticText}</Text>
             <TouchableOpacity onPress={playAudio}>
-              <Text style={styles.japaneseText}>{current?.foreign}</Text>
+              <Text style={styles.japaneseText}>{foreignText}</Text>
             </TouchableOpacity>
           </>
         ) : (
-          <Text style={styles.japaneseText}>{current?.foreign}</Text>
+          <Text style={styles.japaneseText}>{foreignText}</Text>
         )}
       </View>
 
@@ -283,7 +316,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
   phoneticText: {
-    color: '#ccc',
+    color: '#FFD700',
     fontSize: 26,
     fontWeight: '400',
     textShadowColor: 'black',

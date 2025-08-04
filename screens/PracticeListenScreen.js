@@ -9,6 +9,7 @@ import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
+import { useTargetLang } from '../context/TargetLangContext';
 import blocks from '../data/blocks.json';
 import useDynamicAutoplay from '../hooks/useDynamicAutoplay';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
@@ -22,6 +23,8 @@ function shuffleArray(array) {
 
 export default function PracticeListenScreen() {
   const navigation = useNavigation();
+  const { targetLang } = useTargetLang();
+
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState({});
@@ -32,9 +35,24 @@ export default function PracticeListenScreen() {
   const [autoplay, setAutoplay] = useState(false);
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const current = shuffledBlocks[currentIndex];
-  const currentStage = getStage(progress, current?.id);
   const soundRef = useRef(null);
+
+  const current = shuffledBlocks[currentIndex];
+  const capitalLang = targetLang.charAt(0).toUpperCase() + targetLang.slice(1);
+
+  const audioKey = capitalLang === 'Japanese' ? 'audio' : `audio${capitalLang}`;
+  const audioFemaleKey = `audio${capitalLang}Female`;
+  const slowAudioKey = `audio${capitalLang}Slow`;
+
+  const foreignText = current?.[targetLang] || current?.foreign || '';
+  const phoneticText = current?.[`${targetLang}Phonetic`] ?? current?.phonetic ?? '';
+  const currentStage = getStage(progress, current?.id);
+
+  const currentBlock = {
+    ...current,
+    foreign: foreignText,
+    phonetic: phoneticText,
+  };
 
   const handleNext = () => {
     let nextList = [...shuffledBlocks];
@@ -50,8 +68,8 @@ export default function PracticeListenScreen() {
   useDynamicAutoplay({
     active: autoplay,
     block: {
-      ...current,
-      audioFrench: current?.audioSpanish,
+      ...currentBlock,
+      audioFrench: current?.[audioKey],
     },
     onReveal: () => setShowAnswer(true),
     onAdvance: handleNext,
@@ -80,9 +98,9 @@ export default function PracticeListenScreen() {
     if (!autoplay && current && !showAnswer) {
       const playSequence = async () => {
         try {
-          const femaleFile = current?.audioJapaneseFemale;
+          const femaleFile = current?.[audioFemaleKey] || current?.[audioKey];
+          const normalFile = current?.[audioKey];
           const femaleSource = audioMap[femaleFile];
-          const normalFile = current?.audio;
           const normalSource = audioMap[normalFile];
 
           if (!femaleFile || !femaleSource || !normalFile || !normalSource) return;
@@ -105,7 +123,6 @@ export default function PracticeListenScreen() {
             });
           });
 
-          // Wait 2 seconds
           await new Promise((r) => setTimeout(r, 1000));
 
           const { sound: normalSound } = await Audio.Sound.createAsync(normalSource);
@@ -119,7 +136,7 @@ export default function PracticeListenScreen() {
           });
 
         } catch (err) {
-          console.warn('❌ Japanese pre-reveal sequence error:', err.message);
+          console.warn('❌ Pre-reveal sequence error:', err.message);
         }
       };
 
@@ -127,12 +144,42 @@ export default function PracticeListenScreen() {
     }
   }, [current, autoplay, showAnswer]);
 
-  const handlePlayJapaneseSlow = async () => {
-    try {
-      const file = current?.audioJapaneseSlow;
-      const source = audioMap[file];
-      if (!file || !source) return;
+  const handlePlaySlowAudio = async () => {
+    const file = current?.[slowAudioKey];
+    const source = audioMap[file];
 
+    if (!file || !source) {
+      console.warn(`⚠️ No slow ${targetLang} audio found:`, file);
+      return;
+    }
+
+    try {
+      if (soundRef.current) {
+        await soundRef.current.unloadAsync();
+        soundRef.current = null;
+      }
+
+      const { sound } = await Audio.Sound.createAsync(source);
+      soundRef.current = sound;
+      await sound.playAsync();
+
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+    } catch (err) {
+      console.warn(`❌ Slow audio playback error:`, err.message);
+    }
+  };
+
+  const handlePlayAudio = async () => {
+    const file = current?.[audioKey];
+    const source = audioMap[file];
+
+    if (!file || !source) return;
+
+    try {
       if (soundRef.current) {
         await soundRef.current.unloadAsync();
         soundRef.current = null;
@@ -148,7 +195,7 @@ export default function PracticeListenScreen() {
         }
       });
     } catch (err) {
-      console.warn('❌ Slow Japanese playback error:', err.message);
+      console.warn('❌ Manual playback error:', err.message);
     }
   };
 
@@ -183,7 +230,7 @@ export default function PracticeListenScreen() {
     <View style={styles.container}>
       <View style={styles.topHalf}>
         <WordRecordLayout
-          block={current}
+          block={currentBlock}
           imageAsset={imageMap[current.image]}
           showImage={showAnswer}
           showTipIcon={showAnswer}
@@ -191,9 +238,9 @@ export default function PracticeListenScreen() {
           showEnglish={showEnglish}
           hideAudioButton={true}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
-          onPhoneticPress={handlePlayJapaneseSlow}
+          onPhoneticPress={handlePlaySlowAudio}
           showSlowAudioIcon
-          onSlowAudioPress={handlePlayJapaneseSlow}
+          onSlowAudioPress={handlePlaySlowAudio}
         />
 
         <TouchableOpacity onPress={toggleAutoplay} style={styles.autoPlayIconWrapper}>
@@ -219,27 +266,14 @@ export default function PracticeListenScreen() {
 
       <View style={styles.bottomHalf}>
         <WordInteractionBlock
-          block={current}
+          block={currentBlock}
           stage={currentStage}
           onStageChange={() => setRefreshKey(k => k + 1)}
-          onPlayAudio={async () => {
-            try {
-              if (!current?.audio || !audioMap[current.audio]) return;
-              if (soundRef.current) {
-                await soundRef.current.unloadAsync();
-                soundRef.current = null;
-              }
-              const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
-              soundRef.current = sound;
-              await sound.playAsync();
-            } catch (err) {
-              console.warn('❌ Manual Japanese playback error:', err.message);
-            }
-          }}
-          onPhoneticPress={handlePlayJapaneseSlow}
+          onPlayAudio={handlePlayAudio}
+          onPhoneticPress={handlePlaySlowAudio}
           showStars={false}
           showInstruction={!showAnswer}
-          showPhonetic={showAnswer}
+          showPhonetic={true}
         />
 
         {!autoplay && (
