@@ -1,12 +1,13 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
+import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import blocks from '../data/blocks.json';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
@@ -22,18 +23,61 @@ export default function PracticeSpeakScreen() {
   const navigation = useNavigation();
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
   const [progress, setProgress] = useState({});
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [pendingRemovalId, setPendingRemovalId] = useState(null);
-  const [autoplay, setAutoplay] = useState(false);
-  const [showEnglish, setShowEnglish] = useState(false);
 
-  const soundRef = useRef(null);
-  const autoplayTimer = useRef(null);
   const scaleAnim = useRef(new Animated.Value(1)).current;
-
+  const soundRef = useRef(null);
   const current = shuffledBlocks[currentIndex];
-  const currentStage = current?.id ? getStage(progress, current.id) : 0;
+  const currentStage = getStage(progress, current?.id);
+
+  const handleNext = () => {
+    let nextList = [...shuffledBlocks];
+    if (pendingRemovalId) {
+      nextList = nextList.filter(b => b.id !== pendingRemovalId);
+      setPendingRemovalId(null);
+    }
+    const nextIndex = (currentIndex + 1) % nextList.length;
+    setShuffledBlocks(nextList);
+    setCurrentIndex(nextIndex >= nextList.length ? 0 : nextIndex);
+  };
+
+  const handleMarkWrongAndAdvance = async () => {
+    setShowAnswer(false);
+    await new Promise(r => setTimeout(r, 500));
+    handleNext();
+  };
+
+  const handleAdvanceToStage4 = async () => {
+    if (!current?.id) return;
+
+    console.log('🟡 Before update:', current.id, getStage(progress, current.id));
+
+    if (getStage(progress, current.id) < 4) {
+      Animated.sequence([
+        Animated.timing(scaleAnim, { toValue: 1.3, duration: 120, useNativeDriver: true }),
+        Animated.spring(scaleAnim, { toValue: 1, friction: 3, useNativeDriver: true }),
+      ]).start();
+
+      try {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      } catch (err) {
+        console.warn('Haptics error:', err.message);
+      }
+
+      try {
+        await updateWordStage(current.id, 4);
+        const updated = await loadProgress();
+        console.log('🟢 After update:', current.id, getStage(updated, current.id));
+        setProgress(updated);
+        setPendingRemovalId(current.id);
+      } catch (err) {
+        console.error('❌ Failed to update word stage:', err);
+      }
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -46,159 +90,42 @@ export default function PracticeSpeakScreen() {
         setPendingRemovalId(null);
       }
       loadEligibleWords();
-    }, [])
+    }, [refreshKey])
   );
 
   useEffect(() => {
-    if (!autoplay || !current) return;
+    setShowAnswer(false);
+  }, [currentIndex]);
 
-    const runSequence = async () => {
-      try {
-        await new Promise(res => setTimeout(res, 1500));
+  const handlePlayNative = async () => {
+    try {
+      const file = current?.audio;
+      const source = audioMap[file];
+      if (!file || !source) return;
 
-        if (current.audioEnglish && audioMap[current.audioEnglish]) {
-          const { sound } = await Audio.Sound.createAsync(audioMap[current.audioEnglish]);
-          await sound.playAsync();
-        }
-
-        await new Promise(res => setTimeout(res, 3500));
-        setShowAnswer(true);
-
-        await new Promise(res => setTimeout(res, 1000));
-
-        if (current.audio && audioMap[current.audio]) {
-          const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
-          await sound.playAsync();
-        }
-
-        await new Promise(res => setTimeout(res, 1500));
-        handleNext();
-      } catch (err) {
-        console.warn('❌ Autoplay error:', err.message);
-      }
-    };
-
-    autoplayTimer.current = setTimeout(runSequence, 100);
-    return () => clearTimeout(autoplayTimer.current);
-  }, [currentIndex, autoplay]);
-
-  useEffect(() => {
-    if (!current?.audio || !showAnswer || autoplay) return;
-
-    let isMounted = true;
-
-    const loadAndPlay = async () => {
-      try {
-        if (soundRef.current) {
-          await soundRef.current.unloadAsync();
-          soundRef.current.setOnPlaybackStatusUpdate(null);
-          soundRef.current = null;
-        }
-
-        const { sound } = await Audio.Sound.createAsync(audioMap[current.audio]);
-        soundRef.current = sound;
-
-        if (isMounted) {
-          await sound.playAsync();
-        }
-      } catch (err) {
-        console.warn('❌ Speak audio error:', err.message);
-      }
-    };
-
-    loadAndPlay();
-
-    return () => {
-      isMounted = false;
       if (soundRef.current) {
-        soundRef.current.unloadAsync();
+        await soundRef.current.unloadAsync();
         soundRef.current = null;
       }
-    };
-  }, [current?.id, showAnswer]);
 
-  const playAudio = async () => {
-    if (!soundRef.current) return;
-    try {
-      await soundRef.current.replayAsync();
-    } catch (err) {
-      console.warn('⚠️ Replay failed:', err.message);
-    }
-  };
-
-  const handlePlayJapaneseSlow = async () => {
-    const file = current?.audioJapaneseSlow;
-    const source = audioMap[file];
-    if (!file || !source) {
-      console.warn('⚠️ No slow Japanese audio found:', file);
-      return;
-    }
-    try {
       const { sound } = await Audio.Sound.createAsync(source);
+      soundRef.current = sound;
       await sound.playAsync();
-      sound.setOnPlaybackStatusUpdate(status => {
-        if (status.didJustFinish) sound.unloadAsync();
+
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          sound.unloadAsync().catch(() => {});
+        }
       });
     } catch (err) {
-      console.warn('❌ Slow audio playback error:', err.message);
+      console.warn('❌ Native audio playback error:', err.message);
     }
   };
-
-  const triggerTickAnimation = () => {
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 1.3,
-        duration: 120,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 3,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  const handleAdvanceToStage4 = async () => {
-    if (!current?.id || currentStage >= 4) return;
-
-    triggerTickAnimation();
-    try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    } catch (err) {
-      console.warn('Haptics error:', err.message);
-    }
-
-    await updateWordStage(current.id, 4);
-    const updated = await loadProgress();
-    setProgress(updated);
-    setPendingRemovalId(current.id);
-  };
-
-  const handleNext = () => {
-    setShowAnswer(false);
-    setShowEnglish(false);
-
-    let updatedList = [...shuffledBlocks];
-    if (pendingRemovalId) {
-      updatedList = updatedList.filter(b => b.id !== pendingRemovalId);
-      setPendingRemovalId(null);
-    }
-
-    const nextIndex = currentIndex >= updatedList.length - 1 ? 0 : currentIndex + 1;
-    setShuffledBlocks(updatedList);
-    setCurrentIndex(nextIndex);
-  };
-
-  const toggleAutoplay = () => setAutoplay(prev => !prev);
-  const toggleEnglish = () => setShowEnglish(prev => !prev);
 
   if (!current) {
     return (
       <View style={styles.centeredContainer}>
-        <Text style={styles.emptyText}>
-          No eligible words. Go to Level 1 → tap star → then mark as Confident.
-        </Text>
+        <Text style={styles.emptyText}>No eligible words. Go to Listen → progress some → return here.</Text>
       </View>
     );
   }
@@ -209,64 +136,48 @@ export default function PracticeSpeakScreen() {
         <WordRecordLayout
           block={current}
           imageAsset={imageMap[current.image]}
-          showImage
+          showImage={showAnswer}
           showTipIcon={showAnswer}
-          showInfoIcon
-          showEnglish={showEnglish}
-          hideThaiText
-          hidePhonetic
+          showInfoIcon={showAnswer}
+          showEnglish={showAnswer}
           hideAudioButton
-          showSlowAudioIcon={showAnswer} // ✅ Only show after "Show Answer"
-          onSlowAudioPress={handlePlayJapaneseSlow}
-          onToggleEnglish={toggleEnglish}
-          onShowTip={() => {}}
-          onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
+          onPhoneticPress={() => {}}
         />
 
-        <TouchableOpacity onPress={toggleAutoplay} style={styles.autoPlayIconWrapper}>
-          <MaterialCommunityIcons
-            name="autorenew"
-            size={28}
-            color={autoplay ? 'limegreen' : '#aaa'}
-          />
-        </TouchableOpacity>
-
-        {!autoplay && showAnswer && currentStage >= 3 && (
-          <Animated.View style={[styles.tickIconWrapper, { transform: [{ scale: scaleAnim }] }]}>
-            <TouchableOpacity onPress={handleAdvanceToStage4} style={styles.tickIconCircle}>
-              <MaterialCommunityIcons
-                name={currentStage >= 4 ? 'check-circle' : 'check-circle-outline'}
-                size={32}
-                color={currentStage >= 4 ? 'limegreen' : 'gray'}
-              />
+        {showAnswer && (
+          <Animated.View style={[styles.crossIconWrapper, { transform: [{ scale: scaleAnim }] }]}>
+            <TouchableOpacity onPress={handleMarkWrongAndAdvance} style={styles.crossIconCircle}>
+              <MaterialCommunityIcons name="close-circle-outline" size={32} color="red" />
             </TouchableOpacity>
           </Animated.View>
         )}
       </View>
 
-      <View style={styles.centeredContent}>
-        {showAnswer ? (
-          <>
-            <Text style={styles.phoneticText}>{current?.phonetic}</Text>
-            <TouchableOpacity onPress={playAudio}>
-              <Text style={styles.japaneseText}>{current?.foreign}</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          <Text style={styles.japaneseText}>{current?.foreign}</Text>
-        )}
-      </View>
+      <View style={styles.bottomHalf}>
+        <WordInteractionBlock
+          block={current}
+          stage={currentStage}
+          onStageChange={() => setRefreshKey(k => k + 1)}
+          onPlayAudio={handlePlayNative}
+          showStars={false}
+          showInstruction={!showAnswer}
+          showPhonetic={showAnswer}
+        />
 
-      {!autoplay && (
-        <View style={styles.buttonArea}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={showAnswer ? handleNext : () => setShowAnswer(true)}
-          >
-            <Text style={styles.buttonText}>{showAnswer ? 'Next' : 'Show Answer'}</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        <TouchableOpacity
+          style={styles.nextButton}
+          onPress={async () => {
+            if (!showAnswer) {
+              setShowAnswer(true);
+            } else {
+              await handleAdvanceToStage4();
+              handleNext();
+            }
+          }}
+        >
+          <Text style={styles.buttonText}>{showAnswer ? 'Next' : 'Show Answer'}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -274,60 +185,31 @@ export default function PracticeSpeakScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: 'black' },
   topHalf: { height: '58%', position: 'relative' },
-  centeredContent: { alignItems: 'center', marginTop: 24, gap: 20 },
-  japaneseText: {
-    color: 'white',
-    fontSize: 38,
-    fontWeight: '600',
-    textShadowColor: 'black',
-    textShadowRadius: 4,
+  bottomHalf: {
+    height: '42%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 30,
   },
-  phoneticText: {
-    color: '#ccc',
-    fontSize: 26,
-    fontWeight: '400',
-    textShadowColor: 'black',
-    textShadowRadius: 4,
-  },
-  tickIconWrapper: {
+  crossIconWrapper: {
     position: 'absolute',
     bottom: 36,
     right: 20,
     zIndex: 5,
   },
-  tickIconCircle: {
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  crossIconCircle: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
     borderRadius: 24,
     padding: 6,
   },
-  buttonArea: {
-    position: 'absolute',
-    bottom: 28,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  button: {
+  nextButton: {
     backgroundColor: '#444',
     paddingVertical: 12,
     paddingHorizontal: 28,
     borderRadius: 8,
+    marginTop: 20,
   },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-  },
-  autoPlayIconWrapper: {
-    position: 'absolute',
-    top: '45%',
-    left: 20,
-    zIndex: 5,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    padding: 8,
-    borderRadius: 20,
-  },
+  buttonText: { color: 'white', fontSize: 18 },
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',

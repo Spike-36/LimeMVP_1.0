@@ -1,3 +1,6 @@
+// PracticeListenScreen.js
+
+// [unchanged imports above]
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
@@ -45,6 +48,12 @@ export default function PracticeListenScreen() {
     const nextIndex = (currentIndex + 1) % nextList.length;
     setShuffledBlocks(nextList);
     setCurrentIndex(nextIndex >= nextList.length ? 0 : nextIndex);
+  };
+
+  const handleMarkWrongAndAdvance = async () => {
+    setShowAnswer(false);
+    await new Promise(r => setTimeout(r, 500));
+    handleNext();
   };
 
   useDynamicAutoplay({
@@ -105,7 +114,6 @@ export default function PracticeListenScreen() {
             });
           });
 
-          // Wait 2 seconds
           await new Promise((r) => setTimeout(r, 1000));
 
           const { sound: normalSound } = await Audio.Sound.createAsync(normalSource);
@@ -204,13 +212,13 @@ export default function PracticeListenScreen() {
           />
         </TouchableOpacity>
 
-        {!autoplay && showAnswer && currentStage >= 2 && (
+        {!autoplay && showAnswer && (
           <Animated.View style={[styles.tickIconWrapper, { transform: [{ scale: scaleAnim }] }]}>
-            <TouchableOpacity onPress={handleAdvanceToStage3} style={styles.tickIconCircle}>
+            <TouchableOpacity onPress={handleMarkWrongAndAdvance} style={styles.tickIconCircle}>
               <MaterialCommunityIcons
-                name={currentStage >= 3 ? 'check-circle' : 'check-circle-outline'}
+                name="close-circle-outline"
                 size={32}
-                color={currentStage >= 3 ? 'limegreen' : 'gray'}
+                color="red"
               />
             </TouchableOpacity>
           </Animated.View>
@@ -245,7 +253,14 @@ export default function PracticeListenScreen() {
         {!autoplay && (
           <TouchableOpacity
             style={styles.nextButton}
-            onPress={showAnswer ? handleNext : () => setShowAnswer(true)}
+            onPress={async () => {
+              if (!showAnswer) {
+                setShowAnswer(true);
+              } else {
+                await handleAdvanceToStage3();
+                handleNext();
+              }
+            }}
           >
             <Text style={styles.buttonText}>{showAnswer ? 'Next' : 'Show Answer'}</Text>
           </TouchableOpacity>
