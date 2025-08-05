@@ -48,26 +48,18 @@ export default function WordRecordLayout({
           </TouchableOpacity>
         )}
 
-        {showImage && block?.showIndex === "1" ? (
+        {(block?.showIndex === "1" || showEnglish) && (
           <View style={styles.englishOverlay}>
             <View style={styles.englishBackground}>
               <Text style={styles.englishText}>{block.english}</Text>
             </View>
           </View>
-        ) : (
-          showInfoIcon && !showEnglish && (
-            <TouchableOpacity style={styles.langBadge} onPress={onToggleEnglish}>
-              <Text style={styles.langBadgeText}>EN</Text>
-            </TouchableOpacity>
-          )
         )}
 
-        {showEnglish && block?.showIndex !== "1" && (
-          <View style={styles.englishOverlay}>
-            <View style={styles.englishBackground}>
-              <Text style={styles.englishText}>{block.english}</Text>
-            </View>
-          </View>
+        {showInfoIcon && (
+          <TouchableOpacity style={styles.langBadge} onPress={onToggleEnglish}>
+            <Text style={styles.langBadgeText}>EN</Text>
+          </TouchableOpacity>
         )}
 
         {typeof stage === 'number' && stage < 4 && wordId && (

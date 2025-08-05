@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -20,11 +20,11 @@ function shuffleArray(array) {
 }
 
 export default function PracticeSpeakScreen() {
-  const navigation = useNavigation();
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState({});
   const [showAnswer, setShowAnswer] = useState(false);
+  const [showEnglish, setShowEnglish] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [pendingRemovalId, setPendingRemovalId] = useState(null);
 
@@ -44,39 +44,27 @@ export default function PracticeSpeakScreen() {
     setCurrentIndex(nextIndex >= nextList.length ? 0 : nextIndex);
   };
 
+  const handleAdvanceToStage4 = async () => {
+    if (!current?.id) return;
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 1.3, duration: 120, useNativeDriver: true }),
+      Animated.spring(scaleAnim, { toValue: 1, friction: 3, useNativeDriver: true }),
+    ]).start();
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    } catch (err) {
+      console.warn('Haptics error:', err.message);
+    }
+    await updateWordStage(current.id, 4);
+    const updated = await loadProgress();
+    setProgress(updated);
+    setPendingRemovalId(current.id);
+  };
+
   const handleMarkWrongAndAdvance = async () => {
     setShowAnswer(false);
     await new Promise(r => setTimeout(r, 500));
     handleNext();
-  };
-
-  const handleAdvanceToStage4 = async () => {
-    if (!current?.id) return;
-
-    console.log('🟡 Before update:', current.id, getStage(progress, current.id));
-
-    if (getStage(progress, current.id) < 4) {
-      Animated.sequence([
-        Animated.timing(scaleAnim, { toValue: 1.3, duration: 120, useNativeDriver: true }),
-        Animated.spring(scaleAnim, { toValue: 1, friction: 3, useNativeDriver: true }),
-      ]).start();
-
-      try {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      } catch (err) {
-        console.warn('Haptics error:', err.message);
-      }
-
-      try {
-        await updateWordStage(current.id, 4);
-        const updated = await loadProgress();
-        console.log('🟢 After update:', current.id, getStage(updated, current.id));
-        setProgress(updated);
-        setPendingRemovalId(current.id);
-      } catch (err) {
-        console.error('❌ Failed to update word stage:', err);
-      }
-    }
   };
 
   useFocusEffect(
@@ -95,9 +83,10 @@ export default function PracticeSpeakScreen() {
 
   useEffect(() => {
     setShowAnswer(false);
+    setShowEnglish(false);
   }, [currentIndex]);
 
-  const handlePlayNative = async () => {
+  const handlePlayJapanese = async () => {
     try {
       const file = current?.audio;
       const source = audioMap[file];
@@ -122,6 +111,13 @@ export default function PracticeSpeakScreen() {
     }
   };
 
+  // 🔈 Auto-play native audio on reveal
+  useEffect(() => {
+    if (showAnswer && current) {
+      handlePlayJapanese();
+    }
+  }, [showAnswer, current]);
+
   if (!current) {
     return (
       <View style={styles.centeredContainer}>
@@ -130,24 +126,31 @@ export default function PracticeSpeakScreen() {
     );
   }
 
+  const shouldShowEnglishText =
+    (showAnswer && showEnglish) || current?.showIndex === '1';
+
   return (
     <View style={styles.container}>
       <View style={styles.topHalf}>
         <WordRecordLayout
           block={current}
           imageAsset={imageMap[current.image]}
-          showImage={showAnswer}
+          showImage={true}
           showTipIcon={showAnswer}
           showInfoIcon={showAnswer}
-          showEnglish={showAnswer}
-          hideAudioButton
-          onPhoneticPress={() => {}}
+          showEnglish={shouldShowEnglishText}
+          hideAudioButton={true}
+          onToggleEnglish={() => setShowEnglish(!showEnglish)}
         />
 
         {showAnswer && (
-          <Animated.View style={[styles.crossIconWrapper, { transform: [{ scale: scaleAnim }] }]}>
-            <TouchableOpacity onPress={handleMarkWrongAndAdvance} style={styles.crossIconCircle}>
-              <MaterialCommunityIcons name="close-circle-outline" size={32} color="red" />
+          <Animated.View style={[styles.tickIconWrapper, { transform: [{ scale: scaleAnim }] }]}>
+            <TouchableOpacity onPress={handleMarkWrongAndAdvance} style={styles.tickIconCircle}>
+              <MaterialCommunityIcons
+                name="close-circle-outline"
+                size={32}
+                color="red"
+              />
             </TouchableOpacity>
           </Animated.View>
         )}
@@ -158,7 +161,7 @@ export default function PracticeSpeakScreen() {
           block={current}
           stage={currentStage}
           onStageChange={() => setRefreshKey(k => k + 1)}
-          onPlayAudio={handlePlayNative}
+          onPlayAudio={handlePlayJapanese}
           showStars={false}
           showInstruction={!showAnswer}
           showPhonetic={showAnswer}
@@ -191,13 +194,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 30,
   },
-  crossIconWrapper: {
+  tickIconWrapper: {
     position: 'absolute',
     bottom: 36,
     right: 20,
     zIndex: 5,
   },
-  crossIconCircle: {
+  tickIconCircle: {
     backgroundColor: 'rgba(0,0,0,0.6)',
     borderRadius: 24,
     padding: 6,
