@@ -11,7 +11,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import WordListItem from '../components/WordListItemLite';
+import { useTargetLang } from '../context/TargetLangContext';
 import blocks from '../data/blocks.json';
+import { getDynamicWordFields } from '../utils/getDynamicWordFields';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function ExploreListScreen() {
@@ -25,6 +27,7 @@ export default function ExploreListScreen() {
   const [progress, setProgress] = useState({});
   const [activeSection, setActiveSection] = useState('');
   const animRefs = useRef({});
+  const { targetLang } = useTargetLang();
 
   useFocusEffect(
     useCallback(() => {
@@ -193,7 +196,6 @@ export default function ExploreListScreen() {
                           scrollRef.current,
                           (x, y) => {
                             yPositions.current[title] = y;
-                            console.log(`Measured ${title}: y=${y}`);
                           },
                           () => {}
                         );
@@ -219,24 +221,32 @@ export default function ExploreListScreen() {
                   </View>
                 </View>
 
-                {sectionWords.map((item) => (
-                  <WordListItem
-                    key={item.id}
-                    word={item}
-                    wordStage={getStage(progress, item.id)}
-                    onUpdateProgress={setProgress}
-                    onPress={() => {
-                      const index = orderedWords.findIndex((w) => w.id === item.id);
-                      if (index !== -1) {
-                        navigation.push('WordRecord', {
-                          words: orderedWords,
-                          index,
-                          mode: 'explore',
-                        });
-                      }
-                    }}
-                  />
-                ))}
+                {sectionWords.map((item) => {
+                  const { foreignText, audio } = getDynamicWordFields(item, targetLang);
+
+                  return (
+                    <WordListItem
+                      key={item.id}
+                      word={{
+                        ...item,
+                        foreign: foreignText,
+                        audio, // ✅ critical line for correct Korean playback
+                      }}
+                      wordStage={getStage(progress, item.id)}
+                      onUpdateProgress={setProgress}
+                      onPress={() => {
+                        const index = orderedWords.findIndex((w) => w.id === item.id);
+                        if (index !== -1) {
+                          navigation.push('WordRecord', {
+                            words: orderedWords,
+                            index,
+                            mode: 'explore',
+                          });
+                        }
+                      }}
+                    />
+                  );
+                })}
               </View>
             );
           })}

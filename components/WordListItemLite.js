@@ -50,10 +50,10 @@ export default function WordListItem({
   };
 
   const handlePlay = async () => {
-    const preferredKey = word.audioJapaneseFemale || word.audio;
+    const audioKey = word.audio;
 
-    if (!preferredKey || !audioMap[preferredKey]) {
-      console.warn('⚠️ Audio not found for:', preferredKey);
+    if (!audioKey || !audioMap[audioKey]) {
+      console.warn('⚠️ Audio not found for:', audioKey);
       return;
     }
 
@@ -63,7 +63,7 @@ export default function WordListItem({
         setSound(null);
       }
 
-      const { sound: newSound } = await Audio.Sound.createAsync(audioMap[preferredKey]);
+      const { sound: newSound } = await Audio.Sound.createAsync(audioMap[audioKey]);
       setSound(newSound);
       await newSound.replayAsync();
     } catch (err) {
@@ -80,7 +80,7 @@ export default function WordListItem({
         <Text style={styles.english}>{word.english}</Text>
       </TouchableOpacity>
 
-      {/* Japanese: triggers audio */}
+      {/* Foreign text: triggers audio */}
       <View style={styles.japaneseZone}>
         <TouchableOpacity onPress={handlePlay} style={styles.japaneseWrapper}>
           <Text style={styles.japanese}>{word.foreign}</Text>

@@ -1,15 +1,34 @@
-// utils/getDynamicWordFields.js
-
 export function getDynamicWordFields(word, targetLang) {
   if (!word || !targetLang) return {};
 
-  const capitalized = targetLang.charAt(0).toUpperCase() + targetLang.slice(1);
+  let foreignText = '';
+  let phoneticText = '';
+  let audioKey = '';
+  let slowAudioKey = '';
+  let femaleAudioKey = '';
+
+  if (targetLang === 'japanese') {
+    foreignText = word.foreign || '';
+    phoneticText = word.phonetic || '';
+    audioKey = 'audio';
+    slowAudioKey = 'audioJapaneseSlow';
+    femaleAudioKey = 'audioJapaneseFemale';
+  } else if (targetLang === 'korean') {
+    foreignText = word.korean || '';
+    phoneticText = word.koreanPhonetic || '';
+    audioKey = 'audioKorean';
+    slowAudioKey = 'audioKoreanSlow';
+    femaleAudioKey = 'audioKoreanFemale';
+  } else {
+    // fallback for unsupported languages
+    console.warn(`Unsupported language: ${targetLang}`);
+  }
 
   return {
-    foreignText: word?.[targetLang] || word?.foreign || '',
-    phoneticText: word?.[`${targetLang}Phonetic`] || word?.phonetic || '',
-    audioKey: capitalized === 'Japanese' ? 'audio' : `audio${capitalized}`,
-    slowAudioKey: `audio${capitalized}Slow`,
-    femaleAudioKey: `audio${capitalized}Female`,
+    foreignText,
+    phoneticText,
+    audioKey,
+    slowAudioKey,
+    femaleAudioKey,
   };
 }

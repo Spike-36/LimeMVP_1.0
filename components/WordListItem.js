@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
+import { useTargetLang } from '../context/TargetLangContext';
 import { loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function WordListItem({
@@ -11,7 +12,7 @@ export default function WordListItem({
   wordStage = 0,
   onPress,
   onUpdateProgress,
-  persist = true, // ⬅️ allows reuse in non-persistent views
+  persist = true,
 }) {
   if (!word || typeof word !== 'object') {
     console.warn('Invalid word:', word);
@@ -20,6 +21,7 @@ export default function WordListItem({
 
   const [isTicking, setIsTicking] = useState(false);
   const [sound, setSound] = useState(null);
+  const { targetLang } = useTargetLang();
 
   useEffect(() => {
     return () => {
@@ -68,8 +70,12 @@ export default function WordListItem({
   };
 
   const handlePlay = async () => {
-    if (!word.audio || !audioMap[word.audio]) {
-      console.warn('⚠️ Audio not found for:', word.audio);
+    const capitalized = targetLang.charAt(0).toUpperCase() + targetLang.slice(1);
+    const dynamicAudioKey = `audio${capitalized}`;
+    const audioKey = word[dynamicAudioKey];
+
+    if (!audioKey || !audioMap[audioKey]) {
+      console.warn('⚠️ Audio not found for:', audioKey);
       return;
     }
 
@@ -79,7 +85,7 @@ export default function WordListItem({
         setSound(null);
       }
 
-      const { sound: newSound } = await Audio.Sound.createAsync(audioMap[word.audio]);
+      const { sound: newSound } = await Audio.Sound.createAsync(audioMap[audioKey]);
       setSound(newSound);
       await newSound.replayAsync();
     } catch (err) {
@@ -91,19 +97,16 @@ export default function WordListItem({
 
   return (
     <View style={styles.item}>
-      {/* English: triggers navigation */}
       <TouchableOpacity onPress={onPress} style={styles.englishZone}>
         <Text style={styles.english}>{word.english}</Text>
       </TouchableOpacity>
 
-      {/* Foreign: triggers audio */}
       <View style={styles.japaneseZone}>
         <TouchableOpacity onPress={handlePlay} style={styles.japaneseWrapper}>
           <Text style={styles.japanese}>{word.foreign}</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Tick */}
       <TouchableOpacity onPress={handleToggleStage} style={styles.tickButton}>
         <Feather name="check-circle" size={26} color={tickColor} />
       </TouchableOpacity>
@@ -127,7 +130,7 @@ const styles = StyleSheet.create({
   },
   english: {
     fontSize: 18,
-    color: '#FFFFFF',  // ⬅️ Pure white
+    color: '#FFFFFF',
     fontWeight: '600',
   },
   japaneseZone: {

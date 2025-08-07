@@ -1,6 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
 import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTargetLang } from '../context/TargetLangContext'; // ✅ use context instead of local state
 
 const LANGUAGES = [
   { key: 'japanese', label: '🇯🇵 Japanese', available: true },
@@ -12,15 +11,7 @@ const LANGUAGES = [
 ];
 
 export default function LanguagePickerScreen({ navigation }) {
-  const [selected, setSelected] = useState(null);
-
-  useEffect(() => {
-    const loadLang = async () => {
-      const stored = await AsyncStorage.getItem('targetLang');
-      if (stored) setSelected(stored);
-    };
-    loadLang();
-  }, []);
+  const { targetLang, setTargetLang } = useTargetLang(); // ✅ shared context
 
   const selectLang = async (langKey, available) => {
     if (!available) {
@@ -28,16 +19,15 @@ export default function LanguagePickerScreen({ navigation }) {
       return;
     }
 
-    await AsyncStorage.setItem('targetLang', langKey);
-    setSelected(langKey);
-    navigation.navigate('Explore', { targetLang: langKey });
+    await setTargetLang(langKey); // ✅ updates AsyncStorage and context
+    navigation.navigate('Explore');
   };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={[
         styles.option,
-        selected === item.key && item.available && styles.selected,
+        targetLang === item.key && item.available && styles.selected,
         !item.available && styles.disabled,
       ]}
       onPress={() => selectLang(item.key, item.available)}
@@ -50,7 +40,7 @@ export default function LanguagePickerScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Choose a Language</Text>
-      <FlatList data={LANGUAGES} renderItem={renderItem} keyExtractor={item => item.key} />
+      <FlatList data={LANGUAGES} renderItem={renderItem} keyExtractor={(item) => item.key} />
     </View>
   );
 }

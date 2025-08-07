@@ -1,3 +1,5 @@
+// components/WordRecordLayout.js
+
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import StageAdvanceButton from './StageAdvanceButton';
@@ -26,7 +28,11 @@ export default function WordRecordLayout({
   onAdvanceStage = () => {},
   showSlowAudioIcon = false,
   onSlowAudioPress,
+  targetLang, // ✅ DYNAMIC TARGET LANGUAGE
 }) {
+  const resolvedText = block?.[targetLang]; // e.g., korean or japanese
+  const resolvedPhonetic = block?.[`${targetLang}Phonetic`]; // e.g., koreanPhonetic
+
   return (
     <View style={styles.container}>
       <View style={[styles.imageContainer, !showImage && { height: screenHeight * 0.478 }]}>
@@ -79,8 +85,12 @@ export default function WordRecordLayout({
       </View>
 
       <View style={styles.textSection} pointerEvents="auto">
-        {block?.foreign && !hideThaiText && (
-          <Text style={styles.foreign}>{block.foreign}</Text>
+        {resolvedText && !hideThaiText && (
+          <Text style={styles.foreign}>{resolvedText}</Text>
+        )}
+
+        {resolvedPhonetic && (
+          <Text style={styles.phonetic}>{resolvedPhonetic}</Text>
         )}
 
         {topContent}
@@ -93,107 +103,90 @@ export default function WordRecordLayout({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
   },
   imageContainer: {
-    height: screenHeight * 0.5,
+    position: 'relative',
     width: '100%',
-    overflow: 'hidden',
-    zIndex: 0,
+    height: screenHeight * 0.478,
+    backgroundColor: '#000',
   },
   image: {
-    height: '100%',
     width: '100%',
+    height: '100%',
   },
   fallback: {
-    backgroundColor: '#222',
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#222',
   },
   fallbackText: {
     color: '#888',
-    fontSize: 18,
-    fontStyle: 'italic',
+    fontSize: 16,
   },
   starRow: {
     position: 'absolute',
-    top: 60,
-    left: 16,
+    top: 10,
+    right: 10,
     flexDirection: 'row',
-    alignItems: 'center',
-    zIndex: 2,
   },
   findButton: {
     position: 'absolute',
-    top: 49,
-    right: 16,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    padding: 8,
+    top: 10,
+    left: 10,
+    backgroundColor: '#111',
+    padding: 6,
     borderRadius: 20,
-    zIndex: 2,
   },
   slowAudioIcon: {
     position: 'absolute',
-    top: 49,
-    left: 16,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    padding: 8,
+    bottom: 10,
+    right: 10,
+    backgroundColor: '#111',
+    padding: 6,
     borderRadius: 20,
-    zIndex: 2,
-  },
-  langBadge: {
-    position: 'absolute',
-    bottom: 15,
-    left: 15,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderColor: '#555',
-    borderWidth: 1.5,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    zIndex: 2,
-  },
-  langBadgeText: {
-    color: '#aaa',
-    fontSize: 12,
-    fontWeight: 'bold',
   },
   englishOverlay: {
     position: 'absolute',
-    bottom: 15,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 2,
+    bottom: 10,
+    left: 10,
   },
   englishBackground: {
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   englishText: {
-    color: 'white',
-    fontSize: 26,
-    fontWeight: '600',
-    textShadowColor: 'black',
-    textShadowRadius: 4,
+    color: '#fff',
+    fontSize: 18,
+  },
+  langBadge: {
+    position: 'absolute',
+    bottom: 10,
+    left: 100,
+    backgroundColor: '#333',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  langBadgeText: {
+    color: '#fff',
+    fontSize: 12,
   },
   textSection: {
     flex: 1,
-    justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingTop: 24,
-    paddingBottom: 24,
-    zIndex: 100,
-    position: 'relative',
-    pointerEvents: 'auto',
+    padding: 16,
   },
   foreign: {
     fontSize: 36,
-    color: '#fff',
     fontWeight: '600',
+    color: '#fff',
+    marginBottom: 8,
+  },
+  phonetic: {
+    fontSize: 24,
+    color: '#ccc',
     marginBottom: 12,
   },
 });

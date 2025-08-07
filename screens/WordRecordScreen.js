@@ -1,4 +1,3 @@
-
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Audio } from 'expo-av';
@@ -10,12 +9,15 @@ import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
+import { useTargetLang } from '../context/TargetLangContext';
+import { getDynamicWordFields } from '../utils/getDynamicWordFields';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function WordRecordScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { words, index = 0, mode = 'explore' } = route.params || {};
+  const { targetLang } = useTargetLang();
 
   if (!words || !Array.isArray(words) || index < 0 || index >= words.length) {
     return (
@@ -31,8 +33,22 @@ export default function WordRecordScreen() {
   const [showEnglish, setShowEnglish] = useState(false);
   const [showTip, setShowTip] = useState(false);
 
-  const soundRef = useRef(null);
   const stage = getStage(progress, wordId);
+
+  // 🎯 Use hardwired gateField
+  const capitalized = targetLang.charAt(0).toUpperCase() + targetLang.slice(1);
+  const gateField = `lime${capitalized[0]}100`;
+  const isBlocked = !word?.[gateField] || parseInt(word[gateField]) < 1;
+
+  // ✅ Core logic using helper
+  const {
+    foreignText,
+    phoneticText,
+    audioKey,
+    slowAudioKey,
+  } = getDynamicWordFields(word, targetLang);
+
+  const soundRef = useRef(null);
 
   useEffect(() => {
     loadProgress().then(setProgress);
@@ -41,11 +57,10 @@ export default function WordRecordScreen() {
   useEffect(() => {
     let isMounted = true;
 
-    const loadAndPlay = async () => {
-      if (!word?.audio || !audioMap[word.audio]) {
-        console.warn('⚠️ No audio found for:', word?.audio);
-        return;
-      }
+    const playInitialAudio = async () => {
+      const file = word?.[audioKey];
+      const source = audioMap[file];
+      if (!file || !source) return;
 
       try {
         if (soundRef.current) {
@@ -54,18 +69,16 @@ export default function WordRecordScreen() {
           soundRef.current = null;
         }
 
-        const { sound } = await Audio.Sound.createAsync(audioMap[word.audio]);
+        const { sound } = await Audio.Sound.createAsync(source);
         soundRef.current = sound;
 
-        if (isMounted) {
-          await sound.playAsync();
-        }
+        if (isMounted) await sound.playAsync();
       } catch (err) {
-        console.warn('❌ Audio load/play error:', err.message);
+        console.warn('❌ Error loading audio:', err.message);
       }
     };
 
-    loadAndPlay();
+    playInitialAudio();
 
     return () => {
       isMounted = false;
@@ -74,45 +87,36 @@ export default function WordRecordScreen() {
         soundRef.current = null;
       }
     };
-  }, [word?.audio]);
+  }, [word, targetLang]);
 
   const playAudio = async () => {
-    if (!soundRef.current) {
-      console.warn('⚠️ Sound not loaded');
-      return;
-    }
-
     try {
-      await soundRef.current.replayAsync();
+      if (soundRef.current) {
+        await soundRef.current.replayAsync();
+      } else {
+        console.warn('⚠️ No audio loaded');
+      }
     } catch (err) {
-      console.warn('❌ Manual audio playback error:', err.message);
+      console.warn('❌ Manual playback error:', err.message);
     }
   };
 
-  const playJapaneseSlowAudio = async () => {
-    console.log('🧪 Slow audio icon tapped');
-    const file = word?.audioJapaneseSlow;
+  const playSlowAudio = async () => {
+    const file = word?.[slowAudioKey];
     const source = audioMap[file];
-
-    console.log('Audio filename:', file);
-    console.log('AudioMap entry:', source);
-
     if (!file || !source) {
-      console.warn('⚠️ No slow Japanese audio found:', file);
+      console.warn('⚠️ No slow audio:', slowAudioKey);
       return;
     }
 
     try {
       const { sound } = await Audio.Sound.createAsync(source);
       await sound.playAsync();
-
       sound.setOnPlaybackStatusUpdate((status) => {
-        if (status.didJustFinish) {
-          sound.unloadAsync();
-        }
+        if (status.didJustFinish) sound.unloadAsync();
       });
     } catch (err) {
-      console.warn('❌ Slow audio playback error:', err.message);
+      console.warn('❌ Slow audio error:', err.message);
     }
   };
 
@@ -125,7 +129,7 @@ export default function WordRecordScreen() {
 
   const handleAdvanceToStage1 = async () => {
     if (stage >= 1 || !wordId) return;
-    await updateWordStage(wordId, 2); // Skip Learn, go directly to Listen
+    await updateWordStage(wordId, 2);
     const updated = await loadProgress();
     setProgress(updated);
   };
@@ -142,13 +146,26 @@ export default function WordRecordScreen() {
     }
   };
 
+  if (isBlocked) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.error}>⛔ This word is not available in {targetLang} yet.</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.fixedContainer}>
       <StatusBar style="light" translucent backgroundColor="transparent" />
 
       <View style={styles.topHalf}>
         <WordRecordLayout
-          block={word}
+          block={{
+            ...word,
+            foreign: foreignText,
+            phonetic: phoneticText,
+            meaning: word.meaning,
+          }}
           imageAsset={imageMap[word.image]}
           showImage
           showTipIcon
@@ -159,7 +176,7 @@ export default function WordRecordScreen() {
           onShowTip={() => setShowTip(true)}
           onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
           showSlowAudioIcon
-          onSlowAudioPress={playJapaneseSlowAudio}
+          onSlowAudioPress={playSlowAudio}
         />
 
         {mode === 'explore' && (
@@ -177,7 +194,11 @@ export default function WordRecordScreen() {
 
       <View style={styles.interactionBlock} pointerEvents="box-none">
         <WordInteractionBlock
-          block={word}
+          block={{
+            ...word,
+            foreign: foreignText,
+            phonetic: phoneticText,
+          }}
           stage={stage}
           onStageChange={handleSetStage}
           onPlayAudio={playAudio}
