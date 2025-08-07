@@ -30,8 +30,14 @@ export default function WordRecordLayout({
   return (
     <View style={styles.container}>
       <View style={[styles.imageContainer, !showImage && { height: screenHeight * 0.478 }]}>
-        {showImage && imageAsset && (
-          <Image source={imageAsset} style={styles.image} resizeMode="cover" />
+        {showImage && (
+          imageAsset ? (
+            <Image source={imageAsset} style={styles.image} resizeMode="cover" />
+          ) : (
+            <View style={[styles.image, styles.fallback]}>
+              <Text style={styles.fallbackText}>Image not found</Text>
+            </View>
+          )
         )}
 
         {stars && <View style={styles.starRow}>{stars}</View>}
@@ -98,6 +104,16 @@ const styles = StyleSheet.create({
   image: {
     height: '100%',
     width: '100%',
+  },
+  fallback: {
+    backgroundColor: '#222',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fallbackText: {
+    color: '#888',
+    fontSize: 18,
+    fontStyle: 'italic',
   },
   starRow: {
     position: 'absolute',
