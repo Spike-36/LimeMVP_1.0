@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import WordListItem from '../components/WordListItemLite';
+import WordListItem from '../components/WordListItem'; // ✅ shared version only
 import { useTargetLang } from '../context/TargetLangContext';
 import blocks from '../data/blocks.json';
 import { getDynamicWordFields } from '../utils/getDynamicWordFields';
@@ -230,7 +230,7 @@ export default function ExploreListScreen() {
                       word={{
                         ...item,
                         foreign: foreignText,
-                        audio, // ✅ critical line for correct Korean playback
+                        audio,
                       }}
                       wordStage={getStage(progress, item.id)}
                       onUpdateProgress={setProgress}

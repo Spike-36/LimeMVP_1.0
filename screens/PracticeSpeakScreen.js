@@ -9,7 +9,9 @@ import { audioMap } from '../components/audioMap';
 import { imageMap } from '../components/imageMap';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
+import { useTargetLang } from '../context/TargetLangContext';
 import blocks from '../data/blocks.json';
+import { getDynamicWordFields } from '../utils/getDynamicWordFields';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 function shuffleArray(array) {
@@ -20,6 +22,7 @@ function shuffleArray(array) {
 }
 
 export default function PracticeSpeakScreen() {
+  const { targetLang } = useTargetLang();
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState({});
@@ -30,7 +33,22 @@ export default function PracticeSpeakScreen() {
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const soundRef = useRef(null);
-  const current = shuffledBlocks[currentIndex];
+
+  const raw = shuffledBlocks[currentIndex];
+  const {
+    foreignText,
+    phoneticText,
+    audioKey,
+  } = getDynamicWordFields(raw, targetLang);
+
+  const current = raw
+    ? {
+        ...raw,
+        foreign: foreignText,
+        phonetic: phoneticText,
+      }
+    : null;
+
   const currentStage = getStage(progress, current?.id);
 
   const handleNext = () => {
@@ -86,9 +104,9 @@ export default function PracticeSpeakScreen() {
     setShowEnglish(false);
   }, [currentIndex]);
 
-  const handlePlayJapanese = async () => {
+  const handlePlayNativeAudio = async () => {
     try {
-      const file = current?.audio;
+      const file = current?.[audioKey];
       const source = audioMap[file];
       if (!file || !source) return;
 
@@ -111,12 +129,11 @@ export default function PracticeSpeakScreen() {
     }
   };
 
-  // 🔈 Auto-play native audio on reveal
+  // ✅ Play audio only on reveal
   useEffect(() => {
-    if (showAnswer && current) {
-      handlePlayJapanese();
-    }
-  }, [showAnswer, current]);
+    if (!showAnswer) return;
+    handlePlayNativeAudio();
+  }, [showAnswer]);
 
   if (!current) {
     return (
@@ -161,7 +178,7 @@ export default function PracticeSpeakScreen() {
           block={current}
           stage={currentStage}
           onStageChange={() => setRefreshKey(k => k + 1)}
-          onPlayAudio={handlePlayJapanese}
+          onPlayAudio={handlePlayNativeAudio}
           showStars={false}
           showInstruction={!showAnswer}
           showPhonetic={showAnswer}

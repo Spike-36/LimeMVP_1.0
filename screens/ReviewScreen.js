@@ -1,4 +1,3 @@
-// ReviewScreen.js — Shows full list of Level 4 words with tick-all-to-reset
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useRef, useState } from 'react';
 import {
@@ -12,7 +11,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import WordListItem from '../components/WordListItem';
+import { useTargetLang } from '../context/TargetLangContext';
 import blocks from '../data/blocks.json';
+import { getDynamicWordFields } from '../utils/getDynamicWordFields';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function ReviewScreen() {
@@ -23,6 +24,7 @@ export default function ReviewScreen() {
   const suppressScroll = useRef(false);
   const [progress, setProgress] = useState({});
   const [activeSection, setActiveSection] = useState('');
+  const { targetLang } = useTargetLang(); // ✅ added
 
   useFocusEffect(
     useCallback(() => {
@@ -146,25 +148,33 @@ export default function ReviewScreen() {
                 </View>
               </View>
 
-              {groupedBlocks[title].map((item) => (
-                <WordListItem
-                  key={item.id}
-                  word={item}
-                  wordStage={getStage(progress, item.id)}
-                  onUpdateProgress={handleUpdateProgress}
-                  onPress={() => {
-                    const index = orderedWords.findIndex((w) => w.id === item.id);
-                    if (index !== -1) {
-                      navigation.push('ReviewWord', {
-                        words: orderedWords,
-                        index,
-                        mode: 'review',
-                      });
-                    }
-                  }}
-                  showImage={false}
-                />
-              ))}
+              {groupedBlocks[title].map((item) => {
+                const { foreignText, audio } = getDynamicWordFields(item, targetLang); // ✅ dynamic fields
+
+                return (
+                  <WordListItem
+                    key={item.id}
+                    word={{
+                      ...item,
+                      foreign: foreignText,
+                      audio,
+                    }}
+                    wordStage={getStage(progress, item.id)}
+                    onUpdateProgress={handleUpdateProgress}
+                    onPress={() => {
+                      const index = orderedWords.findIndex((w) => w.id === item.id);
+                      if (index !== -1) {
+                        navigation.push('ReviewWord', {
+                          words: orderedWords,
+                          index,
+                          mode: 'review',
+                        });
+                      }
+                    }}
+                    showImage={false}
+                  />
+                );
+              })}
             </View>
           ))}
 

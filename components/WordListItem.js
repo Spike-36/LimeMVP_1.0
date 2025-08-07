@@ -1,10 +1,9 @@
 import { Feather } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
-import { useTargetLang } from '../context/TargetLangContext';
 import { loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function WordListItem({
@@ -12,49 +11,33 @@ export default function WordListItem({
   wordStage = 0,
   onPress,
   onUpdateProgress,
-  persist = true,
+  showPhonetic = false,
+  showTick = false,
+  targetLang = 'japanese',
 }) {
   if (!word || typeof word !== 'object') {
     console.warn('Invalid word:', word);
     return null;
   }
 
-  const [isTicking, setIsTicking] = useState(false);
   const [sound, setSound] = useState(null);
-  const { targetLang } = useTargetLang();
-
-  useEffect(() => {
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
-  }, [sound]);
 
   const refreshProgress = async () => {
     const updated = await loadProgress();
-    onUpdateProgress(updated);
+    onUpdateProgress?.(updated);
   };
 
   const handleToggleStage = () => {
     if (!word?.id || !onUpdateProgress) return;
 
-    const newStage = wordStage >= 1 ? 0 : 2;
+    const newStage = wordStage >= 2 ? 0 : 2;
 
     const doUpdate = async () => {
-      setIsTicking(true);
-
-      if (persist) {
-        await updateWordStage(word.id, newStage, true);
-        await refreshProgress();
-      } else {
-        onUpdateProgress(prev => ({ ...prev, [word.id]: newStage }));
-      }
-
-      setIsTicking(false);
+      await updateWordStage(word.id, newStage, true);
+      await refreshProgress();
     };
 
-    if (newStage === 0 && persist) {
+    if (newStage === 0) {
       Alert.alert(
         'Remove tick?',
         'This will reset progress for this word.',
@@ -70,9 +53,7 @@ export default function WordListItem({
   };
 
   const handlePlay = async () => {
-    const capitalized = targetLang.charAt(0).toUpperCase() + targetLang.slice(1);
-    const dynamicAudioKey = `audio${capitalized}`;
-    const audioKey = word[dynamicAudioKey];
+    const audioKey = word[`audio${capitalize(targetLang)}`];
 
     if (!audioKey || !audioMap[audioKey]) {
       console.warn('⚠️ Audio not found for:', audioKey);
@@ -94,24 +75,38 @@ export default function WordListItem({
   };
 
   const tickColor = wordStage >= 2 ? '#00FF00' : 'gray';
+  const langKey = targetLang.toLowerCase();
+  const phoneticKey = `${langKey}Phonetic`;
 
   return (
     <View style={styles.item}>
+      {/* English: triggers navigation */}
       <TouchableOpacity onPress={onPress} style={styles.englishZone}>
         <Text style={styles.english}>{word.english}</Text>
       </TouchableOpacity>
 
-      <View style={styles.japaneseZone}>
-        <TouchableOpacity onPress={handlePlay} style={styles.japaneseWrapper}>
-          <Text style={styles.japanese}>{word.foreign}</Text>
+      {/* Foreign text: triggers audio */}
+      <View style={styles.foreignZone}>
+        <TouchableOpacity onPress={handlePlay} style={styles.foreignWrapper}>
+          <Text style={styles.foreign}>{word[langKey]}</Text>
+          {showPhonetic && word[phoneticKey] && (
+            <Text style={styles.phonetic}>{word[phoneticKey]}</Text>
+          )}
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity onPress={handleToggleStage} style={styles.tickButton}>
-        <Feather name="check-circle" size={26} color={tickColor} />
-      </TouchableOpacity>
+      {/* Tick */}
+      {showTick && (
+        <TouchableOpacity onPress={handleToggleStage} style={styles.tickButton}>
+          <Feather name="check-circle" size={26} color={tickColor} />
+        </TouchableOpacity>
+      )}
     </View>
   );
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 const styles = StyleSheet.create({
@@ -133,19 +128,24 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '600',
   },
-  japaneseZone: {
+  foreignZone: {
     flex: 1,
     alignItems: 'flex-start',
     paddingLeft: 16,
   },
-  japaneseWrapper: {
+  foreignWrapper: {
     paddingVertical: 4,
     paddingHorizontal: 6,
   },
-  japanese: {
+  foreign: {
     fontSize: 18,
     color: '#aaa',
     textAlign: 'left',
+  },
+  phonetic: {
+    fontSize: 14,
+    color: '#888',
+    marginTop: 4,
   },
   tickButton: {
     padding: 6,

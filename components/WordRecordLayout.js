@@ -1,5 +1,3 @@
-// components/WordRecordLayout.js
-
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import StageAdvanceButton from './StageAdvanceButton';
@@ -28,10 +26,10 @@ export default function WordRecordLayout({
   onAdvanceStage = () => {},
   showSlowAudioIcon = false,
   onSlowAudioPress,
-  targetLang, // ✅ DYNAMIC TARGET LANGUAGE
+  targetLang,
 }) {
-  const resolvedText = block?.[targetLang]; // e.g., korean or japanese
-  const resolvedPhonetic = block?.[`${targetLang}Phonetic`]; // e.g., koreanPhonetic
+  const resolvedText = block?.[targetLang];
+  const resolvedPhonetic = block?.[`${targetLang}Phonetic`];
 
   return (
     <View style={styles.container}>
@@ -48,19 +46,19 @@ export default function WordRecordLayout({
 
         {stars && <View style={styles.starRow}>{stars}</View>}
 
-        {onPressFind && (
-          <TouchableOpacity style={styles.findButton} onPress={onPressFind}>
-            <Ionicons name="search" size={25} color="#aaa" />
-          </TouchableOpacity>
-        )}
-
         {showSlowAudioIcon && (
           <TouchableOpacity style={styles.slowAudioIcon} onPress={onSlowAudioPress}>
             <FontAwesome name="volume-down" size={24} color="#ccc" />
           </TouchableOpacity>
         )}
 
-        {(block?.showIndex === "1" || showEnglish) && (
+        {onPressFind && (
+          <TouchableOpacity style={styles.findButton} onPress={onPressFind}>
+            <Ionicons name="search" size={25} color="#aaa" />
+          </TouchableOpacity>
+        )}
+
+        {(block?.showIndex === '1' || showEnglish) && (
           <View style={styles.englishOverlay}>
             <View style={styles.englishBackground}>
               <Text style={styles.englishText}>{block.english}</Text>
@@ -129,17 +127,17 @@ const styles = StyleSheet.create({
     right: 10,
     flexDirection: 'row',
   },
-  findButton: {
+  slowAudioIcon: {
     position: 'absolute',
-    top: 10,
+    top: 50, // ← moved up
     left: 10,
     backgroundColor: '#111',
     padding: 6,
     borderRadius: 20,
   },
-  slowAudioIcon: {
+  findButton: {
     position: 'absolute',
-    bottom: 10,
+    top: 50, // ← moved up
     right: 10,
     backgroundColor: '#111',
     padding: 6,
@@ -148,7 +146,10 @@ const styles = StyleSheet.create({
   englishOverlay: {
     position: 'absolute',
     bottom: 10,
-    left: 10,
+    left: '50%',
+    transform: [{ translateX: -100 }],
+    width: 200,
+    alignItems: 'center',
   },
   englishBackground: {
     backgroundColor: 'rgba(0,0,0,0.7)',
@@ -159,11 +160,12 @@ const styles = StyleSheet.create({
   englishText: {
     color: '#fff',
     fontSize: 18,
+    textAlign: 'center',
   },
   langBadge: {
     position: 'absolute',
     bottom: 10,
-    left: 100,
+    left: 10,
     backgroundColor: '#333',
     paddingHorizontal: 6,
     paddingVertical: 2,
